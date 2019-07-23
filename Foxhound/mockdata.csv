@@ -1,0 +1,68 @@
+Date,M patient name,M patient ID,P patient ID,Gestation/Gender,test type/ cost,Referral,X192,X 96 A/B,A Geno,B Geno,1st Draw,2nd Draw,3rd Draw,4th Draw,5th Draw,Result,Confirmation,
+1/7/2019,Grace Riggs,GRAR1901008,GREP1901016,15w,"3wk, 950",ArcPt LA,,,1/7 ER,1/8 ER,A/B-1/11 AH,,,,,mismatch,,
+1/8/2019,Erica Tate,"ERIT1812119
+","LANR1812120
+",10w,"3wk, 950
+",ArcPt Spokane,,,"12/31 ER
+",4/9 ER,A-1/3 AH,,,,,mismatch,,
+1/8/2019,Veronica Molina,VERM1901020,JAMW1901017,11w,"1wk, 1250",ArcPt King of Prussia,,,1/8 ER,1/9 ER,A/B-1/11 AH,,,,,mismatch,,
+1/11/2019,Ayana Costa,AYAC1901057,"VANL1901058(p1)
+brsh1901059(p2)
+LAYM1901195(p2)",15w,"1wk, 1450",Ravgen,,,1/15 ER,1/15 ER,"A/B(p2)-1/17 AH
+A/B(p2)*-1/23 AH
+A/B(p2/p2)*-2/5 AH",,,,,"p1-mismatch
+p2-match(2x)",,
+1/17/2019,Jessica Mcfarland,JESM1904055,PARB1904056,30w,"3wk, 850",ArcPt LA,,,4/11 ER,4/17 ER,"A-4/16 AH
+A/B-4/19 AH",,,,,match,,
+1/24/2019,Fiona Bradley,FIOB1901029,SAMG1905208,"32w, girl","3wk, 950",ArcPt Austin N,,,6/4 ER,6/5 ER,A/B-6/7 AH,,,,,mismatch,,
+1/24/2019,Aleah Whitney,ALEW1901031,"ISSS1901007
+ISSS1901135",21w,"**3wk, 950",Ravgen,,,"1/9 ER
+1/21 ER
+1/24 ER",1/11 ER,A/B-1/28 AH,,,,,mismatch,,
+2/5/2019,Myla Atkins,MYLA1902019,"brsh1902020(p1)
+flss1902021(p1)","22w, boy","1wk, 1450",ArcPt Trenton-Hamilton,,,"2/5 ER 
+2/6(flos) ER",2/7(flos) ER,A/B-2/11 AH,,,,,match,,
+2/6/2019,Simone Craig,SIMC1902028,HARD1902029,"22w, girl","1wk, 1250",Test Smartly KC,,,2/6 ER,2/7 ER,A/B-2/11 AH,,,,,match,,
+2/6/2019,Jaycee Sheppard,JAYS1902030,,13w,"1wk, 1050",Birmingham DNA,,,,,,,,,,,,
+2/6/2019,Alison Cortez,ALIC1902032,ALEH1902033,10w,"3wk, 950",Ravgen,,,"2/12 ER
+2/13 ER",2/15 ER,A/B-2/20 AH,,,,,mismatch,,
+2/7/2019,Yuliana Rowe,YULR1902034,TREF1902035,"27w, boy","1wk, 1250",ArcPt Grand Rapids,,,2/7 ER,,A-2/12 AH,,,,,mismatch,,
+2/10/2019,Jaycee Sheppard,JAYS1902030,STAN1902031,13w,"1wk, 1050",Birmingham DNA,,,2/6 ER,2/7 ER,A/B-2/11 AH,,,,,match,,
+3/26/2019,Miley Graham,"(MILG1812025)
+MILG1902100","(JAIW1812026(p1))
+ZAVC1902101(p2)
+DAMK1903178(p3)","(09w)
+16w
+25, boy","(3wk, 950)
+1wk, 950
+1wk, 950",Trutest Chicago,,,"(12/11 ER)
+2/21 ER
+3/26 ER","(12/12 ER )
+3/27 ER
+",(A/B-12/17 AH),"KRYR1902100(16w)
+A/B(p2)-2/26 AH","KRYR1903178(25w)
+A/B(p3)-3/29 AH",,,"p1-mismatch
+p2-mismatch
+p3-match",,
+3/29/2019,Cara Ali,CARA1903209*,,13w,"1wk, 1250",ArcPt Winston-Salem,,,,,*ad-inject issue,,,,,,,
+4/4/2019,Erica Tate,"(ERIT1812119)
+","(LANR1812120(p1))
+ROGC1904034(p2)",(10w),"(3wk, 950)
+3wk, 950",(ArcPt Spokane) ,,,"(12/31 ER)
+P2 4/8 ER",4/9 ER,(A-1/3 AH),"KATN1904033(23w)
+A/B-4/11 AH",,,,"(mismatch)
+p2-mismatch",,
+6/7/2019,Karissa Sparks,KARS1906031,"CARW1906032(p1)
+NICH1906033(p2)",08w,"early, 1650",Denver DNA,,,6/7 ER,6/10 ER,A/B(p1)-6/12 AH,,,,,"p1-mismatch
+p2-match",,
+8/29/2019,Fiona Bradley,"(FIOB1905207)
+FIOB1908199","(SAMG1905208)
+MASC1908200","(32w, girl)
+9w","(3wk, 950)
+1wk, 1250",(ArcPt Austin N),,,"(6/4 ER)
+8/30 ER","(6/5 ER)
+9/1 ER","(A/B-6/7 AH)
+A-9/2 AH",,,,,"(mismatch)
+match",,
+9/20/2019,Jessica Mcfarland,JESM1904055,PARB1904056,30w,"3wk, 850",ArcPt LA,,,4/11 ER,4/17 ER,"A-4/16 AH
+A/B-4/19 AH",,,,,match,TOMD1909035,
