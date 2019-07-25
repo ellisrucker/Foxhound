@@ -32,10 +32,19 @@ public class Case {
     }
 
     //Setters and Getters
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    // TODO: create setName method: separates full name into first and last
+
+
     public String getMotherName(){
         return this.motherFirstName + " " + this.motherLastName;
     }
-    // TODO: create boolean compareStates Method
+    //TODO: create boolean compareStates Method
+
+    //TODO: override equals() and hashCode()
 
     public void setCaseState(String[] currentRow){
         this.caseState.clear();
