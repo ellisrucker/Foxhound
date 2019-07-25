@@ -23,13 +23,7 @@ public class Case {
     //Becomes Update's ID, increment with every new Update
     private Integer updateNumber = 1;
 
-    private class Update {
-        Integer updateId;
-        String file;
-        Date date;
-        ArrayList<String> updatedFields;
 
-    }
     enum Gender {
         Male, Female, MFTWINS
     }
