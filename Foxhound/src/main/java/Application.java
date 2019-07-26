@@ -14,7 +14,13 @@ import java.util.regex.Matcher;
 
 public class Application {
 
-    Pattern normalIdPattern = Pattern.compile("[a-zA-Z]{4}[\\d]{7}");
+    Pattern normalId = Pattern.compile("[a-zA-Z]{4}[\\d]{7}");
+    Pattern shortId = Pattern.compile("[a-zA-Z]{3}[\\d]{7}");
+    Pattern longId = Pattern.compile("[a-zA-Z]{5}[\\d]{7}");
+
+    public boolean isIdValid(String id) {
+        //TODO: finish this method
+    }
 
     //TODO: what ID finder methods do you need? Limit code repetition!
     public String findFirstId() {
