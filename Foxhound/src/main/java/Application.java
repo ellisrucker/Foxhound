@@ -1,4 +1,5 @@
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -13,6 +14,12 @@ import java.util.regex.Matcher;
 
 public class Application {
 
+    Pattern normalIdPattern = Pattern.compile("[a-zA-Z]{4}[\\d]{7}");
+
+    //TODO: what ID finder methods do you need? Limit code repetition!
+    public String findFirstId() {
+        //TODO: finish method
+    }
 
     public static void main(String [] args) throws IOException {
 
@@ -22,9 +29,13 @@ public class Application {
         Arrays.sort(csvList);
 
         for (File csv: csvList) {
-            //TODO: create File reader method that ignores header row of CSV
-            System.out.println(csv.getName());
+            //File reader method, ignores header row of CSV
+            CSVReader reader = new CSVReaderBuilder(new FileReader(csv)).withSkipLines(1).build();
 
+            String[] currentRow = null;
+            while ((currentRow = reader.readNext()) != null) {
+                System.out.println(csv.getName());
+            }
         }
 
     }
