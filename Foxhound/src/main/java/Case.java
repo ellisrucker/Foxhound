@@ -33,14 +33,23 @@ public class Case {
     }
 
     @Override
+    //overridding Object's equals method only overrides it
+    //for Case class right?
     public boolean equals(Object o){
         if (o == this) {
             return true;
         }
+        //Review: Aren't I comparing a String id to a Case?
+        // Wouldn't below statement always return false?
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
         if (o == null) {
             return false;
         }
-
+        //TODO: verify that below is indeed a typecast
+        Case c = (Case) o;
+        return c.id == this.id;
     }
 
 
