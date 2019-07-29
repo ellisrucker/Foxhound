@@ -14,17 +14,29 @@ import java.util.regex.Matcher;
 
 public class Application {
 
-    Pattern normalId = Pattern.compile("[a-zA-Z]{4}[\\d]{7}");
-    Pattern shortId = Pattern.compile("[a-zA-Z]{3}[\\d]{7}");
-    Pattern longId = Pattern.compile("[a-zA-Z]{5}[\\d]{7}");
+
+    Pattern generalId = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
 
     public boolean isIdValid(String id) {
         //TODO: finish this method
     }
 
     //TODO: what ID finder methods do you need? Limit code repetition!
-    public String findFirstId() {
-        //TODO: finish method
+
+    //TODO: test findFirstId method
+    public String findFirstId(String[] currentRow) {
+        if (currentRow[2].length() == 11) {
+            return currentRow[2];
+        }
+        else {
+            Matcher matcher = generalId.matcher(currentRow[2]);
+            if (matcher.find()) {
+                return matcher.group();
+            }
+            else {
+                return null;
+            }
+        }
     }
 
     public static void main(String [] args) throws IOException {
@@ -40,6 +52,7 @@ public class Application {
 
             String[] currentRow = null;
             while ((currentRow = reader.readNext()) != null) {
+                //TODO: create and call boolean caseExists method in Case class
                 System.out.println(csv.getName());
             }
         }

@@ -39,7 +39,7 @@ public class Case {
     // TODO: create setName method: separates full name into first and last
 
 
-    public String getMotherName(){
+    public String getMotherName() {
         return this.motherFirstName + " " + this.motherLastName;
     }
     //TODO: create boolean compareStates Method
