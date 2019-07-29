@@ -13,10 +13,11 @@ public class Case {
     private Gender gender;
     private boolean twins;
     //List of all Case IDs
-    private static HashSet<String> allCases = new HashSet<>();
+    private static HashSet<Case> allCases = new HashSet<>();
 
     //Stores hashed representation of Case's last row
     private ArrayList<Integer> caseState;
+
     //Record of each time Case is updated, use in Update's constructor!
     private ArrayList<Update> caseLog;
 
@@ -30,6 +31,20 @@ public class Case {
     enum Source {
         RAVGEN, REFERRAL, SELFSELL
     }
+
+    @Override
+    public boolean equals(Object o){
+        if (o == this) {
+            return true;
+        }
+        if (o == null) {
+            return false;
+        }
+
+    }
+
+
+
 
     //Setters and Getters
     public void setId(String id) {
