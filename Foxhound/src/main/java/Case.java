@@ -6,6 +6,7 @@ import java.util.HashSet;
 public class Case {
 
     private String id;
+    private int idNumber;
     private String motherFirstName;
     private String motherLastName;
     private Date dateStarted;
@@ -13,7 +14,7 @@ public class Case {
     private Gender gender;
     private boolean twins;
     //List of all Case IDs
-    private static HashSet<Case> allCases = new HashSet<>();
+    private static HashSet<Case> allCases = new HashSet<>(500);
 
     //Stores hashed representation of Case's last row
     private ArrayList<Integer> caseState;
@@ -24,34 +25,42 @@ public class Case {
     //Becomes Update's ID, increment with every new Update
     private Integer updateNumber = 1;
 
-
     enum Gender {
         Male, Female, MFTWINS
     }
     enum Source {
         RAVGEN, REFERRAL, SELFSELL
     }
-
-    @Override
-    //overridding Object's equals method only overrides it
+    //overriding Object's equals method only overrides it
     //for Case class right?
+    @Override
     public boolean equals(Object o){
         if (o == this) {
             return true;
         }
-        //Review: Aren't I comparing a String id to a Case?
-        // Wouldn't below statement always return false?
         if (o.getClass() != this.getClass()) {
             return false;
         }
         if (o == null) {
             return false;
         }
-        //TODO: verify that below is indeed a typecast
+        //Typecast Object down to a Case
         Case c = (Case) o;
-        return c.id == this.id;
+        return c.idNumber == this.idNumber;
     }
+    @Override
+    public int hashCode() {
+        return this.idNumber;
+    }
+    public int idToNumber(String id) {
+        id = id.replaceAll( "\\D", "");
+        return Integer.parseInt(id);
+    }
+    public boolean caseExists(String stringId){
+        int id = idToNumber(stringId);
+        return allCases.contains(id);
 
+    }
 
 
 
@@ -67,8 +76,6 @@ public class Case {
         return this.motherFirstName + " " + this.motherLastName;
     }
     //TODO: create boolean compareStates Method
-
-    //TODO: override equals() and hashCode()
 
     public void setCaseState(String[] currentRow){
         this.caseState.clear();

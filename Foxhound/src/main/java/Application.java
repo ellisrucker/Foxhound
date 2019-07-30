@@ -24,7 +24,7 @@ public class Application {
     //TODO: what ID finder methods do you need? Limit code repetition!
 
     //TODO: test findFirstId method
-    public String findFirstId(String[] currentRow) {
+    public String findCaseId(String[] currentRow) {
         if (currentRow[2].length() == 11) {
             return currentRow[2];
         }
