@@ -15,7 +15,7 @@ import java.util.regex.Matcher;
 public class Application {
 
 
-    Pattern generalId = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
+    public static Pattern generalId = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
 
     public boolean isIdValid(String id) {
         //TODO: finish this method
@@ -24,7 +24,7 @@ public class Application {
     //TODO: what ID finder methods do you need? Limit code repetition!
 
     //TODO: test findFirstId method
-    public String findCaseId(String[] currentRow) {
+    public static String findCaseId(String[] currentRow) {
         if (currentRow[2].length() == 11) {
             return currentRow[2];
         }
@@ -53,6 +53,10 @@ public class Application {
             String[] currentRow = null;
             while ((currentRow = reader.readNext()) != null) {
                 //TODO: create and call boolean caseExists method in Case class
+
+                if (Case.caseExists(findCaseId(currentRow))) {
+
+                }
                 System.out.println(csv.getName());
             }
         }

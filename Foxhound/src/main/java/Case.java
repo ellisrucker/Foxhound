@@ -1,6 +1,7 @@
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Set;
 
 
 public class Case {
@@ -14,7 +15,7 @@ public class Case {
     private Gender gender;
     private boolean twins;
     //List of all Case IDs
-    private static HashSet<Case> allCases = new HashSet<>(500);
+    private static ArrayList<Integer> allCases = new ArrayList<>();
 
     //Stores hashed representation of Case's last row
     private ArrayList<Integer> caseState;
@@ -52,11 +53,11 @@ public class Case {
     public int hashCode() {
         return this.idNumber;
     }
-    public int idToNumber(String id) {
+    public static Integer idToNumber(String id) {
         id = id.replaceAll( "\\D", "");
         return Integer.parseInt(id);
     }
-    public boolean caseExists(String stringId){
+    public static boolean caseExists(String stringId){
         int id = idToNumber(stringId);
         return allCases.contains(id);
 
@@ -76,6 +77,12 @@ public class Case {
         return this.motherFirstName + " " + this.motherLastName;
     }
     //TODO: create boolean compareStates Method
+
+    public static void addToAllCases(String newId) {
+        Integer id = idToNumber(newId);
+        allCases.add(id);
+
+    }
 
     public void setCaseState(String[] currentRow){
         this.caseState.clear();
