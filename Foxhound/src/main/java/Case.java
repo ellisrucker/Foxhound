@@ -54,6 +54,7 @@ public class Case {
         return this.idNumber;
     }
     public static Integer idToNumber(String id) {
+        //TODO: fix java.lang.NullPointerException on below line
         id = id.replaceAll( "\\D", "");
         return Integer.parseInt(id);
     }
