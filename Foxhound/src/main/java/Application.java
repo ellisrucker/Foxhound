@@ -17,9 +17,8 @@ public class Application {
 
     public static Pattern generalId = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
 
-    public boolean isIdValid(String id) {
-        //TODO: finish this method
-    }
+    //TODO: finish public boolean isIdValid(String id) method
+
 
     //TODO: what ID finder methods do you need? Limit code repetition!
 
