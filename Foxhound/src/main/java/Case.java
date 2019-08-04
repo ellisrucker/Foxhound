@@ -59,7 +59,7 @@ public class Case {
         return Integer.parseInt(id);
     }
     public static boolean caseExists(String stringId){
-        int id = idToNumber(stringId);
+        Integer id = idToNumber(stringId);
         return allCases.contains(id);
 
     }
