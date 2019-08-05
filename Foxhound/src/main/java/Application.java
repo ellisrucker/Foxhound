@@ -53,7 +53,12 @@ public class Application {
             while ((currentRow = reader.readNext()) != null) {
 
                 if (Case.caseExists(findCaseId(currentRow))) {
+                    //TODO: create and call compareStates method
+                    //TODO: create and call updateCase method
+                }
 
+                else {
+                    //TODO: create Case constructor
                 }
                 System.out.println(csv.getName());
             }

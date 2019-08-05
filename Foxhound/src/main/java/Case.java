@@ -15,7 +15,7 @@ public class Case {
     private Gender gender;
     private boolean twins;
     //List of all Case IDs
-    private static ArrayList<Integer> allCases = new ArrayList<>();
+    private static HashSet<Case> allCases = new HashSet<>(500);
 
     //Stores hashed representation of Case's last row
     private ArrayList<Integer> caseState;
@@ -51,9 +51,10 @@ public class Case {
     }
     @Override
     public int hashCode() {
-
         return this.idNumber;
     }
+    //TODO: create public int caseCellHash method
+
     public static Integer idToNumber(String id) {
         id = id.replaceAll( "\\D", "");
         Integer idNumber = Integer.parseInt(id);
@@ -62,7 +63,13 @@ public class Case {
     public static boolean caseExists(String stringId){
         Integer id = idToNumber(stringId);
         return allCases.contains(id);
+    }
 
+
+    public Case (String caseID, String[] cuurentRow) {
+        id = caseID;
+        idNumber = idToNumber(caseID);
+        //TODO: create stringToDate method
     }
 
 
@@ -80,11 +87,6 @@ public class Case {
     }
     //TODO: create boolean compareStates Method
 
-    public static void addToAllCases(String newId) {
-        Integer id = idToNumber(newId);
-        allCases.add(id);
-
-    }
 
     public void setCaseState(String[] currentRow){
         this.caseState.clear();
