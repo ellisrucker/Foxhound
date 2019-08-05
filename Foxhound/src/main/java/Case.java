@@ -51,12 +51,13 @@ public class Case {
     }
     @Override
     public int hashCode() {
+
         return this.idNumber;
     }
     public static Integer idToNumber(String id) {
-        //TODO: fix java.lang.NullPointerException on below line
         id = id.replaceAll( "\\D", "");
-        return Integer.parseInt(id);
+        Integer idNumber = Integer.parseInt(id);
+        return idNumber;
     }
     public static boolean caseExists(String stringId){
         Integer id = idToNumber(stringId);

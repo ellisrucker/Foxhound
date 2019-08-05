@@ -51,7 +51,6 @@ public class Application {
 
             String[] currentRow = null;
             while ((currentRow = reader.readNext()) != null) {
-                //TODO: create and call boolean caseExists method in Case class
 
                 if (Case.caseExists(findCaseId(currentRow))) {
 
