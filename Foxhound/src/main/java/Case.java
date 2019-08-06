@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -55,6 +56,10 @@ public class Case {
     }
     //TODO: create public int caseCellHash method
 
+    public static String[] fullNameSplit(String fullName){
+        return fullName.split(" ", 2);
+    }
+
     public static Integer idToNumber(String id) {
         id = id.replaceAll( "\\D", "");
         Integer idNumber = Integer.parseInt(id);
@@ -66,10 +71,20 @@ public class Case {
     }
 
 
-    public Case (String caseID, String[] cuurentRow) {
+    public Case (String caseID, String[] currentRow) {
         id = caseID;
         idNumber = idToNumber(caseID);
+        String fullName = currentRow[1];
+        String[] nameArray = fullNameSplit(fullName);
+        if (nameArray.length == 2){
+            motherFirstName = nameArray[0];
+            motherLastName = nameArray[1];
+        }
+        else if (nameArray.length == 1) {
+            motherFirstName = nameArray[0];
+        }
         //TODO: create stringToDate method
+        //TODO: create pattern matchers for sourceType, Gender, and Twin fields
     }
 
 
@@ -82,7 +97,7 @@ public class Case {
     // TODO: create setName method: separates full name into first and last
 
 
-    public String getMotherName() {
+    public String getMotherFullName() {
         return this.motherFirstName + " " + this.motherLastName;
     }
     //TODO: create boolean compareStates Method
