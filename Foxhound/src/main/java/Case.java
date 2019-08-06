@@ -1,8 +1,12 @@
 import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Case {
@@ -14,7 +18,7 @@ public class Case {
     private Date dateStarted;
     private Source sourceType;
     private Gender gender;
-    private boolean twins;
+    private boolean twins = false;
     //List of all Case IDs
     private static HashSet<Case> allCases = new HashSet<>(500);
 
@@ -59,7 +63,15 @@ public class Case {
     public static String[] fullNameSplit(String fullName){
         return fullName.split(" ", 2);
     }
-
+    public static Date stringToDate (String stringDate) throws ParseException {
+        SimpleDateFormat datePattern = new SimpleDateFormat("MM/dd/yyyy");
+        return datePattern.parse(stringDate);
+    }
+    public static boolean isHavingTwins(String gestationCell){
+        Pattern twin = Pattern.compile("[Tt]win");
+        Matcher twinMatcher = twin.matcher(gestationCell);
+        return twinMatcher.find();
+    }
     public static Integer idToNumber(String id) {
         id = id.replaceAll( "\\D", "");
         Integer idNumber = Integer.parseInt(id);
@@ -70,8 +82,8 @@ public class Case {
         return allCases.contains(id);
     }
 
-
-    public Case (String caseID, String[] currentRow) {
+    //TODO: unit test each constructor component
+    public Case (String caseID, String[] currentRow) throws ParseException {
         id = caseID;
         idNumber = idToNumber(caseID);
         String fullName = currentRow[1];
@@ -83,8 +95,10 @@ public class Case {
         else if (nameArray.length == 1) {
             motherFirstName = nameArray[0];
         }
-        //TODO: create stringToDate method
-        //TODO: create pattern matchers for sourceType, Gender, and Twin fields
+        dateStarted = stringToDate(currentRow[0]);
+        twins = isHavingTwins(currentRow[4]);
+
+        //TODO: create pattern matchers for sourceType and Gender fields
     }
 
 
