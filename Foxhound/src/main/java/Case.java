@@ -1,10 +1,8 @@
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +30,7 @@ public class Case {
     private Integer updateNumber = 1;
 
     enum Gender {
-        Male, Female, MFTWINS
+        MALE, FEMALE, HETEROTWINS
     }
     enum Source {
         RAVGEN, REFERRAL, SELFSELL
@@ -72,6 +70,32 @@ public class Case {
         Matcher twinMatcher = twin.matcher(gestationCell);
         return twinMatcher.find();
     }
+    public static Gender findGender(String genderCell){
+        Pattern boy = Pattern.compile("[Bb]oy");
+        Matcher boyMatcher = boy.matcher(genderCell);
+        Pattern girl = Pattern.compile("[Gg]irl");
+        Matcher girlMatcher = girl.matcher(genderCell);
+        Pattern boyGirl = Pattern.compile("[Bb]oy/[Gg]irl");
+        Matcher boyGirlMatcher = boyGirl.matcher(genderCell);
+        Pattern girlBoy = Pattern.compile("[Gg]irl/[Bb]oy");
+        Matcher girlBoyMatcher = girlBoy.matcher(genderCell);
+
+        if (boyGirlMatcher.find()) {
+            return Gender.HETEROTWINS;
+        }
+        else if (girlBoyMatcher.find()){
+            return Gender.HETEROTWINS;
+        }
+        else if (boyMatcher.find()){
+            return Gender.MALE;
+        }
+        else if (girlMatcher.find()){
+            return Gender.FEMALE;
+        }
+        else {
+            return null;
+        }
+    }
     public static Integer idToNumber(String id) {
         id = id.replaceAll( "\\D", "");
         Integer idNumber = Integer.parseInt(id);
@@ -97,8 +121,9 @@ public class Case {
         }
         dateStarted = stringToDate(currentRow[0]);
         twins = isHavingTwins(currentRow[4]);
+        gender = findGender(currentRow[4]);
 
-        //TODO: create pattern matchers for sourceType and Gender fields
+        //TODO: create pattern matchers for sourceType field
     }
 
 
