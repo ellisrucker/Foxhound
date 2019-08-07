@@ -54,4 +54,77 @@ public class CaseTest {
         Integer idNumber = 1903004;
         assertFalse(allCases.contains(idNumber));
     }
+
+    @Test
+    public void fullNameSplit_returnsTwoNames_ifPassedTwoNames(){
+        String fullName = "Ellis Rucker";
+        String[] expected = new String[]{"Ellis","Rucker"};
+        String[] actual = fullName.split(" ", 2);
+        assertArrayEquals(expected,actual);
+    }
+
+    @Test
+    public void fullNameSplit_returnsSingleName_ifPassedSingleName(){
+        String fullName = "Ellis";
+        String[] expected = new String[]{"Ellis"};
+        String[] actual = fullName.split(" ", 2);
+        assertArrayEquals(expected,actual);
+    }
+
+    @Test
+    public void fullNameSplit_returnsStringArray_ifPassedThreeNames(){
+        String fullName = "Matthew Ellis Rucker";
+        String[] expected = new String[]{"Matthew","Ellis Rucker"};
+        String[] actual = fullName.split(" ", 2);
+        assertArrayEquals(expected,actual);
+    }
+
+    @Test
+    public void constructor_setsFirstName_ifPassedTwoNames(){
+        String[] nameArray = new String[]{"Ellis","Rucker"};
+        String actual = null;
+        if (nameArray.length == 2){
+            actual = nameArray[0];
+        }
+        else if (nameArray.length == 1) {
+            actual = nameArray[0];
+        }
+        String expected = "Ellis";
+        assertTrue(expected == actual);
+    }
+
+    @Test
+    public void constructor_setsFirstName_ifPassedSingleName(){
+        String[] nameArray = new String[]{"Ellis"};
+        String actual = null;
+        if (nameArray.length == 2){
+            actual = nameArray[0];
+        }
+        else if (nameArray.length == 1) {
+            actual = nameArray[0];
+        }
+        String expected = "Ellis";
+        assertTrue(expected == actual);
+    }
+
+    @Test
+    public void constructor_setsLastName_ifPassedTwoNames(){
+        String[] nameArray = new String[]{"Ellis","Rucker"};
+        String actual = null;
+        if (nameArray.length == 2){
+            actual = nameArray[1];
+        }
+        String expected = "Rucker";
+        assertTrue(expected == actual);
+    }
+
+    @Test
+    public void constructor_leavesLastNameNull_ifPassedSingleName(){
+        String[] nameArray = new String[]{"Ellis"};
+        String actual = null;
+        if (nameArray.length == 2){
+            actual = nameArray[1];
+        }
+        assertTrue(actual == null);
+    }
 }

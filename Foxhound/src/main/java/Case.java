@@ -123,7 +123,6 @@ public class Case {
         twins = isHavingTwins(currentRow[4]);
         gender = findGender(currentRow[4]);
 
-        //TODO: create pattern matchers for sourceType field
     }
 
 
