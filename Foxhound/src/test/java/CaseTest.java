@@ -127,4 +127,52 @@ public class CaseTest {
         }
         assertTrue(actual == null);
     }
+
+    @Test
+    public void stringHash_returnsInteger_ifPassedString(){
+        String str = "Ellis";
+        Integer hash = 17;
+        for (int i = 0; i < str.length(); i++){
+            hash = ((hash * 31) + str.charAt(i));
+        }
+        System.out.println(hash);
+        assertTrue(hash instanceof Integer);
+    }
+
+    @Test
+    public void stringHash_returnsDifferentHashes_ifPassedMultipleStrings(){
+        String str1 = "Ellis";
+        String str2 = "Brett";
+        Integer hash1 = 17;
+        Integer hash2 = 17;
+        for (int i = 0; i < str1.length(); i++) {
+            hash1 = ((hash1 * 31) + str1.charAt(i));
+        }
+        for (int i = 0; i < str2.length(); i++) {
+            hash2 = ((hash2 * 31) + str2.charAt(i));
+        }
+        System.out.println("Ellis: "+ hash1);
+        System.out.println("Brett: "+ hash2);
+        assertFalse(hash1.equals(hash2));
+    }
+
+    @Test
+    public void stringHash_returnsSameHash_ifPassedIdenticalStrings(){
+        String str1 = "Ellis";
+        String str2 = "Ellis";
+        Integer hash1 = 17;
+        Integer hash2 = 17;
+        for (int i = 0; i < str1.length(); i++) {
+            hash1 = ((hash1 * 31) + str1.charAt(i));
+        }
+        for (int i = 0; i < str2.length(); i++) {
+            hash2 = ((hash2 * 31) + str2.charAt(i));
+        }
+        System.out.println("Ellis: "+ hash1);
+        System.out.println("Ellis: "+ hash2);
+        assertTrue(hash1.equals(hash2));
+    }
+
+
+
 }

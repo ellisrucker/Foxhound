@@ -17,9 +17,6 @@ public class Case {
     private Source sourceType;
     private Gender gender;
     private boolean twins = false;
-    //List of all Case IDs
-    private static HashSet<Case> allCases = new HashSet<>(500);
-
     //Stores hashed representation of Case's last row
     private ArrayList<Integer> caseState;
 
@@ -28,6 +25,12 @@ public class Case {
 
     //Becomes Update's ID, increment with every new Update
     private Integer updateNumber = 1;
+
+
+    //List of all Case IDs
+    private static HashSet<Case> allCases = new HashSet<>(500);
+
+
 
     enum Gender {
         MALE, FEMALE, HETEROTWINS
@@ -56,7 +59,15 @@ public class Case {
     public int hashCode() {
         return this.idNumber;
     }
-    //TODO: create public int caseCellHash method
+
+    public Integer stringHash(String str){
+        Integer hash = 17;
+        for (int i = 0; i < str.length(); i++){
+            hash = ((hash * 31) + str.charAt(i));
+        }
+        return hash;
+    }
+
 
     public static String[] fullNameSplit(String fullName){
         return fullName.split(" ", 2);
@@ -106,7 +117,7 @@ public class Case {
         return allCases.contains(id);
     }
 
-    //TODO: unit test each constructor component
+    //TODO: unit test constructor, ensure it makes correct object
     public Case (String caseID, String[] currentRow) throws ParseException {
         id = caseID;
         idNumber = idToNumber(caseID);
@@ -122,7 +133,8 @@ public class Case {
         dateStarted = stringToDate(currentRow[0]);
         twins = isHavingTwins(currentRow[4]);
         gender = findGender(currentRow[4]);
-
+        setCaseState(currentRow);
+        allCases.add(this);
     }
 
 
@@ -138,13 +150,19 @@ public class Case {
     public String getMotherFullName() {
         return this.motherFirstName + " " + this.motherLastName;
     }
-    //TODO: create boolean compareStates Method
 
+    public boolean caseStateChanged(String[] currentRow){
+        ArrayList<Integer> newState = new ArrayList<>();
+        for (String str : currentRow){
+            newState.add(stringHash(str));
+        }
+        return this.caseState != newState;
+    }
 
     public void setCaseState(String[] currentRow){
         this.caseState.clear();
         for (String str : currentRow){
-            this.caseState.add(str.hashCode());
+            this.caseState.add(stringHash(str));
         }
 
     }
