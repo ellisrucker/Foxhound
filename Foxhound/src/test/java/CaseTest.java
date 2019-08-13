@@ -173,6 +173,27 @@ public class CaseTest {
         assertTrue(hash1.equals(hash2));
     }
 
+    //TODO: fix test
+    @Before
+    public Integer stringHash(String str){
+        Integer hash = 17;
+        for (int i = 0; i < str.length(); i++){
+            hash = ((hash * 31) + str.charAt(i));
+        }
+        return hash;
+    }
+    @Test
+    public void setCaseState_addsIntegersToArray_ifPassedStringArray(){
+        String[] currentRow = new String[]{"Columbia","Maryland","21075","The Old Line State"};
+        ArrayList<Integer> caseState = new ArrayList<>();
+        for (String str : currentRow){
+            caseState.add(stringHash(str));
+        }
+        for (Integer hash : caseState){
+            System.out.println(hash.toString());
+        }
+        assertTrue((caseState.get(0) instanceof Integer) && (caseState.get(2) instanceof Integer));
+    }
 
 
 }
