@@ -60,7 +60,7 @@ public class Case {
         return this.idNumber;
     }
 
-    public Integer stringHash(String str){
+    public static Integer stringHash(String str){
         Integer hash = 17;
         for (int i = 0; i < str.length(); i++){
             hash = ((hash * 31) + str.charAt(i));

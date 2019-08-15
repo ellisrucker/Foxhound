@@ -1,10 +1,12 @@
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
-
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 public class CaseTest {
 
@@ -14,28 +16,26 @@ public class CaseTest {
     @Test
     public void idToNumber_returnsInteger_ifPassedString() {
         String id = "MONH1903022";
-        id = id.replaceAll("\\D", "");
-        Integer idNumber = Integer.parseInt(id);
-        assertTrue(idNumber instanceof Integer);
+        Integer result = Case.idToNumber(id);
+        assertTrue(result instanceof Integer);
     }
 
     @Test
     public void idToNumber_removesLetters_ifPassedString() {
         String id = "MONH1903022";
         Integer expectedResult = 1903022;
-        id = id.replaceAll("\\D", "");
-        Integer idNumber = Integer.parseInt(id);
-        assertEquals(expectedResult, idNumber);
+        Integer actualResult = Case.idToNumber(id);
+        assertEquals(expectedResult, actualResult);
     }
 
     @Test(expected = NullPointerException.class)
     public void idToNumber_throwsException_ifPassedNull() {
         String id = null;
-        id = id.replaceAll("\\D", "");
-        Integer idNumber = Integer.parseInt(id);
+        Integer result = Case.idToNumber(id);
     }
 
     @Test
+    //TODO: mock allCases, test Case.caseExists
     public void caseExists_returnsTrue_ifInputInArrayList() {
         ArrayList<Integer> allCases = new ArrayList<>();
         allCases.add(1903001);
@@ -45,7 +45,7 @@ public class CaseTest {
         assertTrue(allCases.contains(idNumber));
     }
 
-    @Test
+    @Ignore
     public void caseExists_returnsFalse_ifInputNotInArrayList() {
         ArrayList<Integer> allCases = new ArrayList<>();
         allCases.add(1903001);
@@ -59,7 +59,7 @@ public class CaseTest {
     public void fullNameSplit_returnsTwoNames_ifPassedTwoNames(){
         String fullName = "Ellis Rucker";
         String[] expected = new String[]{"Ellis","Rucker"};
-        String[] actual = fullName.split(" ", 2);
+        String[] actual = Case.fullNameSplit(fullName);
         assertArrayEquals(expected,actual);
     }
 
@@ -67,7 +67,7 @@ public class CaseTest {
     public void fullNameSplit_returnsSingleName_ifPassedSingleName(){
         String fullName = "Ellis";
         String[] expected = new String[]{"Ellis"};
-        String[] actual = fullName.split(" ", 2);
+        String[] actual = Case.fullNameSplit(fullName);
         assertArrayEquals(expected,actual);
     }
 
@@ -75,7 +75,7 @@ public class CaseTest {
     public void fullNameSplit_returnsStringArray_ifPassedThreeNames(){
         String fullName = "Matthew Ellis Rucker";
         String[] expected = new String[]{"Matthew","Ellis Rucker"};
-        String[] actual = fullName.split(" ", 2);
+        String[] actual = Case.fullNameSplit(fullName);
         assertArrayEquals(expected,actual);
     }
 
@@ -131,11 +131,7 @@ public class CaseTest {
     @Test
     public void stringHash_returnsInteger_ifPassedString(){
         String str = "Ellis";
-        Integer hash = 17;
-        for (int i = 0; i < str.length(); i++){
-            hash = ((hash * 31) + str.charAt(i));
-        }
-        System.out.println(hash);
+        Integer hash = Case.stringHash(str);
         assertTrue(hash instanceof Integer);
     }
 
@@ -160,14 +156,8 @@ public class CaseTest {
     public void stringHash_returnsSameHash_ifPassedIdenticalStrings(){
         String str1 = "Ellis";
         String str2 = "Ellis";
-        Integer hash1 = 17;
-        Integer hash2 = 17;
-        for (int i = 0; i < str1.length(); i++) {
-            hash1 = ((hash1 * 31) + str1.charAt(i));
-        }
-        for (int i = 0; i < str2.length(); i++) {
-            hash2 = ((hash2 * 31) + str2.charAt(i));
-        }
+        Integer hash1 = Case.stringHash(str1);
+        Integer hash2 = Case.stringHash(str2);
         System.out.println("Ellis: "+ hash1);
         System.out.println("Ellis: "+ hash2);
         assertTrue(hash1.equals(hash2));
@@ -175,13 +165,8 @@ public class CaseTest {
 
     //TODO: fix test
     @Before
-    public Integer stringHash(String str){
-        Integer hash = 17;
-        for (int i = 0; i < str.length(); i++){
-            hash = ((hash * 31) + str.charAt(i));
-        }
-        return hash;
-    }
+    PowerMockito.mockStatic(Case.class);
+
     @Test
     public void setCaseState_addsIntegersToArray_ifPassedStringArray(){
         String[] currentRow = new String[]{"Columbia","Maryland","21075","The Old Line State"};
