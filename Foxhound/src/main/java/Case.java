@@ -18,7 +18,7 @@ public class Case {
     private Gender gender;
     private boolean twins = false;
     //Stores hashed representation of Case's last row
-    private ArrayList<Integer> caseState;
+    private ArrayList<Integer> caseState = new ArrayList<>();
 
     //Record of each time Case is updated, use in Update's constructor!
     private ArrayList<Update> caseLog;
@@ -117,6 +117,9 @@ public class Case {
         return allCases.contains(id);
     }
 
+    public Case (){
+
+    }
     //TODO: unit test constructor, ensure it makes correct object
     public Case (String caseID, String[] currentRow) throws ParseException {
         id = caseID;
@@ -160,11 +163,15 @@ public class Case {
     }
 
     public void setCaseState(String[] currentRow){
-        this.caseState.clear();
+        if (this.caseState != null) {
+            this.caseState.clear();
+        }
         for (String str : currentRow){
             this.caseState.add(stringHash(str));
         }
 
     }
-
+    public ArrayList<Integer> getCaseState(){
+        return this.caseState;
+    }
 }

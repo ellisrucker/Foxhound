@@ -3,11 +3,12 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
+
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
-
 public class CaseTest {
 
     //Test Naming Conventions:
@@ -139,14 +140,8 @@ public class CaseTest {
     public void stringHash_returnsDifferentHashes_ifPassedMultipleStrings(){
         String str1 = "Ellis";
         String str2 = "Brett";
-        Integer hash1 = 17;
-        Integer hash2 = 17;
-        for (int i = 0; i < str1.length(); i++) {
-            hash1 = ((hash1 * 31) + str1.charAt(i));
-        }
-        for (int i = 0; i < str2.length(); i++) {
-            hash2 = ((hash2 * 31) + str2.charAt(i));
-        }
+        Integer hash1 = Case.stringHash(str1);
+        Integer hash2 = Case.stringHash(str2);
         System.out.println("Ellis: "+ hash1);
         System.out.println("Brett: "+ hash2);
         assertFalse(hash1.equals(hash2));
@@ -163,21 +158,13 @@ public class CaseTest {
         assertTrue(hash1.equals(hash2));
     }
 
-    //TODO: fix test
-    @Before
-    PowerMockito.mockStatic(Case.class);
-
     @Test
-    public void setCaseState_addsIntegersToArray_ifPassedStringArray(){
+    public void setCaseState_addsIntegersToArray_ifPassedStringArray() throws ParseException {
         String[] currentRow = new String[]{"Columbia","Maryland","21075","The Old Line State"};
-        ArrayList<Integer> caseState = new ArrayList<>();
-        for (String str : currentRow){
-            caseState.add(stringHash(str));
-        }
-        for (Integer hash : caseState){
-            System.out.println(hash.toString());
-        }
-        assertTrue((caseState.get(0) instanceof Integer) && (caseState.get(2) instanceof Integer));
+        Case testCase = new Case();
+        testCase.setCaseState(currentRow);
+        ArrayList<Integer> result = testCase.getCaseState();
+        assertTrue((result.get(0) instanceof Integer) && (result.get(2) instanceof Integer));
     }
 
 
