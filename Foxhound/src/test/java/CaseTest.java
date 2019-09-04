@@ -1,14 +1,11 @@
-import org.junit.Before;
-import org.junit.Ignore;
+import Entities.Case;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+
 public class CaseTest {
 
     //Test Naming Conventions:
@@ -36,7 +33,6 @@ public class CaseTest {
     }
 
     @Test
-    //TODO: mock allCases, test Case.caseExists
     public void caseExists_returnsTrue_ifInputInArrayList() {
         ArrayList<Integer> allCases = new ArrayList<>();
         allCases.add(1903001);
@@ -46,7 +42,6 @@ public class CaseTest {
         assertTrue(allCases.contains(idNumber));
     }
 
-    @Ignore
     public void caseExists_returnsFalse_ifInputNotInArrayList() {
         ArrayList<Integer> allCases = new ArrayList<>();
         allCases.add(1903001);

@@ -1,14 +1,11 @@
+import Entities.Case;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
@@ -54,7 +51,9 @@ public class Application {
             while ((currentRow = reader.readNext()) != null) {
 
                 if (Case.caseExists(findCaseId(currentRow)) && (findCaseId(currentRow) != null)) {
-                    //TODO: create and call compareStates method
+                    //TODO: create and call
+
+                    }
                     //TODO: create and call updateCase method
                 }
 
