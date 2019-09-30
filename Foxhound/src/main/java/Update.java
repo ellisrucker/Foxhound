@@ -11,10 +11,10 @@ public class Update {
 
     
     public Update (String file, Date date, ArrayList<String> updatedFields) {
-        this.updateId = i;
-        this.file = file;
-        this.date = date;
-        this.updatedFields = updatedFields;
+        updateId = i;
+        file = file;
+        date = date;
+        updatedFields = updatedFields;
         i++;
 
 

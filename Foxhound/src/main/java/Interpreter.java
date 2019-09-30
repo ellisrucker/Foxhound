@@ -1,7 +1,7 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Parser {
+public class Interpreter {
 
     public static Pattern generalId = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
 
