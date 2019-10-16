@@ -1,0 +1,43 @@
+
+
+public class OldCase {
+
+    //Unused attributes
+    private int idNumber;
+    private Source sourceType;
+    //Stores hashed representation of Case's last row
+    private ArrayList<Integer> caseState = new Arraylist<>();
+    //Record of each time Case is updated, use in Updates constructor
+    private ArrayList<Update> caseLog;
+    //Becomes Update's ID, Increment with every new Update
+    private Integer updateNumber = 1;
+
+    enum Source {
+        RAVGEN, REFERRAL, SELFSELL
+    }
+
+
+    //overriding Object's equals method only overrides it
+    //for Entities.Case class right?
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o.getClass() != this.getClass()) {
+            return false;
+        }
+        if (o == null) {
+            return false;
+        }
+        //Typecast Object down to a Entities.Case
+        Case c = (Case) o;
+        return c.idNumber == this.idNumber;
+    }
+    @Override
+    public int hashCode() {
+        return this.idNumber;
+    }
+
+
+}

@@ -1,3 +1,5 @@
+package readwrite;
+
 
 public class SeparatedRow {
 
@@ -33,6 +35,50 @@ public class SeparatedRow {
         thirdDraw = currentRow[13];
         result = currentRow[16];
         confirmation = currentRow[17];
+    }
+
+    //Setters and Getters
+    public String getDate(){
+        return date;
+    }
+    public String getMotherName(){
+        return motherName;
+    }
+    public String getMaternalPatientId(){
+        return maternalPatientId;
+    }
+    public String getPaternalPatientId(){
+        return paternalPatientId;
+    }
+    public String getGestationGender(){
+        return gestationGender;
+    }
+    public String getTestTypeCost(){
+        return testTypeCost;
+    }
+    public String getReferral(){
+        return referral;
+    }
+    public String getGenotypeA(){
+        return genotypeA;
+    }
+    public String getGenotypeB(){
+        return genotypeB;
+    }
+    public String getFirstDraw(){
+        return firstDraw;
+    }
+    public String getSecondDraw(){
+        return secondDraw;
+    }
+    public String getThirdDraw(){
+        return thirdDraw;
+    }
+    public String getResult(){
+        return result;
+    }
+    public String getConfirmation(){
+        return confirmation;
     }
 
 }

@@ -1,0 +1,41 @@
+
+
+
+private Integer updateId;
+private String file;
+private Date date;
+private ArrayList<String> updatedFields;
+private static Integer i = 1;
+
+
+
+
+
+public Update (String file, Date date, ArrayList<String> updatedFields) {
+        updateId = i;
+        file = file;
+        date = date;
+        updatedFields = updatedFields;
+        i++;
+
+
+        }
+
+
+    /*public static Integer stringHash(String str){
+        Integer hash = 17;
+        for (int i = 0; i < str.length(); i++){
+            hash = ((hash * 31) + str.charAt(i));
+        }
+        return hash;
+    }*/
+
+    /*public void setCaseState(String[] currentRow){
+        if (this.caseState != null) {
+            this.caseState.clear();
+        }
+        for (String str : currentRow){
+            this.caseState.add(stringHash(str));
+        }
+
+    }*/

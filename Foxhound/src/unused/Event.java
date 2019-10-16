@@ -1,4 +1,4 @@
-package Entities;
+package DataTransferObject;
 
 import java.util.Date;
 
