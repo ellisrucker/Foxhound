@@ -1,6 +1,8 @@
 package readwrite;
 
 
+import java.util.Objects;
+
 public class SeparatedRow {
 
     //Object representation of current row
@@ -19,6 +21,25 @@ public class SeparatedRow {
     private String thirdDraw;
     private String result;
     private String confirmation;
+
+    @Override
+    public int hashCode(){
+        int hash = Objects.hash(date,
+                motherName,
+                maternalPatientId,
+                paternalPatientId,
+                gestationGender,
+                testTypeCost,
+                referral,
+                genotypeA,
+                genotypeB,
+                firstDraw,
+                secondDraw,
+                thirdDraw,
+                result,
+                confirmation);
+        return hash;
+    }
 
     public SeparatedRow (String[] currentRow){
         date = currentRow[0];

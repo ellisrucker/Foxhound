@@ -1,14 +1,12 @@
 package DataTransferObject;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.Date;
 
-import readwrite.ConnectionManager;
+import readwrite.DbManager;
 import readwrite.SeparatedRow;
 import logic.Interpreter;
 
@@ -21,10 +19,10 @@ public class Case {
     private LocalDate dateStarted;
     private String gender;
     private boolean twins = false;
+    private Integer rowHash;
 
     public Case() {
     }
-
     public Case(SeparatedRow newRow) throws ParseException {
         Interpreter dateInterpreter = new Interpreter(newRow.getDate());
         Interpreter nameInterpreter = new Interpreter(newRow.getMotherName());
@@ -35,18 +33,22 @@ public class Case {
         dateStarted = dateInterpreter.stringToDate();
         gender = babyInterpreter.findGender();
         twins = babyInterpreter.isHavingTwins();
+        rowHash = newRow.hashCode();
     }
 
+    //Data Access Logic
+    //TODO: move methods out of class? Or create DataAccess Interface?
     public void insertNewCase() throws SQLException {
-        Connection connection = ConnectionManager.openConnection();
+        Connection connection = DbManager.openConnection();
         String newCaseQuery = "INSERT INTO rvdbtest.case ("
             + "caseID, "
             + "motherLastName, "
             + "motherFirstName, "
             + "dateStarted, "
             + "gender, "
-            + "twins) VALUES("
-            + "?,?,?,?,?,?)";
+            + "twins, "
+            + "rowHash) VALUES("
+            + "?,?,?,?,?,?,?)";
 
         try {
             PreparedStatement stmt = connection.prepareStatement(newCaseQuery);
@@ -56,6 +58,7 @@ public class Case {
             stmt.setObject(4,dateStarted);
             stmt.setString(5, gender);
             stmt.setBoolean(6,twins);
+            stmt.setInt(7,rowHash);
             stmt.executeUpdate();
         } finally {
             connection.close();
