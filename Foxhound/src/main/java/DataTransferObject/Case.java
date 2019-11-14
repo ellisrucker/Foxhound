@@ -5,11 +5,10 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
-
 import readwrite.DbManager;
 import readwrite.SeparatedRow;
 import logic.Interpreter;
-
+import static readwrite.MySQL.*;
 
 public class Case {
 
@@ -27,7 +26,9 @@ public class Case {
         Interpreter dateInterpreter = new Interpreter(newRow.getDate());
         Interpreter nameInterpreter = new Interpreter(newRow.getMotherName());
         Interpreter babyInterpreter = new Interpreter(newRow.getGestationGender());
-        id = newRow.getMaternalPatientId();
+        Interpreter mIDInterpreter = new Interpreter(newRow.getMaternalPatientId());
+
+        id = mIDInterpreter.findFirstMaternalID();
         motherLastName = nameInterpreter.findLastName();
         motherFirstName = nameInterpreter.findFirstName();
         dateStarted = dateInterpreter.stringToDate();
@@ -37,21 +38,10 @@ public class Case {
     }
 
     //Data Access Logic
-    //TODO: move methods out of class? Or create DataAccess Interface?
     public void insertNewCase() throws SQLException {
         Connection connection = DbManager.openConnection();
-        String newCaseQuery = "INSERT INTO rvdbtest.case ("
-            + "caseID, "
-            + "motherLastName, "
-            + "motherFirstName, "
-            + "dateStarted, "
-            + "gender, "
-            + "twins, "
-            + "rowHash) VALUES("
-            + "?,?,?,?,?,?,?)";
-
         try {
-            PreparedStatement stmt = connection.prepareStatement(newCaseQuery);
+            PreparedStatement stmt = connection.prepareStatement(insertCase);
             stmt.setString(1,id);
             stmt.setString(2,motherLastName);
             stmt.setString(3,motherFirstName);

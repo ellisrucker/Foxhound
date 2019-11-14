@@ -17,12 +17,13 @@ public class Iterator {
 
     public static void main(String [] args) throws IOException, ParseException, SQLException {
 
-        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\CompareTest");
+        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\MultipleSampleTest");
         File [] csvList = targetFolder.listFiles();
         Arrays.sort(csvList);
 
         DbManager.initializeCaseTable();
         DbManager.initializeSampleTable();
+        DbManager.initializePatientTable();
 
         for (File csv: csvList) {
             //File reader method, ignores header row of CSV

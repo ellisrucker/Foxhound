@@ -7,12 +7,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import static readwrite.MySQL.*;
+
 
 public class Comparison {
 
     private SeparatedRow inputRow;
     private Integer rowHash;
-
+    //TODO: Add caseID as field to refer to, rather than finding it again in each method.
 
 
     /*Calling rs.next() moves the ResultSet cursor. This is not an issue
@@ -23,11 +25,10 @@ public class Comparison {
     just before the first row. Or use Do-While loop.
     */
     public boolean caseExists() throws SQLException {
-        String id = inputRow.getMaternalPatientId();
-        //TODO: Move queries to different/new class?
-        String caseExistsQuery = "SELECT * FROM rvdbtest.case WHERE caseID = ? LIMIT 1";
+        Interpreter caseIDinterpreter = new Interpreter(inputRow.getMaternalPatientId());
+        String id = caseIDinterpreter.findFirstMaternalID();
         Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(caseExistsQuery);
+        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
         stmt.setString(1,id);
         try {
             ResultSet rs = stmt.executeQuery();
@@ -42,11 +43,11 @@ public class Comparison {
     }
     public boolean caseHasChanged() throws SQLException{
         rowHash = inputRow.hashCode();
-        String id = inputRow.getMaternalPatientId();
+        Interpreter caseIDinterpreter = new Interpreter(inputRow.getMaternalPatientId());
+        String id = caseIDinterpreter.findFirstMaternalID();
         //TODO: Abstract into new methods getRow(String id) & getCell(String id, String column)?
-        String caseHasChangedQuery = "SELECT * FROM rvdbtest.case WHERE caseID = ? LIMIT 1";
         Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(caseHasChangedQuery);
+        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
         stmt.setString(1,id);
         try {
             ResultSet rs = stmt.executeQuery();

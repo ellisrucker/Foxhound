@@ -1,5 +1,6 @@
 package DataTransferObject;
 
+import IntermediateObject.SampleString;
 import logic.Interpreter;
 import readwrite.DbManager;
 
@@ -7,7 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
-
+import static readwrite.MySQL.*;
 public class Sample {
 
     //CaseID acts as placeholder for TestID until
@@ -20,8 +21,13 @@ public class Sample {
 
     //Constructors
     public Sample(String str,String caseID, LocalDate date){
-        Interpreter sampleInterpreter = new Interpreter(str);
-        sampleID = patientID = sampleInterpreter.findID();
+        sampleID = patientID = Interpreter.findID(str);
+        this.caseID = caseID;
+        dateReceived = date;
+    }
+    public Sample(SampleString ss,String patientID,String caseID, LocalDate date){
+        sampleID = ss.getId();
+        this.patientID = patientID;
         this.caseID = caseID;
         dateReceived = date;
     }
@@ -29,13 +35,8 @@ public class Sample {
     //Data Access Logic
     public void insertNewSample () throws SQLException {
         Connection connection = DbManager.openConnection();
-        String newSampleQuery = "INSERT INTO rvdbtest.sample ("
-            +"sampleID, "
-            +"dateReceived, "
-            +"caseID, "
-            +"patientID) VALUES(?,?,?,?)";
         try {
-            PreparedStatement stmt = connection.prepareStatement(newSampleQuery);
+            PreparedStatement stmt = connection.prepareStatement(insertSample);
             stmt.setString(1,sampleID);
             stmt.setObject(2,dateReceived);
             stmt.setString(3,caseID);
