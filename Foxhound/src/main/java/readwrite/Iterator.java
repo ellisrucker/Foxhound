@@ -37,7 +37,7 @@ public class Iterator {
                 Comparison rowComparison = new Comparison(newRow);
                 if (rowComparison.caseExists() == false){
                     Update update = new Update(newRow);
-                    update.createNewCase();
+                    update.generateNewCase();
 
                 }
 

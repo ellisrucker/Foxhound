@@ -1,6 +1,7 @@
 package readwrite;
 
 import DataTransferObject.Case;
+import DataTransferObject.Patient;
 import DataTransferObject.Sample;
 import IntermediateObject.SampleString;
 import logic.Interpreter;
@@ -15,6 +16,8 @@ public class Update {
 
     private SeparatedRow inputRow;
     private String caseID;
+    private String motherLastName;
+    private String motherFirstName;
     private LocalDate dateUpdated;
 
     private ArrayList<List<SampleString>> consolidateSampleStrings(){
@@ -43,21 +46,29 @@ public class Update {
         }
     }
 
-    public void createNewCase() throws ParseException, SQLException {
+    public void generateNewCase() throws ParseException, SQLException {
         Case newCase = new Case(inputRow);
         newCase.insertNewCase();
         ArrayList<List<SampleString>> newSamples = consolidateSampleStrings();
         for (List<SampleString> sampleList: newSamples){
             createNewSamples(sampleList);
+            createNewPatient(sampleList);
         }
 
     }
 
-    public void createNewPatients(){
-
+    private void createNewPatient(List<SampleString> sampleList) throws SQLException{
+        SampleString patientString = sampleList.get(0);
+        if(patientString.getRelation() == SampleString.RELATION.M){
+            Patient newPatient = new Patient(patientString,motherLastName,motherFirstName);
+            newPatient.insertNewPatient();
+        } else {
+            Patient newPatient = new Patient(patientString);
+            newPatient.insertNewPatient();
+        }
     }
 
-        //Patients and Events
+        //Tests and Events
         //will also be inserted here
 
 
@@ -68,6 +79,9 @@ public class Update {
         Interpreter mIDinterpreter = new Interpreter(inputRow.getMaternalPatientId());
         this.inputRow = inputRow;
         caseID = mIDinterpreter.findFirstMaternalID();
+        Interpreter nameInterpreter = new Interpreter (inputRow.getMotherName());
+        motherLastName = nameInterpreter.findLastName();
+        motherFirstName = nameInterpreter.findFirstName();
         String date = inputRow.getDate();
         Interpreter dateInterpreter = new Interpreter(date);
         dateUpdated = dateInterpreter.stringToDate();

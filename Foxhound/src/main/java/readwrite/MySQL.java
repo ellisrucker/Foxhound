@@ -77,6 +77,12 @@ public class MySQL {
             caseID +", " +
             patientID +") VALUES("+
             "?,?,?,?)";
+    public static String insertPatient = "INSERT INTO " + database +"."+ patientTable +" (" +
+            patientID + ", " +
+            lastName +", " +
+            firstName +", " +
+            relationship + ") VALUES(" +
+            "?,?,?,?)";
 
     //Select From Table
     public static String selectCaseByID = "SELECT * FROM "+ database +"."+ caseTable +" WHERE "+ caseID +" = ? LIMIT 1";
