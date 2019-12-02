@@ -15,20 +15,20 @@ public class Sample {
     //functionality for multiple Tests is added
     private String sampleID;
     private LocalDate dateReceived;
-    private String caseID;
+    private String testID;
     private String patientID;
 
 
     //Constructors
-    public Sample(String str,String caseID, LocalDate date){
+    public Sample(String str, String testID, LocalDate date){
         sampleID = patientID = Interpreter.findID(str);
-        this.caseID = caseID;
+        this.testID = testID;
         dateReceived = date;
     }
-    public Sample(SampleString ss,String patientID,String caseID, LocalDate date){
+    public Sample(SampleString ss, String patientID, String testID, LocalDate date){
         sampleID = ss.getId();
         this.patientID = patientID;
-        this.caseID = caseID;
+        this.testID = testID;
         dateReceived = date;
     }
 
@@ -39,7 +39,7 @@ public class Sample {
             PreparedStatement stmt = connection.prepareStatement(insertSample);
             stmt.setString(1,sampleID);
             stmt.setObject(2,dateReceived);
-            stmt.setString(3,caseID);
+            stmt.setString(3,testID);
             stmt.setString(4,patientID);
             stmt.executeUpdate();
         } finally {
@@ -57,8 +57,8 @@ public class Sample {
     public void setDateReceived(LocalDate date){
         dateReceived = date;
     }
-    public void setCaseID(String id){
-        caseID = id;
+    public void setTestID(String id){
+        testID = id;
     }
     public void setPatientID(String patient){
         patientID = patient;
@@ -70,8 +70,8 @@ public class Sample {
     public LocalDate getDateReceived(){
         return dateReceived;
     }
-    public String getCaseID(){
-        return caseID;
+    public String getTestID(){
+        return testID;
     }
     public String getPatientID(){
         return patientID;

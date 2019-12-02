@@ -1,14 +1,13 @@
 import IntermediateObject.SampleString;
 import logic.Interpreter;
-import org.apache.commons.collections.ArrayStack;
-import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import readwrite.SeparatedRow;
 
-import java.lang.reflect.Array;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static DataTransferObject.Test.TestType.*;
 import static org.junit.Assert.*;
 
 
@@ -17,101 +16,125 @@ public class InterpreterTest {
 
     @Test
     public void findFirstName_returnsFirstName_ifPassedTwoNames(){
-       Interpreter interpreter = new Interpreter("Ellis Rucker");
-       String expected = "Ellis";
-       String actual = interpreter.findFirstName();
-       assertEquals(expected,actual);
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setMotherName("Ellis Rucker");
+        Interpreter interpreter = new Interpreter(testRow);
+        String expected = "Ellis";
+        String actual = interpreter.findFirstName();
+        assertEquals(expected,actual);
     }
     @Test
     public void findLastName_returnsLastName_ifPassedTwoNames(){
-        Interpreter interpreter = new Interpreter("Ellis Rucker");
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setMotherName("Ellis Rucker");
+        Interpreter interpreter = new Interpreter(testRow);
         String expected = "Rucker";
         String actual = interpreter.findLastName();
         assertEquals(expected,actual);
     }
     @Test
     public void findLastName_returnsLastName_ifPassedThreeNames(){
-        Interpreter interpreter = new Interpreter ("Juju Smith Schuster");
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setMotherName("Juju Smith Schuster");
+        Interpreter interpreter = new Interpreter (testRow);
         String expected = "Smith Schuster";
         String actual = interpreter.findLastName();
         assertEquals(expected,actual);
     }
     @Test
-    public void isolateSamples_returnsOneSampleString_ifPassedOneSampleString(){
-        Interpreter interpreter = new Interpreter("ELLR1903022");
-        ArrayList<String> expected = new ArrayList<>();
-        expected.add("ELLR1903022");
-        ArrayList<String> actual = interpreter.isolateSamples();
-        assertEquals(expected,actual);
-    }
-    @Test
-    public void isolateSamples_returnsOneSample_ifPassedSampleWithRelation(){
-        Interpreter interpreter = new Interpreter("EDWE1910001(P1)");
-        ArrayList<String> sampleArray = interpreter.isolateSamples();
-        String expected = "EDWE1910001(P1)";
-        String actual = sampleArray.get(1);
-        assertEquals(expected,actual);
-    }
-    @Test
-    public void isolateSamples_returnsTwoSamples_ifPassedTwoSamples(){
-        Interpreter interpreter = new Interpreter("EDWE1910001(P1)ALPE1910002(P2)");
-        ArrayList<String> expected = new ArrayList<>();
-        expected.add("EDWE1910001(P1)");
-        expected.add("ALPE1910002(P2)");
-        ArrayList<String> actual = interpreter.isolateSamples();
-        assertEquals(expected,actual);
-    }
-    @Test
-    public void isolateSamples_returnsCorrectSamples_ifPassedComplicatedCell(){
-        Interpreter interpreter = new Interpreter(
-                "(JAIW1812026(p1)) ZAVC1902101(p2)* ZAVC1902104(P2) DAMK1903178(p3)");
-        ArrayList<String> expected = new ArrayList<>();
-        expected.add("JAIW1812026(p1)) ");
-        expected.add("ZAVC1902101(p2)* ");
-        expected.add("ZAVC1902104(P2) ");
-        expected.add("DAMK1903178(p3)");
-        ArrayList<String> actual = interpreter.isolateSamples();
-        assertEquals(expected,actual);
-    }
-    @Test
-    public void findFirstID_returnsSample_ifPassedOneSample(){
-        Interpreter interpreter = new Interpreter("WINR1910055");
+    public void findFirstMaternalID_returnsSample_ifPassedOneSample(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setMaternalPatientId("WINR1910055");
+        Interpreter interpreter = new Interpreter(testRow);
         String expected = "WINR1910055";
-        String actual = interpreter.findFirstID();
+        String actual = interpreter.findFirstMaternalID();
         assertEquals(expected,actual);
     }
     @Test
-    public void findFirstID_returnsCorrectSample_ifPassedMultipleSamples(){
-        Interpreter interpreter = new Interpreter("WINR1910055 WINR1909127*");
+    public void findFirstMaternalID_returnsCorrectSample_ifPassedMultipleSamples(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setMaternalPatientId("WINR1910055 WINR1909127*");
+        Interpreter interpreter = new Interpreter(testRow);
         String expected = "WINR1909127";
-        String actual = interpreter.findFirstID();
+        String actual = interpreter.findFirstMaternalID();
         assertEquals(expected,actual);
     }
     @Test
-    public void findRelation_returnsP1_ifRelationNotStated(){
-        String sample = "EDWE1911013";
-        SampleString.RELATION expected = SampleString.RELATION.P1;
-        SampleString.RELATION actual = SampleString.findRelation(sample);
+    public void findFirstGestation_returnsCorrectGestation_ifPassedMultipleGestations(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setGestationGender("16w 25w, boy");
+        Interpreter interpreter = new Interpreter(testRow);
+        Integer expected = 16;
+        Integer actual = interpreter.findFirstGestation();
         assertEquals(expected,actual);
     }
     @Test
-    public void findRelation_returnsP2_ifPassedP2(){
-        String sample = "ALPE1911014(p2)";
-        SampleString.RELATION expected = SampleString.RELATION.P2;
-        SampleString.RELATION actual = SampleString.findRelation(sample);
+    public void findFirstGender_returnsCorrectGender_ifPassedMultipleGenders(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setGestationGender("(20w,boy) 22w, girl");
+        Interpreter interpreter = new Interpreter(testRow);
+        String expected = "Male";
+        String actual = interpreter.findFirstGender();
+        assertEquals(expected,actual);
+    }
+    @Test
+    public void findFirstGender_returnsNull_ifFirstTestIsMissingGender(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setGestationGender("(10w) 22w, girl");
+        Interpreter interpreter = new Interpreter(testRow);
+        String expected = null;
+        String actual = interpreter.findFirstGender();
+        assertEquals(expected,actual);
+    }
+    @Test
+    public void findFirstTestType_returnsCorrectTestType_ifPassedMultipleTestTypes(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setTestTypeCost("(1wk, 1250) 3wk 950");
+        Interpreter interpreter = new Interpreter(testRow);
+        DataTransferObject.Test.TestType expected = ONE_WEEK;
+        DataTransferObject.Test.TestType actual = interpreter.findFirstTestType();
+        assertEquals(expected,actual);
+    }
+    @Test
+    public void findFirstTestType_returnsUnknown_ifFirstTestTypeIsNull(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setTestTypeCost("(1250) 3wk 950");
+        Interpreter interpreter = new Interpreter(testRow);
+        DataTransferObject.Test.TestType expected = UNKNOWN;
+        DataTransferObject.Test.TestType actual = interpreter.findFirstTestType();
+        assertEquals(expected,actual);
+    }
+
+    @Test
+    public void findFirstCost_returnsCorrectCost_ifPassedMultipleCosts(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setTestTypeCost("(1wk, 1250) 3wk 950");
+        Interpreter interpreter = new Interpreter(testRow);
+        Integer expected = 1250;
+        Integer actual = interpreter.findFirstCost();
+        assertEquals(expected,actual);
+    }
+    @Test
+    public void findFirstCost_returnsNull_ifFirstTestIsMissingCost(){
+        SeparatedRow testRow = new SeparatedRow();
+        testRow.setTestTypeCost("(1wk) 3wk 950");
+        Interpreter interpreter = new Interpreter(testRow);
+        Integer expected = null;
+        Integer actual = interpreter.findFirstCost();
         assertEquals(expected,actual);
     }
 
 
+    /*
     @Ignore
     //Method performs as expected, but fails test due to differences in list order
     public void groupIDsByPatient_sortsSampleStrings_whenPassedCell(){
         String cell = "EDWE1911013(P1) EDWE1911012(P1) ALPE1911014(p2) ROYM1911015(P3) swab1911016(p3)";
-        SampleString ss1 = new SampleString("EDWE1911012(P1)","EDWE1911012", SampleString.RELATION.P1);
-        SampleString ss2 = new SampleString("EDWE1911013(P1)","EDWE1911013", SampleString.RELATION.P1);
-        SampleString ss3 = new SampleString("ALPE1911014(p2)", "ALPE1911014", SampleString.RELATION.P2);
-        SampleString ss4 = new SampleString("ROYM1911015(P3)", "ROYM1911015", SampleString.RELATION.P3);
-        SampleString ss5 = new SampleString("swab1911016(p3)","swab1911016", SampleString.RELATION.P3);
+        SampleString ss1 = new SampleString("EDWE1911012(P1)","EDWE1911012", SampleString.Relation.P1);
+        SampleString ss2 = new SampleString("EDWE1911013(P1)","EDWE1911013", SampleString.Relation.P1);
+        SampleString ss3 = new SampleString("ALPE1911014(p2)", "ALPE1911014", SampleString.Relation.P2);
+        SampleString ss4 = new SampleString("ROYM1911015(P3)", "ROYM1911015", SampleString.Relation.P3);
+        SampleString ss5 = new SampleString("swab1911016(p3)","swab1911016", SampleString.Relation.P3);
         List<SampleString> p1Samples = Arrays.asList(ss1,ss2);
         List<SampleString> p2Samples = Arrays.asList(ss3);
         List<SampleString> p3Samples = Arrays.asList(ss4,ss5);
@@ -122,5 +145,5 @@ public class InterpreterTest {
                 .collect(Collectors.toSet());
         assertEquals(actual,expected);
 
-    }
+    }*/
 }

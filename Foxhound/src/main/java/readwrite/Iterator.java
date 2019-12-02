@@ -17,11 +17,12 @@ public class Iterator {
 
     public static void main(String [] args) throws IOException, ParseException, SQLException {
 
-        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\MultipleSampleTest");
+        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\TestTableTest");
         File [] csvList = targetFolder.listFiles();
         Arrays.sort(csvList);
 
         DbManager.initializeCaseTable();
+        DbManager.initializeTestTable();
         DbManager.initializeSampleTable();
         DbManager.initializePatientTable();
 

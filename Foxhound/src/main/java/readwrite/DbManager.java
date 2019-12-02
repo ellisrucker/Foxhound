@@ -33,6 +33,21 @@ public class DbManager {
             connection.close();
         }
     }
+    public static void initializeTestTable() throws SQLException {
+        Connection connection = openConnection();
+        try {
+            PreparedStatement dropStmt = connection.prepareStatement(dropTestTable);
+            PreparedStatement createStmt = connection.prepareStatement(createTestTable);
+            try{
+                dropStmt.executeUpdate();
+                createStmt.executeUpdate();
+            } catch (Exception e){
+                createStmt.executeUpdate();
+            }
+        } finally {
+            connection.close();
+        }
+    }
     public static void initializeSampleTable() throws SQLException{
         Connection connection = openConnection();
         try {

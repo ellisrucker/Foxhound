@@ -2,12 +2,10 @@ package DataTransferObject;
 
 import IntermediateObject.SampleString;
 import readwrite.DbManager;
-import readwrite.MySQL;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 import static readwrite.MySQL.insertPatient;
 
@@ -16,7 +14,7 @@ public class Patient {
     private String patientID;
     private String lastName;
     private String firstName;
-    private SampleString.RELATION relationship;
+    private SampleString.Relation relationship;
 
     //Constructors
     public Patient() {

@@ -29,10 +29,20 @@ public class MySQL {
     private static final String firstName = "firstName";
     private static final String relationship = "relationship";
 
+    //Test
+    private static final String testTable = "test";
+    private static final String testID = "testID";
+    private static final String testStartDate = "testStartDate";
+    private static final String testType = "testType";
+    private static final String cost = "cost";
+    private static final String gestation = "gestation";
+    private static final String legal = "legal";
+
     //Drop Table
     public static String dropCaseTable = "DROP TABLE "+ database +"."+ caseTable;
     public static String dropSampleTable = "DROP TABLE "+ database +"."+ sampleTable;
     public static String dropPatientTable = "DROP TABLE "+ database +"."+ patientTable;
+    public static String dropTestTable = "DROP TABLE "+ database + "." + testTable;
 
     //Create Table
     public static String createCaseTable = "CREATE TABLE "+ database +"."+ caseTable +" (" +
@@ -48,7 +58,7 @@ public class MySQL {
     public static String createSampleTable = "CREATE TABLE "+ database +"."+ sampleTable +" (" +
             sampleID +" varchar(16) NOT NULL, " +
             dateReceived +" date DEFAULT NULL, " +
-            caseID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
+            testID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             patientID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             "PRIMARY KEY ("+ sampleID +")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
@@ -58,6 +68,16 @@ public class MySQL {
             firstName +" varchar(45) DEFAULT NULL, " +
             relationship +" varchar(4) DEFAULT NULL, " +
             "PRIMARY KEY ("+ patientID +")" +
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+    public static String createTestTable = "CREATE TABLE " + database +"." + testTable + " (" +
+            testID +" varchar(16) NOT NULL, " +
+            testStartDate +" date DEFAULT NULL, " +
+            testType +" varchar(16) DEFAULT NULL, " +
+            cost +" int DEFAULT NULL, " +
+            gestation +" int DEFAULT NULL, " +
+            legal +" tinyint(1) DEFAULT '1' COMMENT '0 = non-legal test\\n1 = legal test', " +
+            caseID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
+            "PRIMARY KEY ("+ testID + ")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
 
     //Insert Into Table
@@ -74,7 +94,7 @@ public class MySQL {
     public static String insertSample = "INSERT INTO "+ database +"."+ sampleTable +" (" +
             sampleID +", " +
             dateReceived +", " +
-            caseID +", " +
+            testID +", " +
             patientID +") VALUES("+
             "?,?,?,?)";
     public static String insertPatient = "INSERT INTO " + database +"."+ patientTable +" (" +
@@ -83,6 +103,16 @@ public class MySQL {
             firstName +", " +
             relationship + ") VALUES(" +
             "?,?,?,?)";
+    public static String insertTest = "INSERT INTO " + database +"." + testTable +" (" +
+            testID + ", " +
+            testStartDate + ", " +
+            testType + ", " +
+            cost + ", " +
+            gestation + ", " +
+            legal + ", " +
+            caseID + ") VALUES(" +
+            "?,?,?,?,?,?,?)";
+
 
     //Select From Table
     public static String selectCaseByID = "SELECT * FROM "+ database +"."+ caseTable +" WHERE "+ caseID +" = ? LIMIT 1";

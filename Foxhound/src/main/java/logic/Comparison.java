@@ -13,8 +13,8 @@ import static readwrite.MySQL.*;
 public class Comparison {
 
     private SeparatedRow inputRow;
+    private String caseID;
     private Integer rowHash;
-    //TODO: Add caseID as field to refer to, rather than finding it again in each method.
 
 
     /*Calling rs.next() moves the ResultSet cursor. This is not an issue
@@ -25,11 +25,9 @@ public class Comparison {
     just before the first row. Or use Do-While loop.
     */
     public boolean caseExists() throws SQLException {
-        Interpreter caseIDinterpreter = new Interpreter(inputRow.getMaternalPatientId());
-        String id = caseIDinterpreter.findFirstMaternalID();
         Connection connection = DbManager.openConnection();
         PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
-        stmt.setString(1,id);
+        stmt.setString(1,caseID);
         try {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -43,12 +41,10 @@ public class Comparison {
     }
     public boolean caseHasChanged() throws SQLException{
         rowHash = inputRow.hashCode();
-        Interpreter caseIDinterpreter = new Interpreter(inputRow.getMaternalPatientId());
-        String id = caseIDinterpreter.findFirstMaternalID();
         //TODO: Abstract into new methods getRow(String id) & getCell(String id, String column)?
         Connection connection = DbManager.openConnection();
         PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
-        stmt.setString(1,id);
+        stmt.setString(1,caseID);
         try {
             ResultSet rs = stmt.executeQuery();
             int storedRowHash = rs.getInt("rowHash");
@@ -77,6 +73,8 @@ public class Comparison {
 
 
     public Comparison (SeparatedRow inputRow){
+        Interpreter interpreter = new Interpreter(inputRow);
         this.inputRow = inputRow;
+        caseID = interpreter.findFirstMaternalID();
     }
 }

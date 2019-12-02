@@ -20,20 +20,19 @@ public class Case {
     private boolean twins = false;
     private Integer rowHash;
 
+
+    //Constructors
     public Case() {
     }
     public Case(SeparatedRow newRow) throws ParseException {
-        Interpreter dateInterpreter = new Interpreter(newRow.getDate());
-        Interpreter nameInterpreter = new Interpreter(newRow.getMotherName());
-        Interpreter babyInterpreter = new Interpreter(newRow.getGestationGender());
-        Interpreter mIDInterpreter = new Interpreter(newRow.getMaternalPatientId());
+        Interpreter interpreter = new Interpreter(newRow);
 
-        id = mIDInterpreter.findFirstMaternalID();
-        motherLastName = nameInterpreter.findLastName();
-        motherFirstName = nameInterpreter.findFirstName();
-        dateStarted = dateInterpreter.stringToDate();
-        gender = babyInterpreter.findGender();
-        twins = babyInterpreter.isHavingTwins();
+        id = interpreter.findFirstMaternalID();
+        motherLastName = interpreter.findLastName();
+        motherFirstName = interpreter.findFirstName();
+        dateStarted = interpreter.findRowDate();
+        gender = interpreter.findFirstGender();
+        twins = interpreter.isHavingTwins();
         rowHash = newRow.hashCode();
     }
 

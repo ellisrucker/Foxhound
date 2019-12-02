@@ -1,6 +1,7 @@
 package readwrite;
 
 
+import java.time.LocalDate;
 import java.util.Objects;
 
 public class SeparatedRow {
@@ -41,6 +42,10 @@ public class SeparatedRow {
         return hash;
     }
 
+    public SeparatedRow (){
+
+    }
+
     public SeparatedRow (String[] currentRow){
         date = currentRow[0];
         motherName = currentRow[1];
@@ -59,6 +64,52 @@ public class SeparatedRow {
     }
 
     //Setters and Getters
+
+    //Setters are for Unit Testing Only
+    //Class fields will ultimately be declared final
+    public void setDate(String newDate){
+        date = newDate;
+    }
+    public void setMotherName(String name){
+        motherName = name;
+    }
+    public void setMaternalPatientId(String mID){
+        maternalPatientId = mID;
+    }
+    public void setPaternalPatientId(String pID){
+        paternalPatientId = pID;
+    }
+    public void setGestationGender(String gg){
+        gestationGender = gg;
+    }
+    public void setTestTypeCost(String ttc){
+        testTypeCost = ttc;
+    }
+    public void setReferral(String newReferral){
+        referral = newReferral;
+    }
+    public void setGenotypeA(String geno){
+        genotypeA = geno;
+    }
+    public void setGenotypeB(String geno){
+        genotypeB = geno;
+    }
+    public void setFirstDraw(String newFirstDraw){
+        firstDraw = newFirstDraw;
+    }
+    public void setSecondDraw(String newSecondDraw){
+        secondDraw = newSecondDraw;
+    }
+    public void setThirdDraw(String newThirdDraw){
+        thirdDraw = newThirdDraw;
+    }
+    public void setResult(String newResult){
+        result = newResult;
+    }
+    public void setConfirmation(String newConfirmation){
+        confirmation = newConfirmation;
+    }
+
     public String getDate(){
         return date;
     }

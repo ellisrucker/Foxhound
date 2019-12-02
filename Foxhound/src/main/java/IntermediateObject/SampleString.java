@@ -1,6 +1,5 @@
 package IntermediateObject;
 
-import DataTransferObject.Sample;
 import logic.Interpreter;
 
 import java.util.Comparator;
@@ -11,7 +10,7 @@ public class SampleString implements Comparable<SampleString>{
 
     private String sample;
     private String id;
-    private RELATION relation;
+    private Relation relation;
 
     @Override
     public String toString(){
@@ -43,7 +42,7 @@ public class SampleString implements Comparable<SampleString>{
         return hash;
     }
 
-    public enum RELATION {M,P1,P2,P3,P4,P5,Unknown}
+    public enum Relation {M,P1,P2,P3,P4,P5,UNKNOWN}
 
     private static Pattern paternalRelation = Pattern.compile("[^a-zA-Z][Pp][\\d]");
 
@@ -68,36 +67,31 @@ public class SampleString implements Comparable<SampleString>{
         id = Interpreter.findID(str);
         relation = findRelation(str);
     }
-    public SampleString (String str, RELATION relation){
+    public SampleString (String str, Relation relation){
         sample = str;
         id = Interpreter.findID(str);
         this.relation = relation;
     }
-    public SampleString (String str, String id, RELATION relation){
-        sample = str;
-        this.id = id;
-        this.relation = relation;
-    }
 
-    public static RELATION findRelation(String idString) {
+    public static Relation findRelation(String idString) {
         Matcher relationMatcher = paternalRelation.matcher(idString);
         String relation;
         if(!relationMatcher.find()){
-            return RELATION.P1;
+            return Relation.P1;
         } else {
             relation = relationMatcher.group().toUpperCase();
         }
         if(relation.contains("P1")){
-            return RELATION.P1;
+            return Relation.P1;
         } else if (relation.contains("P2")){
-            return RELATION.P2;
+            return Relation.P2;
         } else if (relation.contains("P3")){
-            return RELATION.P3;
+            return Relation.P3;
         } else if (relation.contains("P4")){
-            return RELATION.P4;
+            return Relation.P4;
         } else if (relation.contains("P5")){
-            return RELATION.P5;
-        } else return RELATION.Unknown;
+            return Relation.P5;
+        } else return Relation.UNKNOWN;
 
     }
 
@@ -112,7 +106,7 @@ public class SampleString implements Comparable<SampleString>{
     public void setRelation(String str){
         relation = findRelation(str);
     }
-    public void setRelation(RELATION relation){
+    public void setRelation(Relation relation){
         this.relation = relation;
     }
 
@@ -122,7 +116,7 @@ public class SampleString implements Comparable<SampleString>{
     public String getId(){
         return this.id;
     }
-    public RELATION getRelation(){
+    public Relation getRelation(){
         return this.relation;
     }
 
