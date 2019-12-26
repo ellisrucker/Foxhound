@@ -38,11 +38,30 @@ public class MySQL {
     private static final String gestation = "gestation";
     private static final String legal = "legal";
 
+    //Filtered
+    private static final String filteredTable = "filtered";
+    private static final String date = "date";
+    private static final String motherName = "motherName";
+    private static final String maternalPatientId = "maternalPatientId";
+    private static final String paternalPatientId = "paternalPatientId";
+    private static final String gestationGender = "gestationGender";
+    private static final String testTypeCost = "testTypeCost";
+    private static final String referral = "referral";
+    private static final String genotypeA = "genotypeA";
+    private static final String genotypeB = "genotypeB";
+    private static final String firstDraw = "firstDraw";
+    private static final String secondDraw = "secondDraw";
+    private static final String thirdDraw = "thirdDraw";
+    private static final String result = "result";
+    private static final String confirmation = "confirmation";
+
+
     //Drop Table
     public static String dropCaseTable = "DROP TABLE "+ database +"."+ caseTable;
     public static String dropSampleTable = "DROP TABLE "+ database +"."+ sampleTable;
     public static String dropPatientTable = "DROP TABLE "+ database +"."+ patientTable;
     public static String dropTestTable = "DROP TABLE "+ database + "." + testTable;
+    public static String dropFilteredTable = "DROP TABLE "+ database +"."+ filteredTable;
 
     //Create Table
     public static String createCaseTable = "CREATE TABLE "+ database +"."+ caseTable +" (" +
@@ -79,6 +98,25 @@ public class MySQL {
             caseID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             "PRIMARY KEY ("+ testID + ")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+    public static String createFilteredTable = "CREATE TABLE " + database +"."+ filteredTable + " (" +
+            caseID +" varchar(16) NOT NULL, " +
+            date +" varchar(45) DEFAULT NULL, "+
+            motherName +" varchar(45) DEFAULT NULL, "+
+            maternalPatientId +" varchar(45) DEFAULT NULL, "+
+            paternalPatientId +" varchar(45) DEFAULT NULL, "+
+            gestationGender +" varchar(45) DEFAULT NULL, "+
+            testTypeCost +" varchar(45) DEFAULT NULL, "+
+            referral +" varchar(45) DEFAULT NULL, "+
+            genotypeA +" varchar(45) DEFAULT NULL, "+
+            genotypeB +" varchar(45) DEFAULT NULL, "+
+            firstDraw +" varchar(45) DEFAULT NULL, "+
+            secondDraw +" varchar(45) DEFAULT NULL, "+
+            thirdDraw +" varchar(45) DEFAULT NULL, "+
+            result +" varchar(45) DEFAULT NULL, "+
+            confirmation +" varchar(45) DEFAULT NULL, "+
+            "PRIMARY KEY ("+ caseID +") " +
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+
 
     //Insert Into Table
     //Parameterized Statements: Update DTOs if columns are added, removed, or switched!
@@ -112,6 +150,23 @@ public class MySQL {
             legal + ", " +
             caseID + ") VALUES(" +
             "?,?,?,?,?,?,?)";
+    public static String insertFilteredCase = "INSERT INTO " + database +"." + filteredTable +" (" +
+            caseID + ", " +
+            date + ", " +
+            motherName + ", " +
+            maternalPatientId + ", " +
+            paternalPatientId + ", " +
+            gestationGender + ", " +
+            testTypeCost + ", " +
+            referral + ", " +
+            genotypeA + ", " +
+            genotypeB + ", " +
+            firstDraw + ", " +
+            secondDraw + ", " +
+            thirdDraw + ", " +
+            result + ", " +
+            confirmation + ") VALUES(" +
+            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 
     //Select From Table

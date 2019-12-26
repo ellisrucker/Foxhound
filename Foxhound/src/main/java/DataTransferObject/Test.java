@@ -23,9 +23,12 @@ public class Test {
     private String caseID;
 
     public enum TestType {
-        EARLY, ONE_WEEK, TWO_WEEK, THREE_WEEK, GENDER, SURROGATE, IVF, MATERNITY, MAT_PAT, UNKNOWN}
+        EARLY, ONE_WEEK, TWO_WEEK, THREE_WEEK, GENDER, SURROGATE, IVF, MATERNITY, MAT_PAT, UNKNOWN
+    }
 
-
+    public enum Result {
+        MATCH, MISMATCH, CANCELLED, MISCARRIAGE, UNKNOWN
+    }
 
     //Constructors
     public Test(Interpreter interpreter, String caseID, String testID, LocalDate date){

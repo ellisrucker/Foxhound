@@ -1,8 +1,10 @@
 package readwrite;
 
+import DataTransferObject.ExcelRow;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import logic.Comparison;
+import logic.Interpreter;
 
 import java.io.File;
 import java.io.FileReader;
@@ -17,15 +19,37 @@ public class Iterator {
 
     public static void main(String [] args) throws IOException, ParseException, SQLException {
 
-        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\TestTableTest");
+        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\ComplexCaseTest");
+        File finalCSV = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\ComplexCaseTest\\SimpleCase_Mock 5 - mockdata.csv");
+
         File [] csvList = targetFolder.listFiles();
         Arrays.sort(csvList);
 
+        //Initialize Tables
         DbManager.initializeCaseTable();
         DbManager.initializeTestTable();
         DbManager.initializeSampleTable();
         DbManager.initializePatientTable();
+        DbManager.initializeFilteredTable();
 
+        //Pre-filter Complex Cases
+        CSVReader filterReader = new CSVReaderBuilder(new FileReader(finalCSV)).withSkipLines(1).build();
+        String[] currentFilterRow;
+        while ((currentFilterRow = filterReader.readNext()) != null){
+            ExcelRow newRow = new ExcelRow(currentFilterRow);
+            Interpreter interpreter = new Interpreter(newRow);
+            if(interpreter.caseIsComplex()){
+                try {
+                    newRow.setCaseID(interpreter.findFirstMaternalID());
+                    newRow.insertNewFilteredCase();
+                } catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+
+        //Main Loop
         for (File csv: csvList) {
             //File reader method, ignores header row of CSV
             CSVReader reader = new CSVReaderBuilder(new FileReader(csv)).withSkipLines(1).build();
@@ -34,7 +58,7 @@ public class Iterator {
 
             //TODO: Turn into addNewCases() to clean up code?
             while ((currentRow = reader.readNext()) != null) {
-                SeparatedRow newRow = new SeparatedRow(currentRow);
+                ExcelRow newRow = new ExcelRow(currentRow);
                 Comparison rowComparison = new Comparison(newRow);
                 if (rowComparison.caseExists() == false){
                     Update update = new Update(newRow);

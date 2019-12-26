@@ -6,7 +6,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import readwrite.DbManager;
-import readwrite.SeparatedRow;
 import logic.Interpreter;
 import static readwrite.MySQL.*;
 
@@ -24,7 +23,7 @@ public class Case {
     //Constructors
     public Case() {
     }
-    public Case(SeparatedRow newRow) throws ParseException {
+    public Case(ExcelRow newRow) throws ParseException {
         Interpreter interpreter = new Interpreter(newRow);
 
         id = interpreter.findFirstMaternalID();

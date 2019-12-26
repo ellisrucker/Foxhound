@@ -3,7 +3,7 @@ package logic;
 import DataTransferObject.Test;
 import DataTransferObject.Test.TestType;
 import IntermediateObject.SampleString;
-import readwrite.SeparatedRow;
+import DataTransferObject.ExcelRow;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -17,7 +17,7 @@ import static java.util.stream.Collectors.*;
 public class Interpreter {
 
 
-    private SeparatedRow inputRow;
+    private ExcelRow inputRow;
 
     private static Pattern generalID = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
     private static Pattern relationRegex = Pattern.compile("[^a-zA-Z][PpCc][\\d]");
@@ -38,6 +38,20 @@ public class Interpreter {
     private static Pattern girlBoy = Pattern.compile("[Gg]irl/[Bb]oy");
     private static Pattern twin = Pattern.compile("[Tt]win");
 
+
+
+    //Result Strings and Delimiters
+    private static String match = "(?i)match";
+    private static String mismatch = "(?i)mismatch";
+    private static String cancelled = "(?i)cancel";
+    private static String miscarried = "(?i)miscar";
+    private static String resultDelimiters = "(?="+
+            "[^a-zA-Z]" + match + "|" +
+            mismatch + "|" +
+            cancelled + "|" +
+            miscarried + ")";
+
+    private static String[] resultArray = new String[]{match, mismatch, cancelled, miscarried};
 
     //TestType Strings and Delimiters
     private static String early = "(?i)early";
@@ -162,7 +176,6 @@ public class Interpreter {
         return onlySamples;
     }
 
-
     public String findFirstMaternalID(){
         ArrayList<SampleString> maternalIDs = this.retrieveMaternalIDs();
         SampleString firstMaternalSample = maternalIDs.get(0);
@@ -182,7 +195,6 @@ public class Interpreter {
 
     //Gestation Processing
 
-    //TODO: Temporary method to add tests from simple cases
     public Integer findFirstGestation(){
         ArrayList<String> stringsFromCell = isolateGestationGender(inputRow.getGestationGender());
         return findGestation(stringsFromCell.get(0));
@@ -323,7 +335,146 @@ public class Interpreter {
         return twinMatcher.find();
     }
 
-    public Interpreter (SeparatedRow newRow){
+    //Quantitative Methods
+
+    //Empty cell causes nullpointerexception, indicates extreme case
+    public boolean hasSingleMaternalID(){
+        try {
+            ArrayList<SampleString> maternalSamples = retrieveMaternalIDs();
+            if (maternalSamples.size() == 1){
+                return true;
+            }
+            else {
+                System.out.println(inputRow.getMotherName() + ": Irregular ID Quantity");
+                return false;
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+    public boolean hasMultipleGestationGenders(){
+        if(inputRow.getGestationGender() == null){
+            return false;
+        }
+        ArrayList<String> stringList = isolateGestationGender(inputRow.getGestationGender());
+        if(stringList.size() > 1){
+            System.out.println(inputRow.getMotherName() + ": MultipleGestationGenders");
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public boolean hasMultipleTestTypeCosts(){
+        if(inputRow.getTestTypeCost() == null){
+           return false;
+        }
+        ArrayList<String> stringList = isolateTestTypeCost(inputRow.getTestTypeCost());
+        if(stringList.size() > 1){
+            System.out.println(inputRow.getMotherName() + ": MultipleTestTypeCosts");
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public boolean hasMultipleResults(){
+        if(inputRow.getResult() == null){
+            return false;
+        }
+        ArrayList<String> stringList = isolateResults(inputRow.getResult());
+        if(stringList.size() > 1){
+            System.out.println(inputRow.getMotherName() + ": Multiple Results");
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    public boolean hasConfirmation(){
+        String cell = inputRow.getConfirmation();
+        if(cell == null){
+            return false;
+        }
+        Matcher matcher = Pattern.compile("[\\w]").matcher(cell);
+        if (matcher.find()) {
+            System.out.println(inputRow.getMotherName() + ": Confirmation Detected");
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Complexity
+
+    //Used to filter out extreme cases, edit as functionality is added
+    //Remember to adjust unit tests after editing
+    public boolean caseIsComplex(){
+        if(!(hasSingleMaternalID())||
+        hasMultipleGestationGenders()||
+        hasMultipleTestTypeCosts()||
+        hasMultipleResults()||
+        hasConfirmation()){
+           return true;
+        }
+        else return false;
+    }
+
+    //Result Processing
+
+    public static ArrayList<String> isolateResults(String cell){
+        String[] resultStrings = cell.split(resultDelimiters);
+        ArrayList<String> onlyResults = new ArrayList<>();
+        for (String element: resultStrings){
+            if (containsResult(element)){
+                onlyResults.add(element);
+            }
+        }
+        return onlyResults;
+    }
+    public static boolean containsResult(String str){
+        boolean resultIsFound = false;
+        for (String resultString: resultArray){
+            Matcher matcher = Pattern.compile(resultString).matcher(str);
+            if(matcher.find()){
+                resultIsFound = true;
+                break;
+            }
+        }
+        return resultIsFound;
+    }
+
+    public Test.Result findFirstResult(){
+        ArrayList<String> stringsFromCell = isolateResults(inputRow.getResult());
+        return findResult(stringsFromCell.get(0));
+    }
+
+    public static Test.Result findResult (String str){
+        Matcher matchMatcher = Pattern.compile(match).matcher(str);
+        Matcher mismatchMatcher = Pattern.compile(mismatch).matcher(str);
+        Matcher cancelledMatcher = Pattern.compile(cancelled).matcher(str);
+        Matcher miscarriedMatcher = Pattern.compile(miscarried).matcher(str);
+        if (matchMatcher.find()){
+            return Test.Result.MATCH;
+        }
+        else if (mismatchMatcher.find()){
+            return Test.Result.MISMATCH;
+        }
+        else if (cancelledMatcher.find()){
+            return Test.Result.CANCELLED;
+        }
+        else if (miscarriedMatcher.find()) {
+            return Test.Result.MISCARRIAGE;
+        }
+        else {
+            return Test.Result.UNKNOWN;
+        }
+
+    }
+
+    public Interpreter (ExcelRow newRow){
         inputRow = newRow;
     }
 }

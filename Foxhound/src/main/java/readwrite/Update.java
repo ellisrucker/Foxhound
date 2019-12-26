@@ -1,9 +1,6 @@
 package readwrite;
 
-import DataTransferObject.Case;
-import DataTransferObject.Patient;
-import DataTransferObject.Sample;
-import DataTransferObject.Test;
+import DataTransferObject.*;
 import IntermediateObject.SampleString;
 import logic.Interpreter;
 import java.sql.SQLException;
@@ -14,7 +11,7 @@ import java.util.List;
 
 public class Update {
 
-    private SeparatedRow inputRow;
+    private ExcelRow inputRow;
     private String caseID;
     private String testID;
     private String motherLastName;
@@ -66,7 +63,7 @@ public class Update {
 
 
     //Constructors
-    public Update(SeparatedRow inputRow) throws ParseException{
+    public Update(ExcelRow inputRow) throws ParseException{
         this.inputRow = inputRow;
         interpreter = new Interpreter(inputRow);
         caseID = interpreter.findFirstMaternalID();

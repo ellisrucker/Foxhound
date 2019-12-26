@@ -1,7 +1,7 @@
 package logic;
 
 import readwrite.DbManager;
-import readwrite.SeparatedRow;
+import DataTransferObject.ExcelRow;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -12,7 +12,7 @@ import static readwrite.MySQL.*;
 
 public class Comparison {
 
-    private SeparatedRow inputRow;
+    private ExcelRow inputRow;
     private String caseID;
     private Integer rowHash;
 
@@ -72,7 +72,7 @@ public class Comparison {
     */
 
 
-    public Comparison (SeparatedRow inputRow){
+    public Comparison (ExcelRow inputRow){
         Interpreter interpreter = new Interpreter(inputRow);
         this.inputRow = inputRow;
         caseID = interpreter.findFirstMaternalID();

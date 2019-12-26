@@ -1,13 +1,21 @@
-package readwrite;
+package DataTransferObject;
 
 
+import readwrite.DbManager;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.Objects;
 
-public class SeparatedRow {
+import static readwrite.MySQL.insertFilteredCase;
+
+public class ExcelRow {
 
     //Object representation of current row
     //Each cell of currentRow becomes a String attribute
+    //caseID is used only when row is added to complex case table
     private String date;
     private String motherName;
     private String maternalPatientId;
@@ -22,6 +30,7 @@ public class SeparatedRow {
     private String thirdDraw;
     private String result;
     private String confirmation;
+    private String caseID;
 
     @Override
     public int hashCode(){
@@ -42,11 +51,12 @@ public class SeparatedRow {
         return hash;
     }
 
-    public SeparatedRow (){
+    public ExcelRow(){
 
     }
 
-    public SeparatedRow (String[] currentRow){
+    //Constructors
+    public ExcelRow(String[] currentRow){
         date = currentRow[0];
         motherName = currentRow[1];
         maternalPatientId = currentRow[2];
@@ -63,6 +73,31 @@ public class SeparatedRow {
         confirmation = currentRow[17];
     }
 
+    //Data Access Logic
+    public void insertNewFilteredCase() throws SQLException {
+        Connection connection = DbManager.openConnection();
+        try {
+            PreparedStatement stmt = connection.prepareStatement(insertFilteredCase);
+            stmt.setString(1,caseID);
+            stmt.setString(2,date);
+            stmt.setString(3,motherName);
+            stmt.setString(4,maternalPatientId);
+            stmt.setString(5,paternalPatientId);
+            stmt.setString(6,gestationGender);
+            stmt.setString(7,testTypeCost);
+            stmt.setString(8,referral);
+            stmt.setString(9,genotypeA);
+            stmt.setString(10,genotypeB);
+            stmt.setString(11,firstDraw);
+            stmt.setString(12,secondDraw);
+            stmt.setString(13,thirdDraw);
+            stmt.setString(14,result);
+            stmt.setString(15,confirmation);
+            stmt.executeUpdate();
+        } finally {
+            connection.close();
+        }
+    }
     //Setters and Getters
 
     //Setters are for Unit Testing Only
@@ -109,6 +144,9 @@ public class SeparatedRow {
     public void setConfirmation(String newConfirmation){
         confirmation = newConfirmation;
     }
+    public void setCaseID(String id) {
+        caseID = id;
+    }
 
     public String getDate(){
         return date;
@@ -151,6 +189,9 @@ public class SeparatedRow {
     }
     public String getConfirmation(){
         return confirmation;
+    }
+    public String getCaseID(){
+        return caseID;
     }
 
 }

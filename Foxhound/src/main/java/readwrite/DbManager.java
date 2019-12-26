@@ -78,4 +78,20 @@ public class DbManager {
             connection.close();
         }
     }
+    public static void initializeFilteredTable() throws SQLException{
+        Connection connection = openConnection();
+        try {
+            PreparedStatement dropStmt = connection.prepareStatement(dropFilteredTable);
+            PreparedStatement createStmt = connection.prepareStatement(createFilteredTable);
+            try {
+                dropStmt.executeUpdate();
+                createStmt.executeUpdate();
+            } catch (Exception e){
+                createStmt.executeUpdate();
+            }
+        } finally {
+            connection.close();
+        }
+    }
+
 }
