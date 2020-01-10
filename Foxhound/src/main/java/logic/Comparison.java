@@ -17,7 +17,7 @@ public class Comparison {
     private Integer rowHash;
 
 
-    /*Calling rs.next() moves the ResultSet cursor. This is not an issue
+    /* Calling rs.next() moves the ResultSet cursor. This is not an issue
     if rs is empty; but if there is a result, the cursor will now be
     pointed at second row in rs and any subsequent calls of rs.next()
     will miss the first result. If rs is used again, remember
@@ -26,13 +26,20 @@ public class Comparison {
     */
     public boolean caseExists() throws SQLException {
         Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
-        stmt.setString(1,caseID);
+        PreparedStatement caseStmt = connection.prepareStatement(selectCaseByID);
+        PreparedStatement filteredStmt = connection.prepareStatement(selectFilteredCaseByID);
+        caseStmt.setString(1,caseID);
+        filteredStmt.setString(1,caseID);
         try {
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
+            ResultSet caseResult = caseStmt.executeQuery();
+            if (caseResult.next()) {
                 return true;
-            } else {
+            }
+            ResultSet filteredResult = filteredStmt.executeQuery();
+            if (filteredResult.next()){
+                return true;
+            }
+            else {
                 return false;
             }
         } finally {
@@ -48,11 +55,7 @@ public class Comparison {
         try {
             ResultSet rs = stmt.executeQuery();
             int storedRowHash = rs.getInt("rowHash");
-            if (rowHash != storedRowHash) {
-                return true;
-            } else {
-                return false;
-            }
+            return (rowHash != storedRowHash);
         } finally {
             connection.close();
         }

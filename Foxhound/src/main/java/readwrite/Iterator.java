@@ -19,8 +19,8 @@ public class Iterator {
 
     public static void main(String [] args) throws IOException, ParseException, SQLException {
 
-        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\ComplexCaseTest");
-        File finalCSV = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\ComplexCaseTest\\SimpleCase_Mock 5 - mockdata.csv");
+        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\EventTest");
+        File finalCSV = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\EventTest\\Event Mock - mockdata.csv");
 
         File [] csvList = targetFolder.listFiles();
         Arrays.sort(csvList);
@@ -30,6 +30,8 @@ public class Iterator {
         DbManager.initializeTestTable();
         DbManager.initializeSampleTable();
         DbManager.initializePatientTable();
+        DbManager.initializeGenotypeTable();
+        DbManager.initializePlasmaTable();
         DbManager.initializeFilteredTable();
 
         //Pre-filter Complex Cases
@@ -48,7 +50,6 @@ public class Iterator {
             }
         }
 
-
         //Main Loop
         for (File csv: csvList) {
             //File reader method, ignores header row of CSV
@@ -63,13 +64,10 @@ public class Iterator {
                 if (rowComparison.caseExists() == false){
                     Update update = new Update(newRow);
                     update.generateNewCase();
-
                 }
-
-
-
             }
         }
+
 
     }
 

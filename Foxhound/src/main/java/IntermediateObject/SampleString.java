@@ -73,6 +73,7 @@ public class SampleString implements Comparable<SampleString>{
         this.relation = relation;
     }
 
+    //TODO: Move to Interpreter Class?
     public static Relation findRelation(String idString) {
         Matcher relationMatcher = paternalRelation.matcher(idString);
         String relation;

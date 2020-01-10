@@ -1,6 +1,7 @@
 package readwrite;
 
 import DataTransferObject.*;
+import IntermediateObject.EventString;
 import IntermediateObject.SampleString;
 import logic.Interpreter;
 import java.sql.SQLException;
@@ -27,12 +28,16 @@ public class Update {
         newCase.insertNewCase();
         createNewTest();
         ArrayList<List<SampleString>> newSamples = interpreter.consolidateSampleStrings();
+        ArrayList<EventString> newEvents = interpreter.consolidateAllEvents();
         for (List<SampleString> sampleList: newSamples){
             createNewSamples(sampleList);
             createNewPatient(sampleList);
         }
-
+        for (EventString e: newEvents){
+            createNewEvent(e);
+        }
     }
+
     public void createNewTest() throws SQLException {
         Test newTest = new Test(interpreter, caseID, testID, dateUpdated);
         newTest.insertNewTest();
@@ -57,7 +62,27 @@ public class Update {
         }
     }
 
-        //Events will also be inserted here
+    private void createNewEvent(EventString eventString) throws SQLException {
+        Event e = new Event(testID, dateUpdated, eventString);
+        if(e.getType() == Event.LabTest.GENOTYPE){
+            e.insertNewGenotype();
+        }
+        if(e.getType() == Event.LabTest.PLASMA){
+            if(e.getPlasmaNumber() == Event.PlasmaNumber.FIRST){
+                e.setPlasmaUsed(caseID);
+                e.setPlasmaGestation(interpreter.findFirstGestation());
+            } else if(e.getPlasmaNumber() == Event.PlasmaNumber.SECOND){
+                e.setPlasmaUsed(Interpreter.findID(inputRow.getSecondDraw()));
+                e.setPlasmaGestation(Interpreter.findGestation(inputRow.getSecondDraw()));
+            } else if(e.getPlasmaNumber() == Event.PlasmaNumber.THIRD){
+                e.setPlasmaUsed(Interpreter.findID(inputRow.getThirdDraw()));
+                e.setPlasmaGestation(Interpreter.findGestation(inputRow.getThirdDraw()));
+            }
+            e.insertNewPlasma();
+        }
+
+    }
+
 
 
 

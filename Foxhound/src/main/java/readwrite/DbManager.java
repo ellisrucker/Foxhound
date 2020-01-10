@@ -78,6 +78,36 @@ public class DbManager {
             connection.close();
         }
     }
+    public static void initializeGenotypeTable() throws SQLException{
+        Connection connection = openConnection();
+        try{
+            PreparedStatement dropStmt = connection.prepareStatement(dropGenotypeTable);
+            PreparedStatement createStmt = connection.prepareStatement(createGenotypeTable);
+            try{
+                dropStmt.executeUpdate();
+                createStmt.executeUpdate();
+            } catch (Exception e){
+                createStmt.executeUpdate();
+            }
+        } finally {
+            connection.close();
+        }
+    }
+    public static void initializePlasmaTable() throws SQLException{
+        Connection connection = openConnection();
+        try{
+            PreparedStatement dropStmt = connection.prepareStatement(dropPlasmaTable);
+            PreparedStatement createStmt = connection.prepareStatement(createPlasmaTable);
+            try{
+                dropStmt.executeUpdate();
+                createStmt.executeUpdate();
+            } catch (Exception e){
+                createStmt.executeUpdate();
+            }
+        } finally {
+            connection.close();
+        }
+    }
     public static void initializeFilteredTable() throws SQLException{
         Connection connection = openConnection();
         try {

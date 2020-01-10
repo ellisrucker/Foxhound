@@ -41,7 +41,7 @@ public class Test {
         this.caseID = caseID;
     }
 
-    //Data Access Logic
+    //Data Access
     public void insertNewTest() throws SQLException {
         Connection connection = DbManager.openConnection();
         try{

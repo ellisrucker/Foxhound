@@ -1,7 +1,9 @@
 package logic;
 
+import DataTransferObject.Event;
 import DataTransferObject.Test;
 import DataTransferObject.Test.TestType;
+import IntermediateObject.EventString;
 import IntermediateObject.SampleString;
 import DataTransferObject.ExcelRow;
 
@@ -11,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -23,6 +26,7 @@ public class Interpreter {
     private static Pattern relationRegex = Pattern.compile("[^a-zA-Z][PpCc][\\d]");
     private static Pattern gestationRegex = Pattern.compile("[\\d]{1,2}[Ww]");
     private static Pattern costRegex = Pattern.compile("[\\d]{3,4}");
+    private static Pattern mmddRegex = Pattern.compile("[\\d]{1,2}/[\\d]{1,2}");
 
 
     private static Pattern P1 = Pattern.compile("[^a-zA-Z][Pp]1");
@@ -77,6 +81,24 @@ public class Interpreter {
 
     private static String[] testTypeArray = new String[]{early, turnaround, gender, surrogate, ivf, maternity,
             matPat, patMat};
+
+    //Personnel Strings
+    //Be sure to update findPersonnel if more are added
+    private static String john = "(?i)JV";
+    private static String brett = "(?i)BV";
+    private static String xin = "(?i)XG";
+    private static String alex = "(?i)AH";
+    private static String ellis = "(?i)ER|(?i)MR";
+    private static String brina = "(?i)BS";
+    private static String shane = "(?i)SB";
+
+
+    //Event Delimiters
+    private static String genotypeDelimiter = "(?<![\\d])(?=[\\d]{1,2}/[\\d]{1,2})";
+    private static String plasmaDelimiter = "(?=([Aa][[\\s*-][/(]]))";
+
+
+
 
     public final Comparator<SampleString> SS_COMPARATOR = (ss1, ss2) -> {
         Integer idNumber1 = idToNumber(ss1.getId());
@@ -241,8 +263,6 @@ public class Interpreter {
             if (matcher.find()){
                 tt = entry.getValue();
                 break;
-            } else {
-                continue;
             }
         }
         //Avoids Null Pointer Exception when inserting into DB
@@ -264,6 +284,125 @@ public class Interpreter {
         }
         return onlyTestTypeCost;
     }
+
+    public ArrayList<EventString> consolidateAllEvents(){
+        ArrayList<EventString> allEvents = new ArrayList<>();
+        findGenotypeA().stream().forEachOrdered(allEvents::add);
+        findGenotypeB().stream().forEachOrdered(allEvents::add);
+        findFirstDrawPlasmas().stream().forEachOrdered(allEvents::add);
+        findSecondDrawPlasmas().stream().forEachOrdered(allEvents::add);
+        findThirdDrawPlasmas().stream().forEachOrdered(allEvents::add);
+        return allEvents;
+    }
+    public static ArrayList<String> isolateGenotypes (String cell){
+        String[] genotypeArray = cell.split(genotypeDelimiter);
+        ArrayList<String> onlyGenotypes = new ArrayList<>();
+        for(String element: genotypeArray){
+            Matcher dateMatcher = mmddRegex.matcher(element);
+            if(dateMatcher.find()){
+                onlyGenotypes.add(element);
+            }
+        }
+        return onlyGenotypes;
+    }
+    public ArrayList<EventString> findGenotypeA() {
+        return isolateGenotypes(inputRow.getGenotypeA())
+                .stream()
+                .map(e -> new EventString(e, Event.LabTest.GENOTYPE, Event.PrimerSet.A))
+                .collect(toCollection(ArrayList::new));
+    }
+    public ArrayList<EventString> findGenotypeB() {
+        ArrayList<EventString> eventList = isolateGenotypes(inputRow.getGenotypeB())
+                .stream()
+                .map(e -> new EventString(e, Event.LabTest.GENOTYPE, Event.PrimerSet.B))
+                .collect(toCollection((ArrayList::new)));
+        for(EventString e: eventList){
+            Matcher matcher = Pattern.compile("96").matcher(e.getEvent());
+            if(matcher.find()){
+                e.setPrimerSet(Event.PrimerSet.B96);
+            }
+        }
+        return eventList;
+    }
+
+    public static ArrayList<String> isolatePlasmas (String cell){
+        String[] plasmaArray = cell.split(plasmaDelimiter);
+        ArrayList<String> onlyPlasmas = new ArrayList<>();
+        for(String element: plasmaArray){
+            Matcher dateMatcher = mmddRegex.matcher(element);
+            if(dateMatcher.find()){
+                onlyPlasmas.add(element);
+            }
+        }
+        return onlyPlasmas;
+    }
+    //TODO: Abstract Method from plasmaFinders to reduce duplication
+    public ArrayList<EventString> findFirstDrawPlasmas(){
+       return isolatePlasmas(inputRow.getFirstDraw())
+               .stream()
+               .map(e -> new EventString(e, Event.LabTest.PLASMA, Event.PlasmaNumber.FIRST))
+               .collect(toCollection(ArrayList::new));
+    }
+    public ArrayList<EventString> findSecondDrawPlasmas(){
+        return isolatePlasmas(inputRow.getSecondDraw())
+                .stream()
+                .map(e -> new EventString(e, Event.LabTest.PLASMA, Event.PlasmaNumber.SECOND))
+                .collect(toCollection(ArrayList::new));
+    }
+    public ArrayList<EventString> findThirdDrawPlasmas(){
+        return isolatePlasmas(inputRow.getThirdDraw())
+                .stream()
+                .map(e -> new EventString(e, Event.LabTest.PLASMA, Event.PlasmaNumber.THIRD))
+                .collect(toCollection(ArrayList::new));
+    }
+    public static LocalDate findEventDate(String str, LocalDate testStartDate) {
+        try {
+            String mmddString = findmmddString(str);
+            String[] monthAndDay = mmddString.split("/");
+            Integer eventYear = testStartDate.getYear();
+            Integer eventMonth = Integer.parseInt(monthAndDay[0]);
+            Integer eventDay = Integer.parseInt(monthAndDay[1]);
+            if (eventMonth < testStartDate.getMonthValue()) {
+                eventYear++;
+            }
+            return LocalDate.of(eventYear, eventMonth, eventDay);
+        } catch(Exception e){
+            System.out.println(str);
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public static String findmmddString(String str){
+        Matcher matcher = mmddRegex.matcher(str);
+        if(matcher.find()){
+            return matcher.group();
+        } else return null;
+    }
+
+    public static String findPersonnel(String str){
+        Map<Pattern,String> personnelMap = new HashMap<>();
+        personnelMap.put(Pattern.compile(john),"JV");
+        personnelMap.put(Pattern.compile(brett),"BV");
+        personnelMap.put(Pattern.compile(xin),"XG");
+        personnelMap.put(Pattern.compile(alex),"AH");
+        personnelMap.put(Pattern.compile(ellis),"ER");
+        personnelMap.put(Pattern.compile(brina),"BS");
+        personnelMap.put(Pattern.compile(shane), "SB");
+
+        String initials = null;
+        for(Map.Entry<Pattern,String> entry: personnelMap.entrySet()){
+            Matcher matcher = entry.getKey().matcher(str);
+            if(matcher.find()){
+                initials = entry.getValue();
+                break;
+            }
+        }
+        return initials;
+    }
+
+
 
     public static boolean containsTestType(String str){
         boolean matchIsFound = false;
@@ -406,6 +545,17 @@ public class Interpreter {
             return false;
         }
     }
+    public boolean hasUncommonGenotype(){
+        Matcher matcherX = Pattern.compile("[Xx][^Gg]").matcher(inputRow.getGenotypeA());
+        Matcher matcherY = Pattern.compile("(?<![Mm])[Yy]").matcher(inputRow.getGenotypeA());
+        if(matcherX.find()){
+            System.out.println("X Genotype found");
+            return true;
+        } else if(matcherY.find()){
+            System.out.println("Y Genotype found");
+            return true;
+        } else return false;
+    }
 
     //Complexity
 
@@ -416,7 +566,8 @@ public class Interpreter {
         hasMultipleGestationGenders()||
         hasMultipleTestTypeCosts()||
         hasMultipleResults()||
-        hasConfirmation()){
+        hasConfirmation()||
+        hasUncommonGenotype()){
            return true;
         }
         else return false;

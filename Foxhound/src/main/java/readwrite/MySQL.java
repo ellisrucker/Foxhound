@@ -38,6 +38,21 @@ public class MySQL {
     private static final String gestation = "gestation";
     private static final String legal = "legal";
 
+    //Event
+    private static final String eventTable = "event";
+    private static final String genotypeTable = "genotype";
+    private static final String plasmaTable = "plasma";
+    private static final String eventID = "eventID";
+    private static final String genotypeID = "genotypeID";
+    private static final String plasmaID = "plasmaID";
+    private static final String eventDate = "date";
+    private static final String eventType = "type";
+    private static final String primerSet = "primerSet";
+    private static final String plasmaNumber = "plasmaNumber";
+    private static final String performedBy = "performedBy";
+    private static final String plasmaUsed = "plasmaUsed";
+    private static final String plasmaGestation = "plasmaGestation";
+
     //Filtered
     private static final String filteredTable = "filtered";
     private static final String date = "date";
@@ -60,7 +75,9 @@ public class MySQL {
     public static String dropCaseTable = "DROP TABLE "+ database +"."+ caseTable;
     public static String dropSampleTable = "DROP TABLE "+ database +"."+ sampleTable;
     public static String dropPatientTable = "DROP TABLE "+ database +"."+ patientTable;
-    public static String dropTestTable = "DROP TABLE "+ database + "." + testTable;
+    public static String dropTestTable = "DROP TABLE "+ database +"."+ testTable;
+    public static String dropGenotypeTable = "DROP TABLE "+ database +"."+ genotypeTable;
+    public static String dropPlasmaTable = "DROP TABLE "+ database +"."+ plasmaTable;
     public static String dropFilteredTable = "DROP TABLE "+ database +"."+ filteredTable;
 
     //Create Table
@@ -98,22 +115,41 @@ public class MySQL {
             caseID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             "PRIMARY KEY ("+ testID + ")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+    public static String createGenotypeTable = "CREATE TABLE "+ database +"."+ genotypeTable+ " ("+
+            genotypeID +" MEDIUMINT NOT NULL AUTO_INCREMENT, "+
+            eventDate +" date NOT NULL, "+
+            primerSet +" varchar(16) DEFAULT NULL, "+
+            performedBy +" varchar(16) DEFAULT NULL, "+
+            testID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
+            "PRIMARY KEY ("+ genotypeID + ")" +
+            ") AUTO_INCREMENT = 1 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+    public static String createPlasmaTable = "CREATE TABLE "+ database +"."+ plasmaTable+ " ("+
+            plasmaID +" MEDIUMINT NOT NULL AUTO_INCREMENT, " +
+            eventDate +" date NOT NULL, "+
+            plasmaNumber +" varchar(16) DEFAULT NULL, "+
+            plasmaUsed +" varchar(16) DEFAULT NULL, "+
+            plasmaGestation +" int DEFAULT NULL, "+
+            performedBy +" varchar(16) DEFAULT NULL, "+
+            testID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
+            "PRIMARY KEY ("+ plasmaID + ")" +
+            ") AUTO_INCREMENT = 1 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+    //Set high upper limit for cell character count
     public static String createFilteredTable = "CREATE TABLE " + database +"."+ filteredTable + " (" +
-            caseID +" varchar(16) NOT NULL, " +
-            date +" varchar(45) DEFAULT NULL, "+
-            motherName +" varchar(45) DEFAULT NULL, "+
-            maternalPatientId +" varchar(45) DEFAULT NULL, "+
-            paternalPatientId +" varchar(45) DEFAULT NULL, "+
-            gestationGender +" varchar(45) DEFAULT NULL, "+
-            testTypeCost +" varchar(45) DEFAULT NULL, "+
-            referral +" varchar(45) DEFAULT NULL, "+
-            genotypeA +" varchar(45) DEFAULT NULL, "+
-            genotypeB +" varchar(45) DEFAULT NULL, "+
-            firstDraw +" varchar(45) DEFAULT NULL, "+
-            secondDraw +" varchar(45) DEFAULT NULL, "+
-            thirdDraw +" varchar(45) DEFAULT NULL, "+
-            result +" varchar(45) DEFAULT NULL, "+
-            confirmation +" varchar(45) DEFAULT NULL, "+
+            caseID +" varchar(100) NOT NULL, " +
+            date +" varchar(100) DEFAULT NULL, "+
+            motherName +" varchar(100) DEFAULT NULL, "+
+            maternalPatientId +" varchar(100) DEFAULT NULL, "+
+            paternalPatientId +" varchar(100) DEFAULT NULL, "+
+            gestationGender +" varchar(100) DEFAULT NULL, "+
+            testTypeCost +" varchar(100) DEFAULT NULL, "+
+            referral +" varchar(100) DEFAULT NULL, "+
+            genotypeA +" varchar(100) DEFAULT NULL, "+
+            genotypeB +" varchar(100) DEFAULT NULL, "+
+            firstDraw +" varchar(100) DEFAULT NULL, "+
+            secondDraw +" varchar(100) DEFAULT NULL, "+
+            thirdDraw +" varchar(100) DEFAULT NULL, "+
+            result +" varchar(100) DEFAULT NULL, "+
+            confirmation +" varchar(100) DEFAULT NULL, "+
             "PRIMARY KEY ("+ caseID +") " +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
 
@@ -150,6 +186,20 @@ public class MySQL {
             legal + ", " +
             caseID + ") VALUES(" +
             "?,?,?,?,?,?,?)";
+    public static String insertGenotype = "INSERT INTO " + database + "."+ genotypeTable + " (" +
+            eventDate +", "+
+            primerSet +", "+
+            performedBy +", "+
+            testID +") VALUES(" +
+            "?,?,?,?)";
+    public static String insertPlasma = "INSERT INTO " + database + "."+ plasmaTable + " (" +
+            eventDate +", "+
+            plasmaNumber +", "+
+            plasmaUsed +", "+
+            plasmaGestation +", "+
+            performedBy +", "+
+            testID +") VALUES(" +
+            "?,?,?,?,?,?)";
     public static String insertFilteredCase = "INSERT INTO " + database +"." + filteredTable +" (" +
             caseID + ", " +
             date + ", " +
@@ -171,5 +221,6 @@ public class MySQL {
 
     //Select From Table
     public static String selectCaseByID = "SELECT * FROM "+ database +"."+ caseTable +" WHERE "+ caseID +" = ? LIMIT 1";
+    public static String selectFilteredCaseByID = "SELECT * FROM "+ database +"."+ filteredTable + " WHERE "+ caseID +" = ? LIMIT 1";
 
 }
