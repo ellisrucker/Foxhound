@@ -140,6 +140,10 @@ public class Interpreter {
         return nameArray[1];
     }
 
+    public String findSource(){
+        return inputRow.getReferral();
+    }
+
     //Date Processing
 
     public LocalDate findRowDate() throws ParseException {

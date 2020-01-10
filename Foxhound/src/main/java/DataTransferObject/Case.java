@@ -17,6 +17,7 @@ public class Case {
     private LocalDate dateStarted;
     private String gender;
     private boolean twins = false;
+    private String source;
     private Integer rowHash;
 
 
@@ -32,6 +33,7 @@ public class Case {
         dateStarted = interpreter.findRowDate();
         gender = interpreter.findFirstGender();
         twins = interpreter.isHavingTwins();
+        source = interpreter.findSource();
         rowHash = newRow.hashCode();
     }
 
@@ -46,7 +48,8 @@ public class Case {
             stmt.setObject(4,dateStarted);
             stmt.setString(5, gender);
             stmt.setBoolean(6,twins);
-            stmt.setInt(7,rowHash);
+            stmt.setString(7,source);
+            stmt.setInt(8,rowHash);
             stmt.executeUpdate();
         } finally {
             connection.close();

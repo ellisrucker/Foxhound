@@ -15,6 +15,7 @@ public class MySQL {
     private static final String dateStarted = "dateStarted";
     private static final String gender = "gender";
     private static final String twins = "twins";
+    private static final String source = "source";
     private static final String rowHash = "rowHash";
 
     //Sample
@@ -88,6 +89,7 @@ public class MySQL {
             dateStarted +" date DEFAULT NULL, " +
             gender +" varchar(16) DEFAULT NULL, " +
             twins +" tinyint(1) DEFAULT '0' COMMENT '0 = no twins\\n1 = twins', " +
+            source +" varchar(45) DEFAULT NULL COMMENT 'Will eventually become SiteID', " +
             rowHash +" int DEFAULT NULL, " +
             "PRIMARY KEY ("+ caseID +")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
@@ -163,8 +165,9 @@ public class MySQL {
             dateStarted +", " +
             gender +", " +
             twins +", " +
+            source +", " +
             rowHash +") VALUES(" +
-            "?,?,?,?,?,?,?)";
+            "?,?,?,?,?,?,?,?)";
     public static String insertSample = "INSERT INTO "+ database +"."+ sampleTable +" (" +
             sampleID +", " +
             dateReceived +", " +
