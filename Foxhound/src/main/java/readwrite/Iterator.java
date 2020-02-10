@@ -19,8 +19,8 @@ public class Iterator {
 
     public static void main(String [] args) throws IOException, ParseException, SQLException {
 
-        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\EventTest");
-        File finalCSV = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\EventTest\\Event Mock - mockdata.csv");
+        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\UpdateTest");
+        File finalCSV = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\UpdateTest\\Update_Mock_2.csv");
 
         File [] csvList = targetFolder.listFiles();
         Arrays.sort(csvList);
@@ -33,6 +33,7 @@ public class Iterator {
         DbManager.initializeGenotypeTable();
         DbManager.initializePlasmaTable();
         DbManager.initializeFilteredTable();
+        DbManager.initializeHashTable();
 
         //Pre-filter Complex Cases
         CSVReader filterReader = new CSVReaderBuilder(new FileReader(finalCSV)).withSkipLines(1).build();
@@ -42,7 +43,7 @@ public class Iterator {
             Interpreter interpreter = new Interpreter(newRow);
             if(interpreter.caseIsComplex()){
                 try {
-                    newRow.setCaseID(interpreter.findFirstMaternalID());
+                    newRow.setCaseID(interpreter.findFirstMaternalSampleID());
                     newRow.insertNewFilteredCase();
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -61,10 +62,7 @@ public class Iterator {
             while ((currentRow = reader.readNext()) != null) {
                 ExcelRow newRow = new ExcelRow(currentRow);
                 Comparison rowComparison = new Comparison(newRow);
-                if (rowComparison.caseExists() == false){
-                    Update update = new Update(newRow);
-                    update.generateNewCase();
-                }
+                rowComparison.evaluateCase();
             }
         }
 

@@ -1,6 +1,5 @@
 package DataTransferObject;
 
-import IntermediateObject.SampleString;
 import readwrite.DbManager;
 
 import java.sql.Connection;
@@ -14,21 +13,22 @@ public class Patient {
     private String patientID;
     private String lastName;
     private String firstName;
-    private SampleString.Relation relationship;
+    private Relation relationship;
+
+    public enum Relation {M,P1,P2,P3,P4,P5,UNKNOWN}
 
     //Constructors
     public Patient() {
     }
-    public Patient(SampleString ss){
-        patientID = ss.getId();
-        relationship = ss.getRelation();
+    public Patient(String id, Relation relation){
+        patientID = id;
+        relationship = relation;
     }
-    public Patient(SampleString ss, String lastName, String firstName){
-        patientID = ss.getId();
-        relationship = ss.getRelation();
-        this.lastName = lastName;
-        this.firstName = firstName;
+    public Patient(Sample sample){
+        patientID = sample.getSampleID();
+        relationship = sample.getRelation();
     }
+
     public void insertNewPatient() throws SQLException {
         Connection connection = DbManager.openConnection();
         try{
@@ -43,4 +43,30 @@ public class Patient {
         }
     }
 
+    //Setters & Getters
+    public void setPatientID(String patientID){
+        this.patientID = patientID;
+    }
+    public void setLastName(String lastName){
+        this.lastName = lastName;
+    }
+    public void setFirstName(String firstName){
+        this.firstName = firstName;
+    }
+    public void setRelationship(Relation relationship){
+        this.relationship = relationship;
+    }
+
+    public String getPatientID(){
+        return patientID;
+    }
+    public String getLastName(){
+        return lastName;
+    }
+    public String getFirstName(){
+        return firstName;
+    }
+    public Relation getRelationship(){
+        return relationship;
+    }
 }

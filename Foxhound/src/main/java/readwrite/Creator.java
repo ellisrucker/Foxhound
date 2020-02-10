@@ -2,7 +2,6 @@ package readwrite;
 
 import DataTransferObject.*;
 import IntermediateObject.EventString;
-import IntermediateObject.SampleString;
 import logic.Interpreter;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -10,7 +9,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Update {
+public class Creator {
+
+    //Primarily handles Creation and Insertion of new Database Rows
 
     private ExcelRow inputRow;
     private String caseID;
@@ -24,12 +25,15 @@ public class Update {
     //New Case Creation
 
     public void generateNewCase() throws ParseException, SQLException {
+        inputRow.setCaseID(caseID);
         Case newCase = new Case(inputRow);
+        HashRow hashRow = new HashRow(caseID,inputRow);
         newCase.insertNewCase();
+        hashRow.insertNewHash();
         createNewTest();
-        ArrayList<List<SampleString>> newSamples = interpreter.consolidateSampleStrings();
+        ArrayList<List<Sample>> newSamples = interpreter.consolidateSamples();
         ArrayList<EventString> newEvents = interpreter.consolidateAllEvents();
-        for (List<SampleString> sampleList: newSamples){
+        for (List<Sample> sampleList: newSamples){
             createNewSamples(sampleList);
             createNewPatient(sampleList);
         }
@@ -43,23 +47,28 @@ public class Update {
         newTest.insertNewTest();
     }
 
-    private void createNewSamples(List<SampleString> samplesFromPatient) throws SQLException {
-        String patientID = samplesFromPatient.get(0).getId();
-        for (SampleString ss: samplesFromPatient){
-            Sample newSample = new Sample(ss, patientID, testID, dateUpdated);
-            newSample.insertNewSample();
+    private void createNewSamples(List<Sample> samplesFromPatient) throws SQLException {
+        String patientID = samplesFromPatient.get(0).getSampleID();
+        LocalDate date = dateUpdated;
+        String testID = this.testID;
+        for (Sample s: samplesFromPatient){
+            s.setPatientID(patientID);
+            s.setDateReceived(date);
+            s.setTestID(testID);
+            s.insertNewSample();
         }
     }
 
-    private void createNewPatient(List<SampleString> sampleList) throws SQLException{
-        SampleString patientString = sampleList.get(0);
-        if(patientString.getRelation() == SampleString.Relation.M){
-            Patient newPatient = new Patient(patientString,motherLastName,motherFirstName);
-            newPatient.insertNewPatient();
-        } else {
-            Patient newPatient = new Patient(patientString);
-            newPatient.insertNewPatient();
+    private void createNewPatient(List<Sample> sampleList) throws SQLException{
+        Sample firstSample = sampleList.get(0);
+        Patient newPatient = new Patient(firstSample);
+
+        if(newPatient.getRelationship() == Patient.Relation.M){
+            //Set first and last name
+            newPatient.setLastName(motherLastName);
+            newPatient.setFirstName(motherFirstName);
         }
+        newPatient.insertNewPatient();
     }
 
     private void createNewEvent(EventString eventString) throws SQLException {
@@ -88,10 +97,10 @@ public class Update {
 
 
     //Constructors
-    public Update(ExcelRow inputRow) throws ParseException{
+    public Creator(ExcelRow inputRow) throws ParseException{
         this.inputRow = inputRow;
         interpreter = new Interpreter(inputRow);
-        caseID = interpreter.findFirstMaternalID();
+        caseID = interpreter.findFirstMaternalSampleID();
         testID = this.caseID +"_" + "1";
         motherLastName = interpreter.findLastName();
         motherFirstName = interpreter.findFirstName();

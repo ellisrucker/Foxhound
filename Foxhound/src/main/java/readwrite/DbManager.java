@@ -123,5 +123,20 @@ public class DbManager {
             connection.close();
         }
     }
+    public static void initializeHashTable() throws SQLException{
+        Connection connection = openConnection();
+        try {
+            PreparedStatement dropStmt = connection.prepareStatement(dropHashTable);
+            PreparedStatement createStmt = connection.prepareStatement(createHashTable);
+            try {
+                dropStmt.executeUpdate();
+                createStmt.executeUpdate();
+            } catch (Exception e){
+                createStmt.executeUpdate();
+            }
+        } finally {
+            connection.close();
+        }
+    }
 
 }

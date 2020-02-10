@@ -1,11 +1,8 @@
 package logic;
 
-import DataTransferObject.Event;
-import DataTransferObject.Test;
+import DataTransferObject.*;
 import DataTransferObject.Test.TestType;
 import IntermediateObject.EventString;
-import IntermediateObject.SampleString;
-import DataTransferObject.ExcelRow;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -13,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.*;
 
@@ -42,6 +38,7 @@ public class Interpreter {
     private static Pattern girlBoy = Pattern.compile("[Gg]irl/[Bb]oy");
     private static Pattern twin = Pattern.compile("[Tt]win");
 
+    private static Pattern paternalRelation = Pattern.compile("[^a-zA-Z][Pp][\\d]");
 
 
     //Result Strings and Delimiters
@@ -100,18 +97,6 @@ public class Interpreter {
 
 
 
-    public final Comparator<SampleString> SS_COMPARATOR = (ss1, ss2) -> {
-        Integer idNumber1 = idToNumber(ss1.getId());
-        Integer idNumber2 = idToNumber(ss2.getId());
-        if(idNumber1 == idNumber2){
-            return 0;
-        } else if(idNumber1 > idNumber2){
-            return 1;
-        } else{
-            return -1;
-        }
-    };
-
 
     private final Comparator<String> ID_COMPARATOR = (id1, id2) -> {
         Integer idNumber1 = idToNumber(findID(id1));
@@ -124,6 +109,25 @@ public class Interpreter {
             return -1;
         }
     };
+
+    public ArrayList<Integer> createCellHashList(){
+        ArrayList<Integer> cellHashList = new ArrayList<>();
+        cellHashList.add(inputRow.getDate().hashCode());
+        cellHashList.add(inputRow.getMotherName().hashCode());
+        cellHashList.add(inputRow.getMaternalPatientId().hashCode());
+        cellHashList.add(inputRow.getPaternalPatientId().hashCode());
+        cellHashList.add(inputRow.getGestationGender().hashCode());
+        cellHashList.add(inputRow.getTestTypeCost().hashCode());
+        cellHashList.add(inputRow.getReferral().hashCode());
+        cellHashList.add(inputRow.getGenotypeA().hashCode());
+        cellHashList.add(inputRow.getGenotypeB().hashCode());
+        cellHashList.add(inputRow.getFirstDraw().hashCode());
+        cellHashList.add(inputRow.getSecondDraw().hashCode());
+        cellHashList.add(inputRow.getThirdDraw().hashCode());
+        cellHashList.add(inputRow.getResult().hashCode());
+        cellHashList.add(inputRow.getConfirmation().hashCode());
+        return cellHashList;
+    }
 
     //Name Processing
 
@@ -154,38 +158,34 @@ public class Interpreter {
 
     //Identifier Processing
 
-    public ArrayList<List<SampleString>> consolidateSampleStrings(){
-        ArrayList<List<SampleString>> samplesByPatient = new ArrayList<>();
-        samplesByPatient.add(retrieveMaternalIDs());
-        groupIDsByPatient().forEach(samplesByPatient::add);
+    public ArrayList<List<Sample>> consolidateSamples(){
+        ArrayList<List<Sample>> samplesByPatient = new ArrayList<>();
+        samplesByPatient.add(retrieveMaternalSamples());
+        groupSamplesByPatient().forEach(samplesByPatient::add);
         return samplesByPatient;
     }
 
-    public ArrayList<SampleString> retrieveMaternalIDs(){
-        ArrayList<SampleString> maternalIDs = isolateSamples(inputRow.getMaternalPatientId())
+    public ArrayList<Sample> retrieveMaternalSamples(){
+        return isolateSamples(inputRow.getMaternalPatientId())
                 .stream()
-                .map(s -> new SampleString(s, SampleString.Relation.M))
+                .map(s -> new Sample(s, Patient.Relation.M))
                 .sorted()
                 .collect(toCollection(ArrayList::new));
-        return maternalIDs;
     }
 
-    public ArrayList<List<SampleString>> groupIDsByPatient(){
-        Map<SampleString.Relation, List<SampleString>> idsByPatient = isolateSamples(inputRow.getPaternalPatientId())
+    public ArrayList<List<Sample>> groupSamplesByPatient(){
+        Map<Patient.Relation, List<Sample>> samplesByRelation = isolateSamples(inputRow.getPaternalPatientId())
                 .stream()
-                .map(s -> new SampleString(s))
+                .map(s -> new Sample(s))
                 .collect(groupingBy(
-                        SampleString::getRelation
+                        Sample::getRelation
                 ));
-
-        return idsByPatient.values()
+        return samplesByRelation.values()
                 .stream()
                 .map(list -> list.stream()
                         .sorted()
                         .collect(toList()))
                 .collect(toCollection(ArrayList::new));
-
-
     }
 
     //Splits on zero-length matches that precede an id, but
@@ -202,11 +202,13 @@ public class Interpreter {
         return onlySamples;
     }
 
-    public String findFirstMaternalID(){
-        ArrayList<SampleString> maternalIDs = this.retrieveMaternalIDs();
-        SampleString firstMaternalSample = maternalIDs.get(0);
-        return firstMaternalSample.getId();
+    public String findFirstMaternalSampleID(){
+        //Use Matcher to find String? How would you sort? Comparator?
+        ArrayList<Sample> maternalIDs = retrieveMaternalSamples();
+        Sample firstMaternalSample = maternalIDs.get(0);
+        return firstMaternalSample.getSampleID();
     }
+
 
     public static String findID(String str){
         Matcher idMatcher = generalID.matcher(str);
@@ -223,7 +225,9 @@ public class Interpreter {
 
     public Integer findFirstGestation(){
         ArrayList<String> stringsFromCell = isolateGestationGender(inputRow.getGestationGender());
-        return findGestation(stringsFromCell.get(0));
+        if(stringsFromCell.size() != 0) {
+            return findGestation(stringsFromCell.get(0));
+        } else return 0;
     }
 
     //May not need (?<![\\d]) condition
@@ -247,7 +251,7 @@ public class Interpreter {
         ArrayList<String> stringsFromCell = isolateTestTypeCost(inputRow.getTestTypeCost());
         return findTestType(stringsFromCell.get(0));
     }
-
+    //TODO: Refactor into Switch statement
     public static TestType findTestType(String str){
         Map<Pattern,TestType> testTypeMap = new HashMap<>();
         testTypeMap.put(Pattern.compile(threeWeek),TestType.THREE_WEEK);
@@ -274,6 +278,28 @@ public class Interpreter {
             tt = TestType.UNKNOWN;
         }
         return tt;
+    }
+    //TODO: Refactor into Switch statement
+    public static Patient.Relation findRelation(String idString) {
+        Matcher relationMatcher = paternalRelation.matcher(idString);
+        String relation;
+        if(!relationMatcher.find()){
+            return Patient.Relation.P1;
+        } else {
+            relation = relationMatcher.group().toUpperCase();
+        }
+        if(relation.contains("P1")){
+            return Patient.Relation.P1;
+        } else if (relation.contains("P2")){
+            return Patient.Relation.P2;
+        } else if (relation.contains("P3")){
+            return Patient.Relation.P3;
+        } else if (relation.contains("P4")){
+            return Patient.Relation.P4;
+        } else if (relation.contains("P5")){
+            return Patient.Relation.P5;
+        } else return Patient.Relation.UNKNOWN;
+
     }
 
 
@@ -384,7 +410,7 @@ public class Interpreter {
             return matcher.group();
         } else return null;
     }
-
+    //TODO: Refactor into Switch statement
     public static String findPersonnel(String str){
         Map<Pattern,String> personnelMap = new HashMap<>();
         personnelMap.put(Pattern.compile(john),"JV");
@@ -443,7 +469,9 @@ public class Interpreter {
     }
     public String findFirstGender(){
         ArrayList<String> stringsFromCell = isolateGestationGender(inputRow.getGestationGender());
-        return findGender(stringsFromCell.get(0));
+        if(stringsFromCell.size() != 0) {
+            return findGender(stringsFromCell.get(0));
+        } else return null;
     }
     public static String findGender(String cell){
         Matcher boyMatcher = boy.matcher(cell);
@@ -483,7 +511,7 @@ public class Interpreter {
     //Empty cell causes nullpointerexception, indicates extreme case
     public boolean hasSingleMaternalID(){
         try {
-            ArrayList<SampleString> maternalSamples = retrieveMaternalIDs();
+            ArrayList<Sample> maternalSamples = retrieveMaternalSamples();
             if (maternalSamples.size() == 1){
                 return true;
             }
@@ -550,15 +578,23 @@ public class Interpreter {
         }
     }
     public boolean hasUncommonGenotype(){
-        Matcher matcherX = Pattern.compile("[Xx][^Gg]").matcher(inputRow.getGenotypeA());
-        Matcher matcherY = Pattern.compile("(?<![Mm])[Yy]").matcher(inputRow.getGenotypeA());
-        if(matcherX.find()){
-            System.out.println("X Genotype found");
-            return true;
-        } else if(matcherY.find()){
-            System.out.println("Y Genotype found");
-            return true;
-        } else return false;
+        String genotypeA = inputRow.getGenotypeA();
+        String genotypeB = inputRow.getGenotypeB();
+        if (genotypeA != null) {
+            Matcher matcherX = Pattern.compile("[Xx][^Gg]").matcher(genotypeA);
+            if (matcherX.find()){
+                System.out.println("X Genotype found");
+                return true;
+            }
+        }
+        if (genotypeB != null) {
+            Matcher matcherY = Pattern.compile("(?<![Mm])[Yy]").matcher(genotypeB);
+            if(matcherY.find()) {
+                System.out.println("Y Genotype found");
+                return true;
+            }
+        }
+        return false;
     }
 
     //Complexity
@@ -603,10 +639,13 @@ public class Interpreter {
 
     public Test.Result findFirstResult(){
         ArrayList<String> stringsFromCell = isolateResults(inputRow.getResult());
-        return findResult(stringsFromCell.get(0));
+        return findResultEnum(stringsFromCell.get(0));
+    }
+    public String findResultString(){
+        return inputRow.getResult().trim();
     }
 
-    public static Test.Result findResult (String str){
+    public static Test.Result findResultEnum(String str){
         Matcher matchMatcher = Pattern.compile(match).matcher(str);
         Matcher mismatchMatcher = Pattern.compile(mismatch).matcher(str);
         Matcher cancelledMatcher = Pattern.compile(cancelled).matcher(str);

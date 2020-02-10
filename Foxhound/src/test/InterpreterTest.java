@@ -1,3 +1,5 @@
+import DataTransferObject.Patient;
+import DataTransferObject.Sample;
 import logic.Interpreter;
 import org.junit.Test;
 import DataTransferObject.ExcelRow;
@@ -37,21 +39,21 @@ public class InterpreterTest {
         assertEquals(expected,actual);
     }
     @Test
-    public void findFirstMaternalID_returnsSample_ifPassedOneSample(){
+    public void findFirstMaternalSampleID_returnsSample_ifPassedOneSample(){
         ExcelRow testRow = new ExcelRow();
         testRow.setMaternalPatientId("WINR1910055");
         Interpreter interpreter = new Interpreter(testRow);
         String expected = "WINR1910055";
-        String actual = interpreter.findFirstMaternalID();
+        String actual = interpreter.findFirstMaternalSampleID();
         assertEquals(expected,actual);
     }
     @Test
-    public void findFirstMaternalID_returnsCorrectSample_ifPassedMultipleSamples(){
+    public void findFirstMaternalSampleID_returnsCorrectSample_ifPassedMultipleSamples(){
         ExcelRow testRow = new ExcelRow();
         testRow.setMaternalPatientId("WINR1910055 WINR1909127*");
         Interpreter interpreter = new Interpreter(testRow);
         String expected = "WINR1909127";
-        String actual = interpreter.findFirstMaternalID();
+        String actual = interpreter.findFirstMaternalSampleID();
         assertEquals(expected,actual);
     }
     @Test

@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+
 import readwrite.DbManager;
 import logic.Interpreter;
 import static readwrite.MySQL.*;
@@ -18,6 +20,7 @@ public class Case {
     private String gender;
     private boolean twins = false;
     private String source;
+    private String result;
     private Integer rowHash;
 
 
@@ -27,13 +30,14 @@ public class Case {
     public Case(ExcelRow newRow) throws ParseException {
         Interpreter interpreter = new Interpreter(newRow);
 
-        id = interpreter.findFirstMaternalID();
+        id = interpreter.findFirstMaternalSampleID();
         motherLastName = interpreter.findLastName();
         motherFirstName = interpreter.findFirstName();
         dateStarted = interpreter.findRowDate();
         gender = interpreter.findFirstGender();
         twins = interpreter.isHavingTwins();
         source = interpreter.findSource();
+        result = interpreter.findResultString();
         rowHash = newRow.hashCode();
     }
 
@@ -46,10 +50,11 @@ public class Case {
             stmt.setString(2,motherLastName);
             stmt.setString(3,motherFirstName);
             stmt.setObject(4,dateStarted);
-            stmt.setString(5, gender);
+            stmt.setString(5,gender);
             stmt.setBoolean(6,twins);
             stmt.setString(7,source);
-            stmt.setInt(8,rowHash);
+            stmt.setString(8,result);
+            stmt.setInt(9,rowHash);
             stmt.executeUpdate();
         } finally {
             connection.close();

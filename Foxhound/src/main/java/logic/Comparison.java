@@ -1,12 +1,15 @@
 package logic;
 
+import DataTransferObject.HashRow;
+import IntermediateObject.ChangeMap;
+import readwrite.Creator;
 import readwrite.DbManager;
 import DataTransferObject.ExcelRow;
+import readwrite.Updater;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.text.ParseException;
+
 import static readwrite.MySQL.*;
 
 
@@ -14,7 +17,15 @@ public class Comparison {
 
     private ExcelRow inputRow;
     private String caseID;
-    private Integer rowHash;
+    private Integer newRowHash;
+
+
+    //Constructors
+    public Comparison (ExcelRow inputRow){
+        Interpreter interpreter = new Interpreter(inputRow);
+        this.inputRow = inputRow;
+        caseID = interpreter.findFirstMaternalSampleID();
+    }
 
 
     /* Calling rs.next() moves the ResultSet cursor. This is not an issue
@@ -26,17 +37,11 @@ public class Comparison {
     */
     public boolean caseExists() throws SQLException {
         Connection connection = DbManager.openConnection();
-        PreparedStatement caseStmt = connection.prepareStatement(selectCaseByID);
-        PreparedStatement filteredStmt = connection.prepareStatement(selectFilteredCaseByID);
-        caseStmt.setString(1,caseID);
-        filteredStmt.setString(1,caseID);
+        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
+        stmt.setString(1,caseID);
         try {
-            ResultSet caseResult = caseStmt.executeQuery();
-            if (caseResult.next()) {
-                return true;
-            }
-            ResultSet filteredResult = filteredStmt.executeQuery();
-            if (filteredResult.next()){
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
                 return true;
             }
             else {
@@ -46,38 +51,74 @@ public class Comparison {
             connection.close();
         }
     }
-    public boolean caseHasChanged() throws SQLException{
-        rowHash = inputRow.hashCode();
-        //TODO: Abstract into new methods getRow(String id) & getCell(String id, String column)?
+    public boolean caseHasBeenFiltered() throws SQLException {
         Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
+        PreparedStatement stmt = connection.prepareStatement(selectFilteredCaseByID);
         stmt.setString(1,caseID);
         try {
             ResultSet rs = stmt.executeQuery();
-            int storedRowHash = rs.getInt("rowHash");
-            return (rowHash != storedRowHash);
+            if(rs.next()){
+                return true;
+            }
+            else {
+                return false;
+            }
+
         } finally {
             connection.close();
         }
-
     }
-
-
-
-    //Implement Comparison Functionality later
-    /*public boolean caseStateChanged(String[] currentRow){
-        ArrayList<Integer> newState = new ArrayList<>();
-        for (String str : currentRow){
-            newState.add(stringHash(str));
+    public void evaluateCase() throws SQLException, ParseException {
+        Boolean caseExists = caseExists();
+        Boolean caseIsFiltered = caseHasBeenFiltered();
+        if(!caseExists && !caseIsFiltered) {
+            Creator creator = new Creator(inputRow);
+            creator.generateNewCase();
+        } else {
+            if(!caseIsFiltered && caseHasChanged()) {
+                implementUpdates();
+            }
         }
-        return this.caseState != newState;
     }
-    */
+    public boolean caseHasChanged() throws SQLException{
+        newRowHash = inputRow.hashCode();
+        int storedRowHash = retrieveStoredHashRow();
+        boolean caseChanged = (newRowHash != storedRowHash);
+        return caseChanged;
+    }
+    private int retrieveStoredHashRow() throws SQLException {
+        Connection connection = DbManager.openConnection();
+        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
+        stmt.setString(1, caseID);
+        int storedRowHash = 0;
+        try {
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                storedRowHash = rs.getInt(9);
+            }
+            return storedRowHash;
+        }finally {
+            connection.close();
+        }
+    }
+
+    private void implementUpdates() throws SQLException, ParseException{
+        Connection connection = DbManager.openConnection();
+        PreparedStatement stmt = connection.prepareStatement(selectHashByID);
+        stmt.setString(1,caseID);
+        try{
+            HashRow newHash = new HashRow(caseID,inputRow);
+            ResultSet rs = stmt.executeQuery();
+            HashRow storedHash = new HashRow(rs);
+            ChangeMap changeMap = new ChangeMap(newHash,storedHash);
+            Updater updater = new Updater(inputRow);
+            updater.updateCase(changeMap);
+            //Pass changeMap into Logger once functionality is programmed
+        } finally{
+            connection.close();
+        }
+    }
 
 
-    public Comparison (ExcelRow inputRow){
-        Interpreter interpreter = new Interpreter(inputRow);
-        this.inputRow = inputRow;
-        caseID = interpreter.findFirstMaternalID();
-    }
+
 }

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 import static readwrite.MySQL.insertFilteredCase;
+import static readwrite.MySQL.insertHash;
 
 public class ExcelRow {
 
@@ -51,11 +52,9 @@ public class ExcelRow {
         return hash;
     }
 
-    public ExcelRow(){
-
-    }
-
     //Constructors
+    public ExcelRow(){
+    }
     public ExcelRow(String[] currentRow){
         date = currentRow[0];
         motherName = currentRow[1];
@@ -73,7 +72,7 @@ public class ExcelRow {
         confirmation = currentRow[17];
     }
 
-    //Data Access Logic
+    //Data Access
     public void insertNewFilteredCase() throws SQLException {
         Connection connection = DbManager.openConnection();
         try {
@@ -98,6 +97,7 @@ public class ExcelRow {
             connection.close();
         }
     }
+
     //Setters and Getters
 
     //Setters are for Unit Testing Only
