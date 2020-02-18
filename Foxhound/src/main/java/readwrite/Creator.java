@@ -48,11 +48,9 @@ public class Creator {
     }
 
     private void createNewSamples(List<Sample> samplesFromPatient) throws SQLException {
-        String patientID = samplesFromPatient.get(0).getSampleID();
         LocalDate date = dateUpdated;
         String testID = this.testID;
         for (Sample s: samplesFromPatient){
-            s.setPatientID(patientID);
             s.setDateReceived(date);
             s.setTestID(testID);
             s.insertNewSample();

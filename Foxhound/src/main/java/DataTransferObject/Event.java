@@ -46,7 +46,6 @@ public class Event {
        plasmaNumber = es.getPlasmaNumber();
        this.testID = testID;
        performedBy = es.getPerformedBy();
-
     }
 
     //Data Access

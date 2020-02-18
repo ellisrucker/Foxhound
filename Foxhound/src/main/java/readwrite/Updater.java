@@ -1,6 +1,8 @@
 package readwrite;
 
 import DataTransferObject.ExcelRow;
+import DataTransferObject.Patient;
+import DataTransferObject.Sample;
 import DataTransferObject.Test;
 import IntermediateObject.ChangeMap;
 import logic.Interpreter;
@@ -9,6 +11,9 @@ import java.sql.*;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static readwrite.MySQL.*;
 
@@ -38,10 +43,13 @@ public class Updater {
         testID = caseID + "_1";
         dateUpdated = interpreter.findRowDate();
     }
-
+    //TODO: replace with Switch Statement
     public void updateCase(ChangeMap changeMap) throws SQLException {
         if(changeMap.getMotherName()){
             updateMotherName();
+        }
+        if((changeMap.getMaternalPatientId())||(changeMap.getPaternalPatientId())){
+            updateSamplesAndPatients();
         }
         if(changeMap.getGestationGender()){
             updateGestationGender();
@@ -52,6 +60,8 @@ public class Updater {
         if(changeMap.getReferral()){
             updateSource();
         }
+        //Update Samples and Plasmas from 2nd Draw
+        //Update Samples and Plasmas from 3rd Draw
         if(changeMap.getResult()){
             updateResult();
         }
@@ -73,38 +83,30 @@ public class Updater {
             connection.close();
         }
     }
-    //Will be called if either maternalID or paternalID cells are changed
-    //Not pretty. Could use some cleaning up. Maybe make sampleUpdater class?
-    /*
-    public void updateSamplesAndPatients() throws SQLException{
-        ArrayList<List<SampleString>> samplesByPatient = interpreter.consolidateSampleStrings();
-        ArrayList<SampleString> allSampleStrings = listAllSampleStrings(samplesByPatient);
-        Map<String,SampleString> sampleStringMap = new HashMap<>();
-        allSampleStrings.stream()
-                .forEachOrdered(e -> sampleStringMap.put(e.getId(),e));
-        ArrayList<String> newSampleIDs = listAllSampleIDs(samplesByPatient);
-        ArrayList<String> storedSampleIDs = retrieveStoredSampleIDs();
 
-        deleteOutdatedSamples(newSampleIDs,storedSampleIDs);
-        //if a stored sampleID is in newSampleIDs, UPDATE sample.patientID
-        for(String stored: storedSampleIDs){
-            if(newSampleIDs.contains(stored)){
-                String newPatientID = sampleStringMap.get(stored).getPatientID();
-                updateExistingSample(newPatientID,stored);
-            }
+    public void updateSamplesAndPatients() throws SQLException{
+        ArrayList<List<Sample>> samplesByPatient = interpreter.consolidateSamples();
+        /*
+        for(List<Sample> sampleList : samplesByPatient){
+            String patientID = sampleList.get(0).getPatientID();
+
         }
-        //if a new sample is not in db, INSERT into db
-        for(String newSample: newSampleIDs){
-           if(!(storedSampleIDs.contains(newSample))){
-               SampleString ss = sampleStringMap.get(newSample);
-               Sample sampleDTO = new Sample(ss, ss.getPatientID(), testID, dateUpdated);
-               sampleDTO.insertNewSample();
-           }
-        }
+
+         */
+        ArrayList<String> storedSampleIDs = retrieveStoredSampleIDs();
         //Delete all patients under given testID, and insert new patients
+        deleteAndReplacePatients(samplesByPatient);
+
+        //Delete Samples who's IDs do not appear in cell
+        deleteOutdatedSamples(samplesByPatient,storedSampleIDs);
+        //if a stored sampleID is in newSampleIDs, UPDATE sample.patientID
+
+        updateExistingSamples(samplesByPatient,storedSampleIDs);
+
+        //if a new sample is not in db, INSERT into db
+        insertAllNewSamples(samplesByPatient,storedSampleIDs);
 
     }
-     */
 
     public void updateGestationGender() throws SQLException{
         Integer gestation = interpreter.findFirstGestation();
@@ -173,21 +175,28 @@ public class Updater {
 
 
     //Sample Update Methods
-    /*
-    private ArrayList<String> listAllSampleIDs(ArrayList<List<SampleString>> samplesByPatient){
-        ArrayList<String> allSamples = new ArrayList<>();
-        for(List<SampleString> sampleList : samplesByPatient){
+
+    private ArrayList<String> listAllNewSampleIDs(ArrayList<List<Sample>> samplesByPatient){
+        ArrayList<String> allSampleIDs = new ArrayList<>();
+        for(List<Sample> sampleIDList: samplesByPatient){
+            sampleIDList.stream()
+                    .map(e -> e.getSampleID())
+                    .forEachOrdered(allSampleIDs::add);
+        }
+        return allSampleIDs;
+    }
+    private Map<String,Sample> mapSamplesToSampleIDs(ArrayList<List<Sample>> samplesByPatient){
+        Map<String,Sample> sampleIDMap = new HashMap<>();
+        ArrayList<Sample> allSamples = new ArrayList<>();
+        for(List<Sample> sampleList: samplesByPatient){
             sampleList.stream()
-                    .map(e -> e.getId())
                     .forEachOrdered(allSamples::add);
         }
-        return allSamples;
+        for(Sample sample: allSamples){
+            sampleIDMap.put(sample.getSampleID(),sample);
+        }
+        return sampleIDMap;
     }
-    private ArrayList<String> listAllPatients(ArrayList<List<SampleString>> samplesByPatient){
-        ArrayList<String> allPatients = new ArrayList<>();
-
-    }
-     */
     private ArrayList<String> retrieveStoredSampleIDs() throws SQLException{
         ArrayList<String> storedSamples = new ArrayList<>();
         Connection connection = DbManager.openConnection();
@@ -203,9 +212,10 @@ public class Updater {
         }
         return storedSamples;
     }
-    private void deleteOutdatedSamples(ArrayList<String> newSamples,ArrayList<String> storedSamples) throws SQLException{
-        for(String stored: storedSamples){
-          if(!(newSamples.contains(stored))){
+    private void deleteOutdatedSamples(ArrayList<List<Sample>> samplesByPatient,ArrayList<String> storedSampleIDs) throws SQLException{
+        ArrayList<String> newSampleIDs = listAllNewSampleIDs(samplesByPatient);
+        for(String stored: storedSampleIDs){
+          if(!(newSampleIDs.contains(stored))){
               Connection connection = DbManager.openConnection();
               try{
                   PreparedStatement stmt = connection.prepareStatement(deleteSample);
@@ -217,21 +227,54 @@ public class Updater {
             }
         }
     }
-    private void updateExistingSample(String patientID, String sampleID) throws SQLException{
+    private void updateExistingSamples(ArrayList<List<Sample>> samplesByPatient, ArrayList<String> storedSampleIDs) throws SQLException{
+        Map<String,Sample> sampleIDMap = mapSamplesToSampleIDs(samplesByPatient);
+        for(String newID: sampleIDMap.keySet()){
+            if(storedSampleIDs.contains(newID)){
+                Connection connection = DbManager.openConnection();
+                PreparedStatement stmt = connection.prepareStatement(updateSamplePatientID);
+                try{
+                    stmt.setString(1,newID);
+                    stmt.setString(2,sampleIDMap.get(newID).getPatientID());
+                    stmt.executeUpdate();
+                } finally {
+                    connection.close();
+                }
+            }
+        }
+    }
+    private void insertAllNewSamples(ArrayList<List<Sample>> samplesByPatient, ArrayList<String> storedSampleIDs) throws SQLException{
+        Map<String,Sample> sampleIDMap = mapSamplesToSampleIDs(samplesByPatient);
+        for(String newID: sampleIDMap.keySet()){
+            if(!(storedSampleIDs.contains(newID))){
+                Sample newSample = sampleIDMap.get(newID);
+                newSample.setDateReceived(dateUpdated);
+                newSample.setTestID(testID);
+                newSample.insertNewSample();
+            }
+        }
+    }
+    private void deleteAndReplacePatients(ArrayList<List<Sample>> samplesByPatient) throws SQLException{
+        //Create Patient List from Samples arranged by Patient
+        ArrayList<Patient> patientList = new ArrayList<>();
+        samplesByPatient.stream()
+                .map(e -> new Patient(e.get(0)))
+                .forEachOrdered(patientList::add);
+        //Delete existing Patients
         Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(updateSamplePatientID);
+        PreparedStatement stmt = connection.prepareStatement(deletePatient);
         try{
-            stmt.setString(1,patientID);
-            stmt.setString(2,sampleID);
+            stmt.setString(1,testID);
             stmt.executeUpdate();
         } finally {
             connection.close();
         }
-    }
-    private void updateSamplesInDB(ArrayList<String> newSamples,ArrayList<String> storedSamples) throws SQLException{
-        for(String stored: storedSamples){
-            if(newSamples.contains(stored)){
-
+        //Insert new Patients
+        for(Patient patient: patientList){
+            try{
+                patient.insertNewPatient();
+            } catch(Exception e){
+                e.printStackTrace();
             }
         }
     }
@@ -256,4 +299,5 @@ public class Updater {
     public LocalDate getDateUpdated(){
         return dateUpdated;
     }
+
 }

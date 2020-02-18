@@ -58,7 +58,6 @@ public class Iterator {
 
             String[] currentRow = null;
 
-            //TODO: Turn into addNewCases() to clean up code?
             while ((currentRow = reader.readNext()) != null) {
                 ExcelRow newRow = new ExcelRow(currentRow);
                 Comparison rowComparison = new Comparison(newRow);

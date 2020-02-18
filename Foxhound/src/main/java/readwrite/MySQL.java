@@ -278,5 +278,8 @@ public class MySQL {
 
     //Delete
     public static String deleteSample = "DELETE FROM "+ database +"."+ sampleTable +" WHERE "+ sampleID +" =?";
-    public static String deletePatient = "DELETE FROM "+ database +"."+ patientTable +" WHERE "+ testID +" =?";
+    public static String deletePatient = "DELETE "+ database +"."+ patientTable +
+            " FROM "+ database +"."+ sampleTable + " INNER JOIN " + database +"."+ patientTable +
+            " ON " + sampleTable +"."+ patientID +" = "+ patientTable +"."+ patientID +
+            " WHERE "+ sampleTable +"." +testID +" =?";
 }

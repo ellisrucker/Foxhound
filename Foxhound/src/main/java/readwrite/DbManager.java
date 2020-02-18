@@ -16,7 +16,7 @@ public class DbManager {
         Connection dbConnection = DriverManager.getConnection(url, user, password);
         return dbConnection;
     }
-    //TODO: Abstract method from initializations that takes drop & create strings
+    //TODO: Replace second try/catch block with DELETE TABLE IF EXISTS?
     //Database Table initialization
     public static void initializeCaseTable() throws SQLException {
         Connection connection = openConnection();

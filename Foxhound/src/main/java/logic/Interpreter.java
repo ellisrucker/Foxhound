@@ -97,38 +97,6 @@ public class Interpreter {
 
 
 
-
-    private final Comparator<String> ID_COMPARATOR = (id1, id2) -> {
-        Integer idNumber1 = idToNumber(findID(id1));
-        Integer idNumber2 = idToNumber(findID(id2));
-        if(idNumber1 == idNumber2){
-            return 0;
-        } else if(idNumber1 > idNumber2){
-            return 1;
-        } else{
-            return -1;
-        }
-    };
-
-    public ArrayList<Integer> createCellHashList(){
-        ArrayList<Integer> cellHashList = new ArrayList<>();
-        cellHashList.add(inputRow.getDate().hashCode());
-        cellHashList.add(inputRow.getMotherName().hashCode());
-        cellHashList.add(inputRow.getMaternalPatientId().hashCode());
-        cellHashList.add(inputRow.getPaternalPatientId().hashCode());
-        cellHashList.add(inputRow.getGestationGender().hashCode());
-        cellHashList.add(inputRow.getTestTypeCost().hashCode());
-        cellHashList.add(inputRow.getReferral().hashCode());
-        cellHashList.add(inputRow.getGenotypeA().hashCode());
-        cellHashList.add(inputRow.getGenotypeB().hashCode());
-        cellHashList.add(inputRow.getFirstDraw().hashCode());
-        cellHashList.add(inputRow.getSecondDraw().hashCode());
-        cellHashList.add(inputRow.getThirdDraw().hashCode());
-        cellHashList.add(inputRow.getResult().hashCode());
-        cellHashList.add(inputRow.getConfirmation().hashCode());
-        return cellHashList;
-    }
-
     //Name Processing
 
     private String[] splitFullName(String fullName){
@@ -162,9 +130,14 @@ public class Interpreter {
         ArrayList<List<Sample>> samplesByPatient = new ArrayList<>();
         samplesByPatient.add(retrieveMaternalSamples());
         groupSamplesByPatient().forEach(samplesByPatient::add);
+        for(List<Sample> sampleList : samplesByPatient){
+            String patientID = sampleList.get(0).getSampleID();
+            sampleList.stream()
+                    .forEachOrdered(e -> e.setPatientID(patientID));
+        }
         return samplesByPatient;
     }
-
+    //TODO: Parse samples from 2nd and 3rd draw cells
     public ArrayList<Sample> retrieveMaternalSamples(){
         return isolateSamples(inputRow.getMaternalPatientId())
                 .stream()
@@ -174,12 +147,14 @@ public class Interpreter {
     }
 
     public ArrayList<List<Sample>> groupSamplesByPatient(){
+        //Create samples and group them by relationship to mother
         Map<Patient.Relation, List<Sample>> samplesByRelation = isolateSamples(inputRow.getPaternalPatientId())
                 .stream()
                 .map(s -> new Sample(s))
                 .collect(groupingBy(
                         Sample::getRelation
                 ));
+        //Return sorted list of Samples grouped by Patient
         return samplesByRelation.values()
                 .stream()
                 .map(list -> list.stream()
@@ -251,7 +226,7 @@ public class Interpreter {
         ArrayList<String> stringsFromCell = isolateTestTypeCost(inputRow.getTestTypeCost());
         return findTestType(stringsFromCell.get(0));
     }
-    //TODO: Refactor into Switch statement
+    //TODO: Refactor into Switch statement?
     public static TestType findTestType(String str){
         Map<Pattern,TestType> testTypeMap = new HashMap<>();
         testTypeMap.put(Pattern.compile(threeWeek),TestType.THREE_WEEK);
@@ -410,7 +385,7 @@ public class Interpreter {
             return matcher.group();
         } else return null;
     }
-    //TODO: Refactor into Switch statement
+    //TODO: Refactor into Switch statement?
     public static String findPersonnel(String str){
         Map<Pattern,String> personnelMap = new HashMap<>();
         personnelMap.put(Pattern.compile(john),"JV");
