@@ -1,6 +1,5 @@
 package DataTransferObject;
 
-import IntermediateObject.EventString;
 import logic.Interpreter;
 import readwrite.DbManager;
 
@@ -13,15 +12,19 @@ import static readwrite.MySQL.*;
 
 public class Event {
 
+    //TODO: Refactor into abstract class Event, with classes Plasma and Genotype?
     private Integer eventID;
     private LocalDate date;
     private LabTest type;
+    private String performedBy;
+    private String originalString;
+
     private PrimerSet primerSet;
     private PlasmaNumber plasmaNumber;
-    private String performedBy;
     private String plasmaUsed;
     //Initialization avoids null pointer in stmt.setInt()
     private Integer plasmaGestation = 0;
+
     //Future Foreign Key
     private String testID;
 
@@ -39,13 +42,17 @@ public class Event {
     //Constructors
     public Event(){
     }
-    public Event(String testID, LocalDate testStartDate, EventString es) {
-       date = Interpreter.findEventDate(es.getEvent(), testStartDate);
-       type = es.getType();
-       primerSet = es.getPrimerSet();
-       plasmaNumber = es.getPlasmaNumber();
-       this.testID = testID;
-       performedBy = es.getPerformedBy();
+    public Event(String str, LabTest eventType, PrimerSet primerSet){
+        type = eventType;
+        this.primerSet = primerSet;
+        performedBy = Interpreter.findPersonnel(str);
+        originalString = str;
+    }
+    public Event(String str, LabTest eventType, PlasmaNumber plasmaNumber){
+        type = eventType;
+        this.plasmaNumber = plasmaNumber;
+        performedBy = Interpreter.findPersonnel(str);
+        originalString = str;
     }
 
     //Data Access
@@ -112,6 +119,10 @@ public class Event {
     public void setTestID(String str){
         testID = str;
     }
+    public void setOriginalString(String str){
+        originalString = str;
+    }
+
     public Integer getEventID(){
         return eventID;
     }
@@ -138,5 +149,8 @@ public class Event {
     }
     public String getTestID(){
         return testID;
+    }
+    public String getOriginalString(){
+        return originalString;
     }
 }

@@ -2,7 +2,6 @@ package logic;
 
 import DataTransferObject.*;
 import DataTransferObject.Test.TestType;
-import IntermediateObject.EventString;
 
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -290,8 +289,8 @@ public class Interpreter {
         return onlyTestTypeCost;
     }
 
-    public ArrayList<EventString> consolidateAllEvents(){
-        ArrayList<EventString> allEvents = new ArrayList<>();
+    public ArrayList<Event> consolidateAllEvents(){
+        ArrayList<Event> allEvents = new ArrayList<>();
         findGenotypeA().stream().forEachOrdered(allEvents::add);
         findGenotypeB().stream().forEachOrdered(allEvents::add);
         findFirstDrawPlasmas().stream().forEachOrdered(allEvents::add);
@@ -310,19 +309,20 @@ public class Interpreter {
         }
         return onlyGenotypes;
     }
-    public ArrayList<EventString> findGenotypeA() {
-        return isolateGenotypes(inputRow.getGenotypeA())
+    public ArrayList<Event> findGenotypeA() {
+        ArrayList<Event> eventList = isolateGenotypes(inputRow.getGenotypeA())
                 .stream()
-                .map(e -> new EventString(e, Event.LabTest.GENOTYPE, Event.PrimerSet.A))
+                .map(e -> new Event(e, Event.LabTest.GENOTYPE, Event.PrimerSet.A))
                 .collect(toCollection(ArrayList::new));
+        return eventList;
     }
-    public ArrayList<EventString> findGenotypeB() {
-        ArrayList<EventString> eventList = isolateGenotypes(inputRow.getGenotypeB())
+    public ArrayList<Event> findGenotypeB() {
+        ArrayList<Event> eventList = isolateGenotypes(inputRow.getGenotypeB())
                 .stream()
-                .map(e -> new EventString(e, Event.LabTest.GENOTYPE, Event.PrimerSet.B))
+                .map(e -> new Event(e, Event.LabTest.GENOTYPE, Event.PrimerSet.B))
                 .collect(toCollection((ArrayList::new)));
-        for(EventString e: eventList){
-            Matcher matcher = Pattern.compile("96").matcher(e.getEvent());
+        for(Event e: eventList){
+            Matcher matcher = Pattern.compile("96").matcher(e.getOriginalString());
             if(matcher.find()){
                 e.setPrimerSet(Event.PrimerSet.B96);
             }
@@ -341,24 +341,51 @@ public class Interpreter {
         }
         return onlyPlasmas;
     }
-    //TODO: Abstract Method from plasmaFinders to reduce duplication
-    public ArrayList<EventString> findFirstDrawPlasmas(){
-       return isolatePlasmas(inputRow.getFirstDraw())
+    //TODO: Abstract Method from plasmaFinders to reduce duplication?
+    /*
+    Finding sampleID and gestation for First Draws may not work properly
+    for cases with multiple maternal sampleIDs or multiple gestations
+     */
+    public ArrayList<Event> findFirstDrawPlasmas(){
+        String sampleID = findFirstMaternalSampleID();
+        Integer gestation = findFirstGestation();
+        ArrayList<Event> plasmaList = isolatePlasmas(inputRow.getFirstDraw())
                .stream()
-               .map(e -> new EventString(e, Event.LabTest.PLASMA, Event.PlasmaNumber.FIRST))
+               .map(e -> new Event(e, Event.LabTest.PLASMA, Event.PlasmaNumber.FIRST))
                .collect(toCollection(ArrayList::new));
+        for(Event e : plasmaList){
+            e.setPlasmaUsed(sampleID);
+            e.setPlasmaGestation(gestation);
+        }
+       return plasmaList;
     }
-    public ArrayList<EventString> findSecondDrawPlasmas(){
-        return isolatePlasmas(inputRow.getSecondDraw())
+    public ArrayList<Event> findSecondDrawPlasmas(){
+        String cell = inputRow.getSecondDraw();
+        String sampleID = Interpreter.findID(cell);
+        Integer gestation = Interpreter.findGestation(cell);
+        ArrayList<Event> plasmaList = isolatePlasmas(cell)
                 .stream()
-                .map(e -> new EventString(e, Event.LabTest.PLASMA, Event.PlasmaNumber.SECOND))
+                .map(e -> new Event(e, Event.LabTest.PLASMA, Event.PlasmaNumber.SECOND))
                 .collect(toCollection(ArrayList::new));
+        for(Event e : plasmaList){
+            e.setPlasmaUsed(sampleID);
+            e.setPlasmaGestation(gestation);
+        }
+        return plasmaList;
     }
-    public ArrayList<EventString> findThirdDrawPlasmas(){
-        return isolatePlasmas(inputRow.getThirdDraw())
+    public ArrayList<Event> findThirdDrawPlasmas(){
+        String cell = inputRow.getThirdDraw();
+        String sampleID = Interpreter.findID(cell);
+        Integer gestation = Interpreter.findGestation(cell);
+        ArrayList<Event> plasmaList = isolatePlasmas(cell)
                 .stream()
-                .map(e -> new EventString(e, Event.LabTest.PLASMA, Event.PlasmaNumber.THIRD))
+                .map(e -> new Event(e, Event.LabTest.PLASMA, Event.PlasmaNumber.THIRD))
                 .collect(toCollection(ArrayList::new));
+        for(Event e : plasmaList){
+            e.setPlasmaUsed(sampleID);
+            e.setPlasmaGestation(gestation);
+        }
+        return plasmaList;
     }
     public static LocalDate findEventDate(String str, LocalDate testStartDate) {
         try {

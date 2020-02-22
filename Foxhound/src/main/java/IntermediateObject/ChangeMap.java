@@ -4,6 +4,7 @@ import DataTransferObject.HashRow;
 
 public class ChangeMap {
 
+    //TODO: Refactor class as DTO Log class?
     private String caseID;
     private Boolean date;
     private Boolean motherName;

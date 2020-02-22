@@ -282,4 +282,6 @@ public class MySQL {
             " FROM "+ database +"."+ sampleTable + " INNER JOIN " + database +"."+ patientTable +
             " ON " + sampleTable +"."+ patientID +" = "+ patientTable +"."+ patientID +
             " WHERE "+ sampleTable +"." +testID +" =?";
+    public static String deleteGenotype = "DELETE FROM "+ database +"."+ genotypeTable + " WHERE " + testID + " =?";
+    public static String deletePlasma = "DELETE FROM "+ database +"."+ plasmaTable + " WHERE " + testID + " =?";
 }

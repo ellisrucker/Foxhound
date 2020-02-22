@@ -1,9 +1,6 @@
 package readwrite;
 
-import DataTransferObject.ExcelRow;
-import DataTransferObject.Patient;
-import DataTransferObject.Sample;
-import DataTransferObject.Test;
+import DataTransferObject.*;
 import IntermediateObject.ChangeMap;
 import logic.Interpreter;
 
@@ -60,6 +57,14 @@ public class Updater {
         if(changeMap.getReferral()){
             updateSource();
         }
+        if((changeMap.getGenotypeA())||
+                (changeMap.getGenotypeB()) ||
+                (changeMap.getFirstDraw()) ||
+                (changeMap.getSecondDraw()) ||
+                (changeMap.getThirdDraw()))
+        {
+         updateEvents();
+        }
         //Update Samples and Plasmas from 2nd Draw
         //Update Samples and Plasmas from 3rd Draw
         if(changeMap.getResult()){
@@ -86,13 +91,7 @@ public class Updater {
 
     public void updateSamplesAndPatients() throws SQLException{
         ArrayList<List<Sample>> samplesByPatient = interpreter.consolidateSamples();
-        /*
-        for(List<Sample> sampleList : samplesByPatient){
-            String patientID = sampleList.get(0).getPatientID();
 
-        }
-
-         */
         ArrayList<String> storedSampleIDs = retrieveStoredSampleIDs();
         //Delete all patients under given testID, and insert new patients
         deleteAndReplacePatients(samplesByPatient);
@@ -152,6 +151,12 @@ public class Updater {
             connection.close();
         }
     }
+    //TODO: Separate: make update protocol for each event cell?
+    public void updateEvents() throws SQLException {
+        deleteOldEvents();
+        insertNewEvents();
+    }
+    //TODO: Remember to set date and testID for Event Update pipeline
     public void updateGenotypeA(){}
     public void updateGenotypeB(){}
     public void updateFirstDraw(){}
@@ -260,6 +265,13 @@ public class Updater {
         samplesByPatient.stream()
                 .map(e -> new Patient(e.get(0)))
                 .forEachOrdered(patientList::add);
+        //Add Mother Name to Maternal Patients
+        for(Patient p : patientList){
+            if(p.getRelationship() == Patient.Relation.M){
+                p.setLastName(interpreter.findLastName());
+                p.setFirstName(interpreter.findFirstName());
+            }
+        }
         //Delete existing Patients
         Connection connection = DbManager.openConnection();
         PreparedStatement stmt = connection.prepareStatement(deletePatient);
@@ -275,6 +287,38 @@ public class Updater {
                 patient.insertNewPatient();
             } catch(Exception e){
                 e.printStackTrace();
+            }
+        }
+    }
+
+    private void deleteOldEvents() throws SQLException{
+        Connection connection = DbManager.openConnection();
+        PreparedStatement genotypeStmt = connection.prepareStatement(deleteGenotype);
+        PreparedStatement plasmaStmt = connection.prepareStatement(deletePlasma);
+        try{
+            genotypeStmt.setString(1,testID);
+            plasmaStmt.setString(1,testID);
+            genotypeStmt.executeUpdate();
+            plasmaStmt.executeUpdate();
+        } finally {
+            connection.close();
+        }
+    }
+    private void insertNewEvents() throws SQLException {
+        //Set date and testID for each event
+        ArrayList<Event> eventList = interpreter.consolidateAllEvents();
+        for(Event event : eventList){
+            LocalDate date = interpreter.findEventDate(event.getOriginalString(), dateUpdated);
+            event.setDate(date);
+            event.setTestID(testID);
+        }
+        //Insert Genotypes and Plasmas into their respective tables
+        for(Event event : eventList){
+            if(event.getType() == Event.LabTest.GENOTYPE){
+                event.insertNewGenotype();
+            }
+            if(event.getType() == Event.LabTest.PLASMA){
+                event.insertNewPlasma();
             }
         }
     }

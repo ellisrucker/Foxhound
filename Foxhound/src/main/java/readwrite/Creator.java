@@ -1,7 +1,6 @@
 package readwrite;
 
 import DataTransferObject.*;
-import IntermediateObject.EventString;
 import logic.Interpreter;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -32,12 +31,13 @@ public class Creator {
         hashRow.insertNewHash();
         createNewTest();
         ArrayList<List<Sample>> newSamples = interpreter.consolidateSamples();
-        ArrayList<EventString> newEvents = interpreter.consolidateAllEvents();
+        ArrayList<Event> newEvents = interpreter.consolidateAllEvents();
         for (List<Sample> sampleList: newSamples){
             createNewSamples(sampleList);
             createNewPatient(sampleList);
         }
-        for (EventString e: newEvents){
+        for (Event e: newEvents){
+
             createNewEvent(e);
         }
     }
@@ -69,23 +69,15 @@ public class Creator {
         newPatient.insertNewPatient();
     }
 
-    private void createNewEvent(EventString eventString) throws SQLException {
-        Event e = new Event(testID, dateUpdated, eventString);
-        if(e.getType() == Event.LabTest.GENOTYPE){
-            e.insertNewGenotype();
+    private void createNewEvent(Event event) throws SQLException {
+        LocalDate date = interpreter.findEventDate(event.getOriginalString(), dateUpdated);
+        event.setDate(date);
+        event.setTestID(testID);
+        if(event.getType() == Event.LabTest.GENOTYPE){
+            event.insertNewGenotype();
         }
-        if(e.getType() == Event.LabTest.PLASMA){
-            if(e.getPlasmaNumber() == Event.PlasmaNumber.FIRST){
-                e.setPlasmaUsed(caseID);
-                e.setPlasmaGestation(interpreter.findFirstGestation());
-            } else if(e.getPlasmaNumber() == Event.PlasmaNumber.SECOND){
-                e.setPlasmaUsed(Interpreter.findID(inputRow.getSecondDraw()));
-                e.setPlasmaGestation(Interpreter.findGestation(inputRow.getSecondDraw()));
-            } else if(e.getPlasmaNumber() == Event.PlasmaNumber.THIRD){
-                e.setPlasmaUsed(Interpreter.findID(inputRow.getThirdDraw()));
-                e.setPlasmaGestation(Interpreter.findGestation(inputRow.getThirdDraw()));
-            }
-            e.insertNewPlasma();
+        if(event.getType() == Event.LabTest.PLASMA){
+            event.insertNewPlasma();
         }
 
     }
