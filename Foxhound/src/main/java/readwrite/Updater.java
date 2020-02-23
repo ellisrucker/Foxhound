@@ -46,7 +46,8 @@ public class Updater {
             updateMotherName();
         }
         if((changeMap.getMaternalPatientId())||(changeMap.getPaternalPatientId())){
-            updateSamplesAndPatients();
+            updatePatients();
+            updateSamples();
         }
         if(changeMap.getGestationGender()){
             updateGestationGender();
@@ -57,22 +58,27 @@ public class Updater {
         if(changeMap.getReferral()){
             updateSource();
         }
-        if((changeMap.getGenotypeA())||
-                (changeMap.getGenotypeB()) ||
-                (changeMap.getFirstDraw()) ||
-                (changeMap.getSecondDraw()) ||
-                (changeMap.getThirdDraw()))
-        {
-         updateEvents();
+        if(changeMap.getGenotypeA()){
+            updateGenotypeA();
         }
-        //Update Samples and Plasmas from 2nd Draw
-        //Update Samples and Plasmas from 3rd Draw
+        if(changeMap.getGenotypeB()){
+            updateGenotypeB();
+        }
+        if(changeMap.getFirstDraw()){
+            updateFirstDraw();
+        }
+        if(changeMap.getSecondDraw()){
+            updateSecondDraw();
+        }
+        if(changeMap.getThirdDraw()){
+            updateThirdDraw();
+        }
         if(changeMap.getResult()){
             updateResult();
         }
     }
 
-    public void updateMotherName() throws SQLException {
+    private void updateMotherName() throws SQLException {
         String motherLastName = interpreter.findLastName();
         String motherFirstName = interpreter.findFirstName();
         Connection connection = DbManager.openConnection();
@@ -89,25 +95,25 @@ public class Updater {
         }
     }
 
-    public void updateSamplesAndPatients() throws SQLException{
+    private void updateSamples() throws SQLException{
         ArrayList<List<Sample>> samplesByPatient = interpreter.consolidateSamples();
-
         ArrayList<String> storedSampleIDs = retrieveStoredSampleIDs();
-        //Delete all patients under given testID, and insert new patients
+
+        //DELETE Samples who's IDs do not appear in cell
+        deleteOutdatedSamples(samplesByPatient, storedSampleIDs);
+
+        //If a stored sample ID is in newSampleIDs, UPDATE sample.patientID
+        updateExistingSamples(samplesByPatient, storedSampleIDs);
+
+        //If a new sample is not in db, INSERT into db
+        insertAllNewSamples(samplesByPatient, storedSampleIDs);
+    }
+    private void updatePatients() throws SQLException{
+        ArrayList<List<Sample>> samplesByPatient = interpreter.consolidateSamples();
         deleteAndReplacePatients(samplesByPatient);
-
-        //Delete Samples who's IDs do not appear in cell
-        deleteOutdatedSamples(samplesByPatient,storedSampleIDs);
-        //if a stored sampleID is in newSampleIDs, UPDATE sample.patientID
-
-        updateExistingSamples(samplesByPatient,storedSampleIDs);
-
-        //if a new sample is not in db, INSERT into db
-        insertAllNewSamples(samplesByPatient,storedSampleIDs);
-
     }
 
-    public void updateGestationGender() throws SQLException{
+    private void updateGestationGender() throws SQLException{
         Integer gestation = interpreter.findFirstGestation();
         String gender = interpreter.findFirstGender();
         Connection connection = DbManager.openConnection();
@@ -125,7 +131,7 @@ public class Updater {
         }
 
     }
-    public void updateTestTypeCost() throws SQLException{
+    private void updateTestTypeCost() throws SQLException{
         Test.TestType type = interpreter.findFirstTestType();
         Integer cost = interpreter.findFirstCost();
         Connection connection = DbManager.openConnection();
@@ -139,7 +145,7 @@ public class Updater {
             connection.close();
         }
     }
-    public void updateSource() throws SQLException{
+    private void updateSource() throws SQLException{
         String source = interpreter.findSource();
         Connection connection = DbManager.openConnection();
         try{
@@ -151,18 +157,45 @@ public class Updater {
             connection.close();
         }
     }
-    //TODO: Separate: make update protocol for each event cell?
-    public void updateEvents() throws SQLException {
-        deleteOldEvents();
-        insertNewEvents();
+
+    private void updateGenotypeA() throws SQLException {
+        //Delete from PrimerSet A
+        deleteGenotypes(Event.PrimerSet.A);
+
+        //Insert new Genotypes
+        ArrayList<Event> genotypes = interpreter.findGenotypeA();
+        insertGenotypes(genotypes);
     }
-    //TODO: Remember to set date and testID for Event Update pipeline
-    public void updateGenotypeA(){}
-    public void updateGenotypeB(){}
-    public void updateFirstDraw(){}
-    public void updateSecondDraw(){}
-    public void updateThirdDraw(){}
-    public void updateResult() throws SQLException {
+    private void updateGenotypeB() throws SQLException {
+        //Delete from PrimerSets B and B96
+        deleteGenotypes(Event.PrimerSet.B);
+        deleteGenotypes(Event.PrimerSet.B96);
+
+        //Insert new Genotypes
+        ArrayList<Event> genotypes = interpreter.findGenotypeB();
+        insertGenotypes(genotypes);
+    }
+    private void updateFirstDraw() throws SQLException{
+        //Delete from First Draws
+        deletePlasmas(Event.PlasmaNumber.FIRST);
+
+        //Insert new Plasmas
+        ArrayList<Event> plasmas = interpreter.findFirstDrawPlasmas();
+        insertPlasmas(plasmas);
+    }
+    private void updateSecondDraw() throws SQLException {
+        deletePlasmas(Event.PlasmaNumber.SECOND);
+        ArrayList<Event> plasmas = interpreter.findSecondDrawPlasmas();
+        insertPlasmas(plasmas);
+        updateSamples();
+    }
+    private void updateThirdDraw() throws SQLException {
+        deletePlasmas(Event.PlasmaNumber.THIRD);
+        ArrayList<Event> plasmas = interpreter.findThirdDrawPlasmas();
+        insertPlasmas(plasmas);
+        updateSamples();
+    }
+    private void updateResult() throws SQLException {
         String result = inputRow.getResult();
         Connection connection = DbManager.openConnection();
         try {
@@ -176,10 +209,10 @@ public class Updater {
             connection.close();
         }
     }
-    public void updateConfirmation(){}
+    private void updateConfirmation(){}
 
 
-    //Sample Update Methods
+    //Sample and Patient Update Methods
 
     private ArrayList<String> listAllNewSampleIDs(ArrayList<List<Sample>> samplesByPatient){
         ArrayList<String> allSampleIDs = new ArrayList<>();
@@ -259,6 +292,7 @@ public class Updater {
             }
         }
     }
+
     private void deleteAndReplacePatients(ArrayList<List<Sample>> samplesByPatient) throws SQLException{
         //Create Patient List from Samples arranged by Patient
         ArrayList<Patient> patientList = new ArrayList<>();
@@ -291,6 +325,8 @@ public class Updater {
         }
     }
 
+    //Event Update Methods
+
     private void deleteOldEvents() throws SQLException{
         Connection connection = DbManager.openConnection();
         PreparedStatement genotypeStmt = connection.prepareStatement(deleteGenotype);
@@ -304,6 +340,29 @@ public class Updater {
             connection.close();
         }
     }
+    private void deleteGenotypes(Event.PrimerSet primerSet) throws SQLException{
+        Connection connection = DbManager.openConnection();
+        PreparedStatement stmt = connection.prepareStatement(deleteGenotype);
+        try{
+            stmt.setString(1,primerSet.name());
+            stmt.setString(2,testID);
+            stmt.executeUpdate();
+        } finally {
+            connection.close();
+        }
+    }
+    private void deletePlasmas(Event.PlasmaNumber plasmaNumber) throws SQLException {
+        Connection connection = DbManager.openConnection();
+        PreparedStatement stmt = connection.prepareStatement(deletePlasma);
+        try{
+            stmt.setString(1, plasmaNumber.name());
+            stmt.setString(2, testID);
+        } finally {
+            connection.close();
+        }
+
+    }
+
     private void insertNewEvents() throws SQLException {
         //Set date and testID for each event
         ArrayList<Event> eventList = interpreter.consolidateAllEvents();
@@ -320,6 +379,28 @@ public class Updater {
             if(event.getType() == Event.LabTest.PLASMA){
                 event.insertNewPlasma();
             }
+        }
+    }
+    private void insertGenotypes(ArrayList<Event> genotypes) throws SQLException {
+        for(Event g : genotypes){
+            //Set date and testID
+            LocalDate date = interpreter.findEventDate(g.getOriginalString(), dateUpdated);
+            g.setDate(date);
+            g.setTestID(testID);
+
+            //Insert into Database
+            g.insertNewGenotype();
+        }
+    }
+    private void insertPlasmas(ArrayList<Event> plasmas) throws SQLException {
+        for(Event p : plasmas){
+            //Set date and testID
+            LocalDate date = interpreter.findEventDate(p.getOriginalString(), dateUpdated);
+            p.setDate(date);
+            p.setTestID(testID);
+
+            //Insert into Database
+            p.insertNewPlasma();
         }
     }
 

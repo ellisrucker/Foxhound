@@ -24,13 +24,6 @@ public class Interpreter {
     private static Pattern mmddRegex = Pattern.compile("[\\d]{1,2}/[\\d]{1,2}");
 
 
-    private static Pattern P1 = Pattern.compile("[^a-zA-Z][Pp]1");
-    private static Pattern P2 = Pattern.compile("[^a-zA-Z][Pp]2");
-    private static Pattern P3 = Pattern.compile("[^a-zA-Z][Pp]3");
-    private static Pattern P4 = Pattern.compile("[^a-zA-Z][Pp]4");
-    private static Pattern P5 = Pattern.compile("[^a-zA-Z][Pp]5");
-
-
     private static Pattern boy = Pattern.compile("[Bb]oy");
     private static Pattern girl = Pattern.compile("[Gg]irl");
     private static Pattern boyGirl = Pattern.compile("[Bb]oy/[Gg]irl");
@@ -129,20 +122,24 @@ public class Interpreter {
         ArrayList<List<Sample>> samplesByPatient = new ArrayList<>();
         samplesByPatient.add(retrieveMaternalSamples());
         groupSamplesByPatient().forEach(samplesByPatient::add);
-        for(List<Sample> sampleList : samplesByPatient){
-            String patientID = sampleList.get(0).getSampleID();
-            sampleList.stream()
-                    .forEachOrdered(e -> e.setPatientID(patientID));
-        }
         return samplesByPatient;
     }
-    //TODO: Parse samples from 2nd and 3rd draw cells
+
     public ArrayList<Sample> retrieveMaternalSamples(){
-        return isolateSamples(inputRow.getMaternalPatientId())
+        ArrayList<String> maternalSampleStrings = isolateSamples(inputRow.getMaternalPatientId());
+        maternalSampleStrings.addAll(isolateSamples(inputRow.getSecondDraw()));
+        maternalSampleStrings.addAll(isolateSamples(inputRow.getThirdDraw()));
+        ArrayList<Sample> maternalSamples = maternalSampleStrings
                 .stream()
                 .map(s -> new Sample(s, Patient.Relation.M))
                 .sorted()
                 .collect(toCollection(ArrayList::new));
+        //Set PatientID for all Samples
+        String patientID = maternalSamples.get(0).getSampleID();
+        for(Sample s : maternalSamples) {
+            s.setPatientID(patientID);
+        }
+        return maternalSamples;
     }
 
     public ArrayList<List<Sample>> groupSamplesByPatient(){
@@ -153,17 +150,26 @@ public class Interpreter {
                 .collect(groupingBy(
                         Sample::getRelation
                 ));
-        //Return sorted list of Samples grouped by Patient
-        return samplesByRelation.values()
+        //Create sorted list of Samples grouped by Patient
+        ArrayList<List<Sample>> samplesByPatient = samplesByRelation.values()
                 .stream()
                 .map(list -> list.stream()
                         .sorted()
                         .collect(toList()))
                 .collect(toCollection(ArrayList::new));
+        //Set PatientID for all Samples
+        for(List<Sample> sampleList : samplesByPatient){
+            String patientID = sampleList.get(0).getSampleID();
+            sampleList.stream()
+                    .forEachOrdered(e -> e.setPatientID(patientID));
+        }
+        return samplesByPatient;
     }
 
-    //Splits on zero-length matches that precede an id, but
-    //that do not follow a letter (to avoid splitting ids)
+    /*
+    Splits on zero-length matches that precede an id, but
+    that do not follow a letter (to avoid splitting ids)
+    */
     public static ArrayList<String> isolateSamples(String sampleCell){
         String[] sampleArray = sampleCell.split("(?<![a-zA-z])(?=([a-zA-Z]{3,}[\\d]{5,}))");
         ArrayList<String> onlySamples = new ArrayList<>();
@@ -513,8 +519,8 @@ public class Interpreter {
     //Empty cell causes nullpointerexception, indicates extreme case
     public boolean hasSingleMaternalID(){
         try {
-            ArrayList<Sample> maternalSamples = retrieveMaternalSamples();
-            if (maternalSamples.size() == 1){
+            ArrayList<String> maternalIDs = isolateSamples(inputRow.getMaternalPatientId());
+            if (maternalIDs.size() == 1){
                 return true;
             }
             else {

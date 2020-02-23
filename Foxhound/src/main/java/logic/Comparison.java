@@ -77,6 +77,7 @@ public class Comparison {
         } else {
             if(!caseIsFiltered && caseHasChanged()) {
                 implementUpdates();
+
             }
         }
     }
@@ -113,7 +114,6 @@ public class Comparison {
             ChangeMap changeMap = new ChangeMap(newHash,storedHash);
             Updater updater = new Updater(inputRow);
             updater.updateCase(changeMap);
-            //Pass changeMap into Logger once functionality is programmed
         } finally{
             connection.close();
         }

@@ -8,7 +8,7 @@ public class MySQL {
     //Table & Column Names
 
     //Case
-    private static final String caseTable = "case";
+    private static final String caseTable = database +"."+"case";
     private static final String caseID = "caseID";
     private static final String motherLastName = "motherLastName";
     private static final String motherFirstName = "motherFirstName";
@@ -19,19 +19,19 @@ public class MySQL {
     private static final String rowHash = "rowHash";
 
     //Sample
-    private static final String sampleTable = "sample";
+    private static final String sampleTable = database +"."+"sample";
     private static final String sampleID = "sampleID";
     private static final String dateReceived = "dateReceived";
 
     //Patient
-    private static final String patientTable = "patient";
+    private static final String patientTable = database +"."+"patient";
     private static final String patientID = "patientID";
     private static final String lastName = "lastName";
     private static final String firstName = "firstName";
     private static final String relationship = "relationship";
 
     //Test
-    private static final String testTable = "test";
+    private static final String testTable = database +"."+"test";
     private static final String testID = "testID";
     private static final String testStartDate = "testStartDate";
     private static final String testType = "testType";
@@ -41,8 +41,8 @@ public class MySQL {
 
     //Event
     private static final String eventTable = "event";
-    private static final String genotypeTable = "genotype";
-    private static final String plasmaTable = "plasma";
+    private static final String genotypeTable = database +"."+"genotype";
+    private static final String plasmaTable = database +"."+"plasma";
     private static final String eventID = "eventID";
     private static final String genotypeID = "genotypeID";
     private static final String plasmaID = "plasmaID";
@@ -55,7 +55,7 @@ public class MySQL {
     private static final String plasmaGestation = "plasmaGestation";
 
     //Filtered
-    private static final String filteredTable = "filtered";
+    private static final String filteredTable = database +"."+"filtered";
     private static final String date = "date";
     private static final String motherName = "motherName";
     private static final String maternalPatientId = "maternalPatientId";
@@ -72,20 +72,20 @@ public class MySQL {
     private static final String confirmation = "confirmation";
 
     //ExcelHash
-    private static final String hashTable = "hash";
+    private static final String hashTable = database +"."+"hash";
 
     //Drop Table
-    public static String dropCaseTable = "DROP TABLE "+ database +"."+ caseTable;
-    public static String dropSampleTable = "DROP TABLE "+ database +"."+ sampleTable;
-    public static String dropPatientTable = "DROP TABLE "+ database +"."+ patientTable;
-    public static String dropTestTable = "DROP TABLE "+ database +"."+ testTable;
-    public static String dropGenotypeTable = "DROP TABLE "+ database +"."+ genotypeTable;
-    public static String dropPlasmaTable = "DROP TABLE "+ database +"."+ plasmaTable;
-    public static String dropFilteredTable = "DROP TABLE "+ database +"."+ filteredTable;
-    public static String dropHashTable = "DROP TABLE "+ database +"."+ hashTable;
+    public static String dropCaseTable = "DROP TABLE "+ caseTable;
+    public static String dropSampleTable = "DROP TABLE "+ sampleTable;
+    public static String dropPatientTable = "DROP TABLE "+ patientTable;
+    public static String dropTestTable = "DROP TABLE "+ testTable;
+    public static String dropGenotypeTable = "DROP TABLE "+ genotypeTable;
+    public static String dropPlasmaTable = "DROP TABLE "+ plasmaTable;
+    public static String dropFilteredTable = "DROP TABLE "+ filteredTable;
+    public static String dropHashTable = "DROP TABLE "+ hashTable;
 
     //Create Table
-    public static String createCaseTable = "CREATE TABLE "+ database +"."+ caseTable +" (" +
+    public static String createCaseTable = "CREATE TABLE "+ caseTable +" (" +
             caseID +" varchar(16) NOT NULL, " +
             motherLastName +" varchar(45) DEFAULT NULL, " +
             motherFirstName +" varchar(45) DEFAULT NULL, " +
@@ -97,21 +97,21 @@ public class MySQL {
             rowHash +" int DEFAULT NULL, " +
             "PRIMARY KEY ("+ caseID +")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
-    public static String createSampleTable = "CREATE TABLE "+ database +"."+ sampleTable +" (" +
+    public static String createSampleTable = "CREATE TABLE "+ sampleTable +" (" +
             sampleID +" varchar(16) NOT NULL, " +
             dateReceived +" date DEFAULT NULL, " +
             testID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             patientID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             "PRIMARY KEY ("+ sampleID +")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
-    public static String createPatientTable = "CREATE TABLE " + database +"."+ patientTable +" (" +
+    public static String createPatientTable = "CREATE TABLE " + patientTable +" (" +
             patientID +" varchar(16) NOT NULL, " +
             lastName +" varchar(45) DEFAULT NULL, " +
             firstName +" varchar(45) DEFAULT NULL, " +
             relationship +" varchar(4) DEFAULT NULL, " +
             "PRIMARY KEY ("+ patientID +")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
-    public static String createTestTable = "CREATE TABLE " + database +"." + testTable + " (" +
+    public static String createTestTable = "CREATE TABLE " + testTable + " (" +
             testID +" varchar(16) NOT NULL, " +
             testStartDate +" date DEFAULT NULL, " +
             testType +" varchar(16) DEFAULT NULL, " +
@@ -121,7 +121,7 @@ public class MySQL {
             caseID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             "PRIMARY KEY ("+ testID + ")" +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
-    public static String createGenotypeTable = "CREATE TABLE "+ database +"."+ genotypeTable+ " ("+
+    public static String createGenotypeTable = "CREATE TABLE "+ genotypeTable+ " ("+
             genotypeID +" MEDIUMINT NOT NULL AUTO_INCREMENT, "+
             eventDate +" date NOT NULL, "+
             primerSet +" varchar(16) DEFAULT NULL, "+
@@ -129,7 +129,7 @@ public class MySQL {
             testID +" varchar(16) DEFAULT NULL COMMENT 'Future FK', " +
             "PRIMARY KEY ("+ genotypeID + ")" +
             ") AUTO_INCREMENT = 1 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
-    public static String createPlasmaTable = "CREATE TABLE "+ database +"."+ plasmaTable+ " ("+
+    public static String createPlasmaTable = "CREATE TABLE "+ plasmaTable+ " ("+
             plasmaID +" MEDIUMINT NOT NULL AUTO_INCREMENT, " +
             eventDate +" date NOT NULL, "+
             plasmaNumber +" varchar(16) DEFAULT NULL, "+
@@ -140,7 +140,7 @@ public class MySQL {
             "PRIMARY KEY ("+ plasmaID + ")" +
             ") AUTO_INCREMENT = 1 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
     //Set high upper limit for cell character count
-    public static String createFilteredTable = "CREATE TABLE " + database +"."+ filteredTable + " (" +
+    public static String createFilteredTable = "CREATE TABLE " + filteredTable + " (" +
             caseID +" varchar(100) NOT NULL, " +
             date +" varchar(100) DEFAULT NULL, "+
             motherName +" varchar(100) DEFAULT NULL, "+
@@ -158,7 +158,7 @@ public class MySQL {
             confirmation +" varchar(100) DEFAULT NULL, "+
             "PRIMARY KEY ("+ caseID +") " +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
-    public static String createHashTable = "CREATE TABLE " + database +"."+ hashTable + " (" +
+    public static String createHashTable = "CREATE TABLE " + hashTable + " (" +
             caseID +" varchar(100) NOT NULL, " +
             date +" int DEFAULT NULL, "+
             motherName +" int DEFAULT NULL, "+
@@ -179,7 +179,7 @@ public class MySQL {
 
     //Insert Into Table
     //Parameterized Statements: Update DTOs if columns are added, removed, or switched!
-    public static String insertCase = "INSERT INTO "+ database +"."+ caseTable +" (" +
+    public static String insertCase = "INSERT INTO "+ caseTable +" (" +
             caseID +", " +
             motherLastName +", " +
             motherFirstName +", " +
@@ -190,19 +190,19 @@ public class MySQL {
             result +", " +
             rowHash +") VALUES(" +
             "?,?,?,?,?,?,?,?,?)";
-    public static String insertSample = "INSERT INTO "+ database +"."+ sampleTable +" (" +
+    public static String insertSample = "INSERT INTO "+ sampleTable +" (" +
             sampleID +", " +
             dateReceived +", " +
             testID +", " +
             patientID +") VALUES("+
             "?,?,?,?)";
-    public static String insertPatient = "INSERT INTO " + database +"."+ patientTable +" (" +
+    public static String insertPatient = "INSERT INTO " + patientTable +" (" +
             patientID + ", " +
             lastName +", " +
             firstName +", " +
             relationship + ") VALUES(" +
             "?,?,?,?)";
-    public static String insertTest = "INSERT INTO " + database +"." + testTable +" (" +
+    public static String insertTest = "INSERT INTO " + testTable +" (" +
             testID + ", " +
             testStartDate + ", " +
             testType + ", " +
@@ -211,13 +211,13 @@ public class MySQL {
             legal + ", " +
             caseID + ") VALUES(" +
             "?,?,?,?,?,?,?)";
-    public static String insertGenotype = "INSERT INTO " + database + "."+ genotypeTable + " (" +
+    public static String insertGenotype = "INSERT INTO " + genotypeTable + " (" +
             eventDate +", "+
             primerSet +", "+
             performedBy +", "+
             testID +") VALUES(" +
             "?,?,?,?)";
-    public static String insertPlasma = "INSERT INTO " + database + "."+ plasmaTable + " (" +
+    public static String insertPlasma = "INSERT INTO " + plasmaTable + " (" +
             eventDate +", "+
             plasmaNumber +", "+
             plasmaUsed +", "+
@@ -225,7 +225,7 @@ public class MySQL {
             performedBy +", "+
             testID +") VALUES(" +
             "?,?,?,?,?,?)";
-    public static String insertFilteredCase = "INSERT INTO " + database +"." + filteredTable +" (" +
+    public static String insertFilteredCase = "INSERT INTO " + filteredTable +" (" +
             caseID + ", " +
             date + ", " +
             motherName + ", " +
@@ -242,7 +242,7 @@ public class MySQL {
             result + ", " +
             confirmation + ") VALUES(" +
             "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    public static String insertHash = "INSERT INTO " + database +"." + hashTable +" (" +
+    public static String insertHash = "INSERT INTO " + hashTable +" (" +
             caseID + ", " +
             date + ", " +
             motherName + ", " +
@@ -262,26 +262,28 @@ public class MySQL {
 
 
     //Select From Table
-    public static String selectCaseByID = "SELECT * FROM "+ database +"."+ caseTable +" WHERE "+ caseID +" = ? LIMIT 1";
-    public static String selectFilteredCaseByID = "SELECT * FROM "+ database +"."+ filteredTable + " WHERE "+ caseID +" = ? LIMIT 1";
-    public static String selectHashByID = "SELECT * FROM "+ database +"."+ hashTable + " WHERE "+ caseID +" = ? LIMIT 1";
-    public static String selectSampleIDsByTestID = "SELECT "+ sampleID +" FROM "+ database +"."+ sampleTable +" WHERE "+ testID + " = ?";
+    public static String selectCaseByID = "SELECT * FROM "+ caseTable +" WHERE "+ caseID +" = ? LIMIT 1";
+    public static String selectFilteredCaseByID = "SELECT * FROM "+ filteredTable + " WHERE "+ caseID +" = ? LIMIT 1";
+    public static String selectHashByID = "SELECT * FROM "+ hashTable + " WHERE "+ caseID +" = ? LIMIT 1";
+    public static String selectSampleIDsByTestID = "SELECT "+ sampleID +" FROM "+ sampleTable +" WHERE "+ testID + " = ?";
+    public static String selectSampleIDsByPatientID = "SELECT " + sampleID +" FROM "+ sampleTable +" WHERE "+ patientID +" = ?";
 
     //Update
-    public static String updateCaseResult = "UPDATE "+ database +"."+ caseTable +" SET " + result + " = ? WHERE "+ caseID + " = ?";
-    public static String updateMotherName = "UPDATE "+ database +"."+ caseTable +" SET " + motherLastName +" = ?, "+ motherFirstName +" = ? WHERE "+ caseID + " = ?";
-    public static String updateGestation = "UPDATE "+ database +"."+ testTable +" SET " + gestation + " = ? WHERE "+ testID + " = ?";
-    public static String updateGender = "UPDATE "+ database +"."+ caseTable +" SET " + gender + " = ? WHERE "+ caseID + " = ?";
-    public static String updateTestTypeCost = "UPDATE "+ database +"."+ testTable +" SET " + testType +" = ?, "+ cost +" = ? WHERE "+ testID + " = ?";
-    public static String updateSource = "UPDATE "+ database +"."+ caseTable +" SET " + source + " = ? WHERE "+ caseID + " = ?";
-    public static String updateSamplePatientID = "UPDATE "+ database +"."+ sampleTable +" SET " + patientID + " = ? WHERE "+ sampleID + " = ?";
+    public static String updateCaseResult = "UPDATE "+ caseTable +" SET " + result + " = ? WHERE "+ caseID + " = ?";
+    public static String updateMotherName = "UPDATE "+ caseTable +" SET " + motherLastName +" = ?, "+ motherFirstName +" = ? WHERE "+ caseID + " = ?";
+    public static String updateGestation = "UPDATE "+ testTable +" SET " + gestation + " = ? WHERE "+ testID + " = ?";
+    public static String updateGender = "UPDATE "+ caseTable +" SET " + gender + " = ? WHERE "+ caseID + " = ?";
+    public static String updateTestTypeCost = "UPDATE "+ testTable +" SET " + testType +" = ?, "+ cost +" = ? WHERE "+ testID + " = ?";
+    public static String updateSource = "UPDATE "+ caseTable +" SET " + source + " = ? WHERE "+ caseID + " = ?";
+    public static String updateSamplePatientID = "UPDATE "+ sampleTable +" SET " + patientID + " = ? WHERE "+ sampleID + " = ?";
 
     //Delete
-    public static String deleteSample = "DELETE FROM "+ database +"."+ sampleTable +" WHERE "+ sampleID +" =?";
-    public static String deletePatient = "DELETE "+ database +"."+ patientTable +
-            " FROM "+ database +"."+ sampleTable + " INNER JOIN " + database +"."+ patientTable +
+    public static String deleteSample = "DELETE FROM "+ sampleTable +" WHERE "+ sampleID +" =?";
+    public static String deletePatient = "DELETE "+ patientTable +
+            " FROM "+ sampleTable + " INNER JOIN " + patientTable +
             " ON " + sampleTable +"."+ patientID +" = "+ patientTable +"."+ patientID +
             " WHERE "+ sampleTable +"." +testID +" =?";
-    public static String deleteGenotype = "DELETE FROM "+ database +"."+ genotypeTable + " WHERE " + testID + " =?";
-    public static String deletePlasma = "DELETE FROM "+ database +"."+ plasmaTable + " WHERE " + testID + " =?";
+    public static String deleteGenotype = "DELETE FROM "+ genotypeTable + " WHERE "+ primerSet +" = ? AND "+ testID + " =?";
+    public static String deletePlasma = "DELETE FROM "+ plasmaTable + " WHERE "+ plasmaNumber +" = ? AND " + testID + " =?";
+
 }
