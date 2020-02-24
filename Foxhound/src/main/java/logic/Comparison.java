@@ -108,12 +108,13 @@ public class Comparison {
         PreparedStatement stmt = connection.prepareStatement(selectHashByID);
         stmt.setString(1,caseID);
         try{
-            HashRow newHash = new HashRow(caseID,inputRow);
+            HashRow hashRow = new HashRow(caseID,inputRow);
             ResultSet rs = stmt.executeQuery();
             HashRow storedHash = new HashRow(rs);
-            ChangeMap changeMap = new ChangeMap(newHash,storedHash);
+            ChangeMap changeMap = new ChangeMap(hashRow,storedHash);
             Updater updater = new Updater(inputRow);
             updater.updateCase(changeMap);
+            hashRow.replaceHash();
         } finally{
             connection.close();
         }

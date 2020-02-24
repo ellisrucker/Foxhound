@@ -260,8 +260,27 @@ public class MySQL {
             confirmation + ") VALUES(" +
             "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
+    //Replace
+    public static String replaceHash = "REPLACE " + hashTable +" (" +
+            caseID + ", " +
+            date + ", " +
+            motherName + ", " +
+            maternalPatientId + ", " +
+            paternalPatientId + ", " +
+            gestationGender + ", " +
+            testTypeCost + ", " +
+            referral + ", " +
+            genotypeA + ", " +
+            genotypeB + ", " +
+            firstDraw + ", " +
+            secondDraw + ", " +
+            thirdDraw + ", " +
+            result + ", " +
+            confirmation + ") VALUES(" +
+            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
-    //Select From Table
+
+    //Select
     public static String selectCaseByID = "SELECT * FROM "+ caseTable +" WHERE "+ caseID +" = ? LIMIT 1";
     public static String selectFilteredCaseByID = "SELECT * FROM "+ filteredTable + " WHERE "+ caseID +" = ? LIMIT 1";
     public static String selectHashByID = "SELECT * FROM "+ hashTable + " WHERE "+ caseID +" = ? LIMIT 1";
@@ -276,6 +295,7 @@ public class MySQL {
     public static String updateTestTypeCost = "UPDATE "+ testTable +" SET " + testType +" = ?, "+ cost +" = ? WHERE "+ testID + " = ?";
     public static String updateSource = "UPDATE "+ caseTable +" SET " + source + " = ? WHERE "+ caseID + " = ?";
     public static String updateSamplePatientID = "UPDATE "+ sampleTable +" SET " + patientID + " = ? WHERE "+ sampleID + " = ?";
+    public static String updateCaseRowHash = "UPDATE "+ caseTable + " SET " + rowHash + " = ? WHERE " + caseID + " = ?";
 
     //Delete
     public static String deleteSample = "DELETE FROM "+ sampleTable +" WHERE "+ sampleID +" =?";

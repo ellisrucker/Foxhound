@@ -76,6 +76,7 @@ public class Updater {
         if(changeMap.getResult()){
             updateResult();
         }
+        updateCaseHash();
     }
 
     private void updateMotherName() throws SQLException {
@@ -94,7 +95,6 @@ public class Updater {
             connection.close();
         }
     }
-
     private void updateSamples() throws SQLException{
         ArrayList<List<Sample>> samplesByPatient = interpreter.consolidateSamples();
         ArrayList<String> storedSampleIDs = retrieveStoredSampleIDs();
@@ -112,7 +112,6 @@ public class Updater {
         ArrayList<List<Sample>> samplesByPatient = interpreter.consolidateSamples();
         deleteAndReplacePatients(samplesByPatient);
     }
-
     private void updateGestationGender() throws SQLException{
         Integer gestation = interpreter.findFirstGestation();
         String gender = interpreter.findFirstGender();
@@ -157,7 +156,6 @@ public class Updater {
             connection.close();
         }
     }
-
     private void updateGenotypeA() throws SQLException {
         //Delete from PrimerSet A
         deleteGenotypes(Event.PrimerSet.A);
@@ -210,6 +208,19 @@ public class Updater {
         }
     }
     private void updateConfirmation(){}
+
+    private void updateCaseHash() throws SQLException {
+        Integer hash = inputRow.hashCode();
+        Connection connection = DbManager.openConnection();
+        PreparedStatement stmt = connection.prepareStatement(updateCaseRowHash);
+        try{
+            stmt.setInt(1, hash);
+            stmt.setString(2, caseID);
+            stmt.executeUpdate();
+        } finally {
+            connection.close();
+        }
+    }
 
 
     //Sample and Patient Update Methods
