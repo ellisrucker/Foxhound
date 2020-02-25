@@ -34,6 +34,7 @@ public class Iterator {
         DbManager.initializePlasmaTable();
         DbManager.initializeFilteredTable();
         DbManager.initializeHashTable();
+        DbManager.initializeLogTable();
 
         //Pre-filter Complex Cases
         CSVReader filterReader = new CSVReaderBuilder(new FileReader(finalCSV)).withSkipLines(1).build();
@@ -60,7 +61,7 @@ public class Iterator {
 
             while ((currentRow = reader.readNext()) != null) {
                 ExcelRow newRow = new ExcelRow(currentRow);
-                Comparison rowComparison = new Comparison(newRow);
+                Comparison rowComparison = new Comparison(newRow,csv.getName());
                 rowComparison.evaluateCase();
             }
         }

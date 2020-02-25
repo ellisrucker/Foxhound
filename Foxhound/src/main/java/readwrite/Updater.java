@@ -1,7 +1,7 @@
 package readwrite;
 
 import DataTransferObject.*;
-import IntermediateObject.ChangeMap;
+import DataTransferObject.Log;
 import logic.Interpreter;
 
 import java.sql.*;
@@ -41,42 +41,44 @@ public class Updater {
         dateUpdated = interpreter.findRowDate();
     }
     //TODO: replace with Switch Statement
-    public void updateCase(ChangeMap changeMap) throws SQLException {
-        if(changeMap.getMotherName()){
+    public void updateCase(Log log) throws SQLException, ParseException {
+        if(log.getMotherName()){
             updateMotherName();
         }
-        if((changeMap.getMaternalPatientId())||(changeMap.getPaternalPatientId())){
+        if((log.getMaternalPatientId())||(log.getPaternalPatientId())){
             updatePatients();
             updateSamples();
         }
-        if(changeMap.getGestationGender()){
+        if(log.getGestationGender()){
             updateGestationGender();
         }
-        if(changeMap.getTestTypeCost()){
+        if(log.getTestTypeCost()){
             updateTestTypeCost();
         }
-        if(changeMap.getReferral()){
+        if(log.getReferral()){
             updateSource();
         }
-        if(changeMap.getGenotypeA()){
+        if(log.getGenotypeA()){
             updateGenotypeA();
         }
-        if(changeMap.getGenotypeB()){
+        if(log.getGenotypeB()){
             updateGenotypeB();
         }
-        if(changeMap.getFirstDraw()){
+        if(log.getFirstDraw()){
             updateFirstDraw();
         }
-        if(changeMap.getSecondDraw()){
+        if(log.getSecondDraw()){
             updateSecondDraw();
         }
-        if(changeMap.getThirdDraw()){
+        if(log.getThirdDraw()){
             updateThirdDraw();
         }
-        if(changeMap.getResult()){
+        if(log.getResult()){
             updateResult();
         }
         updateCaseHash();
+        log.setDateUpdated(interpreter.findRowDate());
+        log.insertNewLog();
     }
 
     private void updateMotherName() throws SQLException {

@@ -524,7 +524,6 @@ public class Interpreter {
                 return true;
             }
             else {
-                System.out.println(inputRow.getMotherName() + ": Irregular ID Quantity");
                 return false;
             }
         } catch(Exception e){
@@ -539,7 +538,6 @@ public class Interpreter {
         }
         ArrayList<String> stringList = isolateGestationGender(inputRow.getGestationGender());
         if(stringList.size() > 1){
-            System.out.println(inputRow.getMotherName() + ": MultipleGestationGenders");
             return true;
         }
         else {
@@ -552,7 +550,6 @@ public class Interpreter {
         }
         ArrayList<String> stringList = isolateTestTypeCost(inputRow.getTestTypeCost());
         if(stringList.size() > 1){
-            System.out.println(inputRow.getMotherName() + ": MultipleTestTypeCosts");
             return true;
         }
         else {
@@ -565,7 +562,6 @@ public class Interpreter {
         }
         ArrayList<String> stringList = isolateResults(inputRow.getResult());
         if(stringList.size() > 1){
-            System.out.println(inputRow.getMotherName() + ": Multiple Results");
             return true;
         }
         else {
@@ -579,7 +575,6 @@ public class Interpreter {
         }
         Matcher matcher = Pattern.compile("[\\w]").matcher(cell);
         if (matcher.find()) {
-            System.out.println(inputRow.getMotherName() + ": Confirmation Detected");
             return true;
         } else {
             return false;
@@ -591,14 +586,12 @@ public class Interpreter {
         if (genotypeA != null) {
             Matcher matcherX = Pattern.compile("[Xx][^Gg]").matcher(genotypeA);
             if (matcherX.find()){
-                System.out.println("X Genotype found");
                 return true;
             }
         }
         if (genotypeB != null) {
             Matcher matcherY = Pattern.compile("(?<![Mm])[Yy]").matcher(genotypeB);
             if(matcherY.find()) {
-                System.out.println("Y Genotype found");
                 return true;
             }
         }

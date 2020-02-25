@@ -138,5 +138,20 @@ public class DbManager {
             connection.close();
         }
     }
+    public static void initializeLogTable() throws SQLException{
+        Connection connection = openConnection();
+        try {
+            PreparedStatement dropStmt = connection.prepareStatement(dropLogTable);
+            PreparedStatement createStmt = connection.prepareStatement(createLogTable);
+            try {
+                dropStmt.executeUpdate();
+                createStmt.executeUpdate();
+            } catch (Exception e){
+                createStmt.executeUpdate();
+            }
+        } finally {
+            connection.close();
+        }
+    }
 
 }

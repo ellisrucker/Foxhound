@@ -74,6 +74,12 @@ public class MySQL {
     //ExcelHash
     private static final String hashTable = database +"."+"hash";
 
+    //Log
+    private static final String logTable = database +"."+"log";
+    private static final String dateUpdated = "dateUpdated";
+    private static final String fileName = "fileName";
+    private static final String logID = "logID";
+
     //Drop Table
     public static String dropCaseTable = "DROP TABLE "+ caseTable;
     public static String dropSampleTable = "DROP TABLE "+ sampleTable;
@@ -83,6 +89,7 @@ public class MySQL {
     public static String dropPlasmaTable = "DROP TABLE "+ plasmaTable;
     public static String dropFilteredTable = "DROP TABLE "+ filteredTable;
     public static String dropHashTable = "DROP TABLE "+ hashTable;
+    public static String dropLogTable = "DROP TABLE " + logTable;
 
     //Create Table
     public static String createCaseTable = "CREATE TABLE "+ caseTable +" (" +
@@ -176,6 +183,27 @@ public class MySQL {
             confirmation +" int DEFAULT NULL, "+
             "PRIMARY KEY ("+ caseID +") " +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+    public static String createLogTable = "CREATE TABLE " + logTable + " (" +
+            logID +" MEDIUMINT NOT NULL AUTO_INCREMENT, " +
+            caseID +" varchar(16) DEFAULT NULL, " +
+            dateUpdated +" date DEFAULT NULL, " +
+            fileName +" varchar(45) DEFAULT NULL, " +
+            date +" tinyint(1) DEFAULT '0', " +
+            motherName +" tinyint(1) DEFAULT '0', " +
+            maternalPatientId +" tinyint(1) DEFAULT '0', " +
+            paternalPatientId +" tinyint(1) DEFAULT '0', " +
+            gestationGender +" tinyint(1) DEFAULT '0', " +
+            testTypeCost +" tinyint(1) DEFAULT '0', " +
+            referral +" tinyint(1) DEFAULT '0', " +
+            genotypeA +" tinyint(1) DEFAULT '0', " +
+            genotypeB +" tinyint(1) DEFAULT '0', " +
+            firstDraw +" tinyint(1) DEFAULT '0', " +
+            secondDraw +" tinyint(1) DEFAULT '0', " +
+            thirdDraw +" tinyint(1) DEFAULT '0', " +
+            result +" tinyint(1) DEFAULT '0', " +
+            confirmation +" tinyint(1) DEFAULT '0', " +
+            "PRIMARY KEY ("+ logID +") " +
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
 
     //Insert Into Table
     //Parameterized Statements: Update DTOs if columns are added, removed, or switched!
@@ -259,6 +287,25 @@ public class MySQL {
             result + ", " +
             confirmation + ") VALUES(" +
             "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    public static String insertLog = "INSERT INTO " + logTable +" (" +
+            caseID + ", " +
+            dateUpdated + ", " +
+            fileName + ", " +
+            date + ", " +
+            motherName + ", " +
+            maternalPatientId + ", " +
+            paternalPatientId + ", " +
+            gestationGender + ", " +
+            testTypeCost + ", " +
+            referral + ", " +
+            genotypeA + ", " +
+            genotypeB + ", " +
+            firstDraw + ", " +
+            secondDraw + ", " +
+            thirdDraw + ", " +
+            result + ", " +
+            confirmation + ") VALUES (" +
+            "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
     //Replace
     public static String replaceHash = "REPLACE " + hashTable +" (" +

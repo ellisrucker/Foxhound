@@ -1,12 +1,13 @@
 package logic;
 
 import DataTransferObject.HashRow;
-import IntermediateObject.ChangeMap;
+import DataTransferObject.Log;
 import readwrite.Creator;
 import readwrite.DbManager;
 import DataTransferObject.ExcelRow;
 import readwrite.Updater;
 
+import java.io.File;
 import java.sql.*;
 import java.text.ParseException;
 
@@ -18,13 +19,14 @@ public class Comparison {
     private ExcelRow inputRow;
     private String caseID;
     private Integer newRowHash;
-
+    private String fileName;
 
     //Constructors
-    public Comparison (ExcelRow inputRow){
+    public Comparison (ExcelRow inputRow, String fileName){
         Interpreter interpreter = new Interpreter(inputRow);
         this.inputRow = inputRow;
         caseID = interpreter.findFirstMaternalSampleID();
+        this.fileName = fileName;
     }
 
 
@@ -63,7 +65,6 @@ public class Comparison {
             else {
                 return false;
             }
-
         } finally {
             connection.close();
         }
@@ -108,13 +109,14 @@ public class Comparison {
         PreparedStatement stmt = connection.prepareStatement(selectHashByID);
         stmt.setString(1,caseID);
         try{
-            HashRow hashRow = new HashRow(caseID,inputRow);
             ResultSet rs = stmt.executeQuery();
             HashRow storedHash = new HashRow(rs);
-            ChangeMap changeMap = new ChangeMap(hashRow,storedHash);
+            HashRow newHash = new HashRow(caseID,inputRow);
+
+            Log log = new Log(newHash,storedHash,fileName);
             Updater updater = new Updater(inputRow);
-            updater.updateCase(changeMap);
-            hashRow.replaceHash();
+            updater.updateCase(log);
+            newHash.replaceHash();
         } finally{
             connection.close();
         }
