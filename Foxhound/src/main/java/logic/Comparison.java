@@ -18,8 +18,8 @@ public class Comparison {
 
     private ExcelRow inputRow;
     private String caseID;
-    private Integer newRowHash;
     private String fileName;
+    private Connection dbConnection;
 
     //Constructors
     public Comparison (ExcelRow inputRow, String fileName){
@@ -27,6 +27,28 @@ public class Comparison {
         this.inputRow = inputRow;
         caseID = interpreter.findFirstMaternalSampleID();
         this.fileName = fileName;
+    }
+
+    public void evaluateCase() throws SQLException, ParseException {
+        dbConnection = DbManager.openConnection();
+        try {
+            boolean caseExists = caseExists();
+            boolean caseIsFiltered = caseHasBeenFiltered();
+            if(!caseExists && !caseIsFiltered) {
+                Creator creator = new Creator(inputRow);
+                creator.generateNewCase();
+            } else {
+                if(!caseIsFiltered && caseHasChanged()) {
+                    implementUpdates();
+                }
+            }
+            //TODO: Add catch to log errors
+        } catch(Exception e) {
+            dbConnection.rollback();
+            //TODO: Create Error and add to Error Table, commit
+        } finally {
+            dbConnection.close();
+        }
     }
 
 
@@ -37,91 +59,65 @@ public class Comparison {
     to call rs.beforeFirst() to reset cursor to default position,
     just before the first row. Or use Do-While loop.
     */
-    public boolean caseExists() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
+    private boolean caseExists() throws SQLException {
+        PreparedStatement stmt = dbConnection.prepareStatement(selectCaseByID);
         stmt.setString(1,caseID);
-        try {
-            ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        } finally {
-            connection.close();
-        }
+        ResultSet rs = stmt.executeQuery();
+        return rs.next();
     }
-    public boolean caseHasBeenFiltered() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(selectFilteredCaseByID);
+    private boolean caseHasBeenFiltered() throws SQLException {
+        PreparedStatement stmt = dbConnection.prepareStatement(selectFilteredCaseByID);
         stmt.setString(1,caseID);
-        try {
-            ResultSet rs = stmt.executeQuery();
-            if(rs.next()){
-                return true;
-            }
-            else {
-                return false;
-            }
-        } finally {
-            connection.close();
-        }
+        ResultSet rs = stmt.executeQuery();
+        return rs.next();
     }
-    public void evaluateCase() throws SQLException, ParseException {
-        Boolean caseExists = caseExists();
-        Boolean caseIsFiltered = caseHasBeenFiltered();
-        if(!caseExists && !caseIsFiltered) {
-            Creator creator = new Creator(inputRow);
-            creator.generateNewCase();
-        } else {
-            if(!caseIsFiltered && caseHasChanged()) {
-                implementUpdates();
-
-            }
-        }
-    }
-    public boolean caseHasChanged() throws SQLException{
-        newRowHash = inputRow.hashCode();
+    private boolean caseHasChanged() throws SQLException{
+        int newRowHash = inputRow.hashCode();
         int storedRowHash = retrieveStoredHashRow();
-        boolean caseChanged = (newRowHash != storedRowHash);
-        return caseChanged;
+        return (newRowHash != storedRowHash);
     }
     private int retrieveStoredHashRow() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(selectCaseByID);
+        PreparedStatement stmt = dbConnection.prepareStatement(selectCaseByID);
         stmt.setString(1, caseID);
         int storedRowHash = 0;
-        try {
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                storedRowHash = rs.getInt(9);
-            }
-            return storedRowHash;
-        }finally {
-            connection.close();
+        ResultSet rs = stmt.executeQuery();
+        while (rs.next()) {
+            storedRowHash = rs.getInt(9);
         }
+        return storedRowHash;
     }
 
     private void implementUpdates() throws SQLException, ParseException{
-        Connection connection = DbManager.openConnection();
-        PreparedStatement stmt = connection.prepareStatement(selectHashByID);
+        PreparedStatement stmt = dbConnection.prepareStatement(selectHashByID);
         stmt.setString(1,caseID);
-        try{
-            ResultSet rs = stmt.executeQuery();
-            HashRow storedHash = new HashRow(rs);
-            HashRow newHash = new HashRow(caseID,inputRow);
+        ResultSet rs = stmt.executeQuery();
+        HashRow storedHash = new HashRow(rs);
+        HashRow newHash = new HashRow(caseID,inputRow);
 
-            Log log = new Log(newHash,storedHash,fileName);
-            Updater updater = new Updater(inputRow);
-            updater.updateCase(log);
-            newHash.replaceHash();
-        } finally{
-            connection.close();
-        }
+        Log log = new Log(newHash,storedHash,fileName);
+        Updater updater = new Updater(inputRow);
+        updater.updateCase(log);
+        replaceHash(newHash);
     }
 
-
+    private void replaceHash(HashRow hashRow) throws SQLException {
+        PreparedStatement stmt = dbConnection.prepareStatement(replaceHash);
+        stmt.setString(1,caseID);
+        stmt.setInt(2,hashRow.getDate());
+        stmt.setInt(3,hashRow.getMotherName());
+        stmt.setInt(4,hashRow.getMaternalPatientId());
+        stmt.setInt(5,hashRow.getPaternalPatientId());
+        stmt.setInt(6,hashRow.getGestationGender());
+        stmt.setInt(7,hashRow.getTestTypeCost());
+        stmt.setInt(8,hashRow.getReferral());
+        stmt.setInt(9,hashRow.getGenotypeA());
+        stmt.setInt(10,hashRow.getGenotypeB());
+        stmt.setInt(11,hashRow.getFirstDraw());
+        stmt.setInt(12,hashRow.getSecondDraw());
+        stmt.setInt(13,hashRow.getThirdDraw());
+        stmt.setInt(14,hashRow.getReferral());
+        stmt.setInt(15,hashRow.getConfirmation());
+        stmt.executeUpdate();
+    }
 
 }

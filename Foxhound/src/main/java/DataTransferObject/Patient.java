@@ -29,20 +29,6 @@ public class Patient {
         relationship = sample.getRelation();
     }
 
-    public void insertNewPatient() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try{
-            PreparedStatement stmt = connection.prepareStatement(insertPatient);
-            stmt.setString(1,patientID);
-            stmt.setString(2,lastName);
-            stmt.setString(3,firstName);
-            stmt.setString(4,relationship.name());
-            stmt.executeUpdate();
-        } finally{
-            connection.close();
-        }
-    }
-
     //Setters & Getters
     public void setPatientID(String patientID){
         this.patientID = patientID;

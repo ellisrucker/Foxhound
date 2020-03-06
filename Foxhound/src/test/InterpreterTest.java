@@ -212,26 +212,4 @@ public class InterpreterTest {
         assertEquals(false, interpreter.caseIsComplex());
     }
 
-
-    /*
-    @Ignore
-    //Method performs as expected, but fails test due to differences in list order
-    public void groupIDsByPatient_sortsSampleStrings_whenPassedCell(){
-        String cell = "EDWE1911013(P1) EDWE1911012(P1) ALPE1911014(p2) ROYM1911015(P3) swab1911016(p3)";
-        SampleString ss1 = new SampleString("EDWE1911012(P1)","EDWE1911012", SampleString.Relation.P1);
-        SampleString ss2 = new SampleString("EDWE1911013(P1)","EDWE1911013", SampleString.Relation.P1);
-        SampleString ss3 = new SampleString("ALPE1911014(p2)", "ALPE1911014", SampleString.Relation.P2);
-        SampleString ss4 = new SampleString("ROYM1911015(P3)", "ROYM1911015", SampleString.Relation.P3);
-        SampleString ss5 = new SampleString("swab1911016(p3)","swab1911016", SampleString.Relation.P3);
-        List<SampleString> p1Samples = Arrays.asList(ss1,ss2);
-        List<SampleString> p2Samples = Arrays.asList(ss3);
-        List<SampleString> p3Samples = Arrays.asList(ss4,ss5);
-        Set<List<SampleString>> expected = new HashSet<>(Arrays.asList(p1Samples,p2Samples,p3Samples));
-        Interpreter interpreter = new Interpreter(cell);
-        Set<List<SampleString>> actual = interpreter.groupIDsByPatient()
-                .stream()
-                .collect(Collectors.toSet());
-        assertEquals(actual,expected);
-
-    }*/
 }

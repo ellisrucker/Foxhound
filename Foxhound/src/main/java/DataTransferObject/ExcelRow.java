@@ -72,36 +72,10 @@ public class ExcelRow {
         confirmation = currentRow[17];
     }
 
-    //Data Access
-    public void insertNewFilteredCase() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try {
-            PreparedStatement stmt = connection.prepareStatement(insertFilteredCase);
-            stmt.setString(1,caseID);
-            stmt.setString(2,date);
-            stmt.setString(3,motherName);
-            stmt.setString(4,maternalPatientId);
-            stmt.setString(5,paternalPatientId);
-            stmt.setString(6,gestationGender);
-            stmt.setString(7,testTypeCost);
-            stmt.setString(8,referral);
-            stmt.setString(9,genotypeA);
-            stmt.setString(10,genotypeB);
-            stmt.setString(11,firstDraw);
-            stmt.setString(12,secondDraw);
-            stmt.setString(13,thirdDraw);
-            stmt.setString(14,result);
-            stmt.setString(15,confirmation);
-            stmt.executeUpdate();
-        } finally {
-            connection.close();
-        }
-    }
 
     //Setters and Getters
 
     //Setters are for Unit Testing Only
-    //Class fields will ultimately be declared final
     public void setDate(String newDate){
         date = newDate;
     }

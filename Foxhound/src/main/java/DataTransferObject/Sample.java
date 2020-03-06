@@ -57,23 +57,6 @@ public class Sample implements Comparable<Sample> {
                 && s.relation == this.relation;
     }
 
-    //Data Access
-    public void insertNewSample () throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try {
-            PreparedStatement stmt = connection.prepareStatement(insertSample);
-            stmt.setString(1,sampleID);
-            stmt.setObject(2,dateReceived);
-            stmt.setString(3,testID);
-            stmt.setString(4,patientID);
-            stmt.executeUpdate();
-        } finally {
-            connection.close();
-        }
-    }
-
-
-
 
     //Setters and Getters
     public void setSampleID(String id){

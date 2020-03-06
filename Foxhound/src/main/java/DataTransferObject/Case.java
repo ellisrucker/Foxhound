@@ -41,26 +41,6 @@ public class Case {
         rowHash = newRow.hashCode();
     }
 
-    //Data Access Logic
-    public void insertNewCase() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try {
-            PreparedStatement stmt = connection.prepareStatement(insertCase);
-            stmt.setString(1,id);
-            stmt.setString(2,motherLastName);
-            stmt.setString(3,motherFirstName);
-            stmt.setObject(4,dateStarted);
-            stmt.setString(5,gender);
-            stmt.setBoolean(6,twins);
-            stmt.setString(7,source);
-            stmt.setString(8,result);
-            stmt.setInt(9,rowHash);
-            stmt.executeUpdate();
-        } finally {
-            connection.close();
-        }
-
-    }
 
     //Setters and Getters
     public String getId() {
@@ -80,5 +60,14 @@ public class Case {
     }
     public boolean getTwins(){
         return twins;
+    }
+    public String getSource() {
+        return source;
+    }
+    public String getResult(){
+        return result;
+    }
+    public Integer getRowHash(){
+        return rowHash;
     }
 }

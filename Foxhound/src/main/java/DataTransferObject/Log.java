@@ -1,13 +1,8 @@
 package DataTransferObject;
 
-import readwrite.DbManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static readwrite.MySQL.insertLog;
 
 public class Log {
 
@@ -50,34 +45,6 @@ public class Log {
         thirdDraw = (!newHash.getThirdDraw().equals(storedHash.getThirdDraw()));
         result = (!newHash.getResult().equals(storedHash.getResult()));
         confirmation = (!newHash.getConfirmation().equals(storedHash.getConfirmation()));
-    }
-
-    //Data Access
-    public void insertNewLog() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try {
-            PreparedStatement stmt = connection.prepareStatement(insertLog);
-            stmt.setString(1,caseID);
-            stmt.setObject(2,dateUpdated);
-            stmt.setString(3,fileName);
-            stmt.setBoolean(4,date);
-            stmt.setBoolean(5,motherName);
-            stmt.setBoolean(6,maternalPatientId);
-            stmt.setBoolean(7,paternalPatientId);
-            stmt.setBoolean(8,gestationGender);
-            stmt.setBoolean(9,testTypeCost);
-            stmt.setBoolean(10,referral);
-            stmt.setBoolean(11,genotypeA);
-            stmt.setBoolean(12,genotypeB);
-            stmt.setBoolean(13,firstDraw);
-            stmt.setBoolean(14,secondDraw);
-            stmt.setBoolean(15,thirdDraw);
-            stmt.setBoolean(16,result);
-            stmt.setBoolean(17,confirmation);
-            stmt.executeUpdate();
-        } finally {
-            connection.close();
-        }
     }
 
     //Setters & Getters

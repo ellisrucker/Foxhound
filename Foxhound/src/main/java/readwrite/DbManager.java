@@ -1,5 +1,6 @@
 package readwrite;
 
+import DataTransferObject.Case;
 import com.mysql.cj.x.protobuf.MysqlxPrepare;
 
 import java.sql.*;
@@ -14,144 +15,84 @@ public class DbManager {
 
     public static Connection openConnection() throws SQLException {
         Connection dbConnection = DriverManager.getConnection(url, user, password);
+        //Set autocommit to false to allow for Rollbacks
+        dbConnection.setAutoCommit(false);
         return dbConnection;
     }
-    //TODO: Replace second try/catch block with DELETE TABLE IF EXISTS?
+
+    public static void initializeTables() throws SQLException {
+        Connection dbConnection = openConnection();
+
+        try {
+            initializeCaseTable(dbConnection);
+            initializeTestTable(dbConnection);
+            initializeSampleTable(dbConnection);
+            initializePatientTable(dbConnection);
+            initializeGenotypeTable(dbConnection);
+            initializePlasmaTable(dbConnection);
+            initializeFilteredTable(dbConnection);
+            initializeHashTable(dbConnection);
+            initializeLogTable(dbConnection);
+        } finally {
+            dbConnection.close();
+        }
+    }
+
     //Database Table initialization
-    public static void initializeCaseTable() throws SQLException {
-        Connection connection = openConnection();
-        try {
-            PreparedStatement dropStmt = connection.prepareStatement(dropCaseTable);
-            PreparedStatement createStmt = connection.prepareStatement(createCaseTable);
-            try {
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializeCaseTable(Connection dbConnection) throws SQLException {
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropCaseTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createCaseTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
+
     }
-    public static void initializeTestTable() throws SQLException {
-        Connection connection = openConnection();
-        try {
-            PreparedStatement dropStmt = connection.prepareStatement(dropTestTable);
-            PreparedStatement createStmt = connection.prepareStatement(createTestTable);
-            try{
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializeTestTable(Connection dbConnection) throws SQLException {
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropTestTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createTestTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
-    public static void initializeSampleTable() throws SQLException{
-        Connection connection = openConnection();
-        try {
-            PreparedStatement dropStmt = connection.prepareStatement(dropSampleTable);
-            PreparedStatement createStmt = connection.prepareStatement(createSampleTable);
-            try {
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializeSampleTable(Connection dbConnection) throws SQLException{
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropSampleTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createSampleTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
-    public static void initializePatientTable() throws SQLException{
-        Connection connection = openConnection();
-        try {
-            PreparedStatement dropStmt = connection.prepareStatement(dropPatientTable);
-            PreparedStatement createStmt = connection.prepareStatement(createPatientTable);
-            try {
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();;
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializePatientTable(Connection dbConnection) throws SQLException{
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropPatientTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createPatientTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
-    public static void initializeGenotypeTable() throws SQLException{
-        Connection connection = openConnection();
-        try{
-            PreparedStatement dropStmt = connection.prepareStatement(dropGenotypeTable);
-            PreparedStatement createStmt = connection.prepareStatement(createGenotypeTable);
-            try{
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializeGenotypeTable(Connection dbConnection) throws SQLException{
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropGenotypeTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createGenotypeTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
-    public static void initializePlasmaTable() throws SQLException{
-        Connection connection = openConnection();
-        try{
-            PreparedStatement dropStmt = connection.prepareStatement(dropPlasmaTable);
-            PreparedStatement createStmt = connection.prepareStatement(createPlasmaTable);
-            try{
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializePlasmaTable(Connection dbConnection) throws SQLException{
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropPlasmaTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createPlasmaTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
-    public static void initializeFilteredTable() throws SQLException{
-        Connection connection = openConnection();
-        try {
-            PreparedStatement dropStmt = connection.prepareStatement(dropFilteredTable);
-            PreparedStatement createStmt = connection.prepareStatement(createFilteredTable);
-            try {
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializeFilteredTable(Connection dbConnection) throws SQLException{
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropFilteredTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createFilteredTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
-    public static void initializeHashTable() throws SQLException{
-        Connection connection = openConnection();
-        try {
-            PreparedStatement dropStmt = connection.prepareStatement(dropHashTable);
-            PreparedStatement createStmt = connection.prepareStatement(createHashTable);
-            try {
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializeHashTable(Connection dbConnection) throws SQLException{
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropHashTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createHashTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
-    public static void initializeLogTable() throws SQLException{
-        Connection connection = openConnection();
-        try {
-            PreparedStatement dropStmt = connection.prepareStatement(dropLogTable);
-            PreparedStatement createStmt = connection.prepareStatement(createLogTable);
-            try {
-                dropStmt.executeUpdate();
-                createStmt.executeUpdate();
-            } catch (Exception e){
-                createStmt.executeUpdate();
-            }
-        } finally {
-            connection.close();
-        }
+    private static void initializeLogTable(Connection dbConnection) throws SQLException{
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropLogTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createLogTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
     }
 
 }

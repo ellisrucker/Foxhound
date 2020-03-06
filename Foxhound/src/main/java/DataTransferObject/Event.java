@@ -22,7 +22,7 @@ public class Event {
     private PrimerSet primerSet;
     private PlasmaNumber plasmaNumber;
     private String plasmaUsed;
-    //Initialization avoids null pointer in stmt.setInt()
+    //Initialization avoids null pointer in stmt.setInt(): switch to int?
     private Integer plasmaGestation = 0;
 
     //Future Foreign Key
@@ -53,42 +53,6 @@ public class Event {
         this.plasmaNumber = plasmaNumber;
         performedBy = Interpreter.findPersonnel(str);
         originalString = str;
-    }
-
-    //Data Access
-    public void insertNewGenotype() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try{
-           PreparedStatement stmt = connection.prepareStatement(insertGenotype);
-           stmt.setObject(1,date);
-           stmt.setString(2,primerSet.name());
-           stmt.setString(3,performedBy);
-           stmt.setString(4,testID);
-           stmt.executeUpdate();
-        } catch(Exception e){
-            System.out.println(testID);
-            e.printStackTrace();
-        } finally {
-            connection.close();
-        }
-    }
-    public void insertNewPlasma() throws SQLException{
-        Connection connection = DbManager.openConnection();
-        try{
-            PreparedStatement stmt = connection.prepareStatement(insertPlasma);
-            stmt.setObject(1, date);
-            stmt.setString(2,plasmaNumber.name());
-            stmt.setString(3, plasmaUsed);
-            stmt.setInt(4, plasmaGestation);
-            stmt.setString(5, performedBy);
-            stmt.setString(6, testID);
-            stmt.executeUpdate();
-        } catch(Exception e){
-            System.out.println(testID);
-            e.printStackTrace();
-        } finally {
-            connection.close();
-        }
     }
 
     //Setters & Getters

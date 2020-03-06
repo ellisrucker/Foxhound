@@ -81,15 +81,15 @@ public class MySQL {
     private static final String logID = "logID";
 
     //Drop Table
-    public static String dropCaseTable = "DROP TABLE "+ caseTable;
-    public static String dropSampleTable = "DROP TABLE "+ sampleTable;
-    public static String dropPatientTable = "DROP TABLE "+ patientTable;
-    public static String dropTestTable = "DROP TABLE "+ testTable;
-    public static String dropGenotypeTable = "DROP TABLE "+ genotypeTable;
-    public static String dropPlasmaTable = "DROP TABLE "+ plasmaTable;
-    public static String dropFilteredTable = "DROP TABLE "+ filteredTable;
-    public static String dropHashTable = "DROP TABLE "+ hashTable;
-    public static String dropLogTable = "DROP TABLE " + logTable;
+    public static String dropCaseTable = "DROP TABLE IF EXISTS "+ caseTable;
+    public static String dropSampleTable = "DROP TABLE IF EXISTS "+ sampleTable;
+    public static String dropPatientTable = "DROP TABLE IF EXISTS "+ patientTable;
+    public static String dropTestTable = "DROP TABLE IF EXISTS "+ testTable;
+    public static String dropGenotypeTable = "DROP TABLE IF EXISTS "+ genotypeTable;
+    public static String dropPlasmaTable = "DROP TABLE IF EXISTS "+ plasmaTable;
+    public static String dropFilteredTable = "DROP TABLE IF EXISTS "+ filteredTable;
+    public static String dropHashTable = "DROP TABLE IF EXISTS "+ hashTable;
+    public static String dropLogTable = "DROP TABLE IF EXISTS " + logTable;
 
     //Create Table
     public static String createCaseTable = "CREATE TABLE "+ caseTable +" (" +

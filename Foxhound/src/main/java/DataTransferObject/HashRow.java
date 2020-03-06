@@ -7,7 +7,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static readwrite.MySQL.insertHash;
 import static readwrite.MySQL.replaceHash;
 
 public class HashRow {
@@ -48,6 +47,7 @@ public class HashRow {
         result = inputRow.getResult().hashCode();
         confirmation = inputRow.getConfirmation().hashCode();
     }
+    //Update column labels if MySQL column names change
     public HashRow(ResultSet rs) throws SQLException{
         rs.first();
         caseID = rs.getString("caseID");
@@ -67,54 +67,6 @@ public class HashRow {
         confirmation = rs.getInt("confirmation");
     }
 
-    public void insertNewHash() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try {
-            PreparedStatement stmt = connection.prepareStatement(insertHash);
-            stmt.setString(1,caseID);
-            stmt.setInt(2,date);
-            stmt.setInt(3,motherName);
-            stmt.setInt(4,maternalPatientId);
-            stmt.setInt(5,paternalPatientId);
-            stmt.setInt(6,gestationGender);
-            stmt.setInt(7,testTypeCost);
-            stmt.setInt(8,referral);
-            stmt.setInt(9,genotypeA);
-            stmt.setInt(10,genotypeB);
-            stmt.setInt(11,firstDraw);
-            stmt.setInt(12,secondDraw);
-            stmt.setInt(13,thirdDraw);
-            stmt.setInt(14,result);
-            stmt.setInt(15,confirmation);
-            stmt.executeUpdate();
-        } finally {
-            connection.close();
-        }
-    }
-    public void replaceHash() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try {
-            PreparedStatement stmt = connection.prepareStatement(replaceHash);
-            stmt.setString(1,caseID);
-            stmt.setInt(2,date);
-            stmt.setInt(3,motherName);
-            stmt.setInt(4,maternalPatientId);
-            stmt.setInt(5,paternalPatientId);
-            stmt.setInt(6,gestationGender);
-            stmt.setInt(7,testTypeCost);
-            stmt.setInt(8,referral);
-            stmt.setInt(9,genotypeA);
-            stmt.setInt(10,genotypeB);
-            stmt.setInt(11,firstDraw);
-            stmt.setInt(12,secondDraw);
-            stmt.setInt(13,thirdDraw);
-            stmt.setInt(14,result);
-            stmt.setInt(15,confirmation);
-            stmt.executeUpdate();
-        } finally {
-            connection.close();
-        }
-    }
     public void setDate(Integer newDate){
         date = newDate;
     }

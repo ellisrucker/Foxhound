@@ -41,26 +41,6 @@ public class Test {
         this.caseID = caseID;
     }
 
-    //Data Access
-    public void insertNewTest() throws SQLException {
-        Connection connection = DbManager.openConnection();
-        try{
-            PreparedStatement stmt = connection.prepareStatement(insertTest);
-            stmt.setString(1,testID);
-            stmt.setObject(2,dateStarted);
-            stmt.setString(3,type.name());
-            stmt.setInt(4,cost);
-            stmt.setInt(5,gestation);
-            stmt.setBoolean(6,legal);
-            stmt.setString(7,this.caseID);
-            stmt.executeUpdate();
-        } catch(Exception e) {
-            System.out.println(this.testID);
-            e.printStackTrace();
-        }finally{
-            connection.close();
-        }
-    }
 
 
     //Setters & Getters

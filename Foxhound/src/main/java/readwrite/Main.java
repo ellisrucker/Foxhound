@@ -13,7 +13,9 @@ import java.sql.*;
 import java.text.ParseException;
 import java.util.Arrays;
 
-public class Iterator {
+import static readwrite.MySQL.insertFilteredCase;
+
+public class Main {
 
 
 
@@ -26,15 +28,7 @@ public class Iterator {
         Arrays.sort(csvList);
 
         //Initialize Tables
-        DbManager.initializeCaseTable();
-        DbManager.initializeTestTable();
-        DbManager.initializeSampleTable();
-        DbManager.initializePatientTable();
-        DbManager.initializeGenotypeTable();
-        DbManager.initializePlasmaTable();
-        DbManager.initializeFilteredTable();
-        DbManager.initializeHashTable();
-        DbManager.initializeLogTable();
+        DbManager.initializeTables();
 
         //Pre-filter Complex Cases
         CSVReader filterReader = new CSVReaderBuilder(new FileReader(finalCSV)).withSkipLines(1).build();
@@ -43,11 +37,16 @@ public class Iterator {
             ExcelRow newRow = new ExcelRow(currentFilterRow);
             Interpreter interpreter = new Interpreter(newRow);
             if(interpreter.caseIsComplex()){
+                Connection dbConnection = DbManager.openConnection();
                 try {
                     newRow.setCaseID(interpreter.findFirstMaternalSampleID());
-                    newRow.insertNewFilteredCase();
+                    insertNewFilteredCase(newRow, dbConnection);
+                    dbConnection.commit();
                 } catch(Exception e) {
                     e.printStackTrace();
+                    dbConnection.rollback();
+                } finally {
+                    dbConnection.close();
                 }
             }
         }
@@ -65,8 +64,27 @@ public class Iterator {
                 rowComparison.evaluateCase();
             }
         }
+    }
 
-
+    //DML
+    private static void insertNewFilteredCase(ExcelRow row, Connection dbConnection) throws SQLException {
+            PreparedStatement stmt = dbConnection.prepareStatement(insertFilteredCase);
+            stmt.setString(1, row.getCaseID());
+            stmt.setString(2, row.getDate());
+            stmt.setString(3, row.getMotherName());
+            stmt.setString(4, row.getMaternalPatientId());
+            stmt.setString(5, row.getPaternalPatientId());
+            stmt.setString(6, row.getGestationGender());
+            stmt.setString(7, row.getTestTypeCost());
+            stmt.setString(8, row.getReferral());
+            stmt.setString(9, row.getGenotypeA());
+            stmt.setString(10, row.getGenotypeB());
+            stmt.setString(11, row.getFirstDraw());
+            stmt.setString(12, row.getSecondDraw());
+            stmt.setString(13, row.getThirdDraw());
+            stmt.setString(14, row.getResult());
+            stmt.setString(15, row.getConfirmation());
+            stmt.executeUpdate();
     }
 
 }
