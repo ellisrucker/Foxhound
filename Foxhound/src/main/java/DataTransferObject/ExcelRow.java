@@ -12,7 +12,7 @@ import java.util.Objects;
 import static readwrite.MySQL.insertFilteredCase;
 import static readwrite.MySQL.insertHash;
 
-public class ExcelRow {
+public class ExcelRow implements Insertable {
 
     //Object representation of current row
     //Each cell of currentRow becomes a String attribute
@@ -70,6 +70,26 @@ public class ExcelRow {
         thirdDraw = currentRow[13];
         result = currentRow[16];
         confirmation = currentRow[17];
+    }
+
+    public void insert(Connection dbConnection) throws SQLException {
+        PreparedStatement stmt = dbConnection.prepareStatement(insertFilteredCase);
+        stmt.setString(1,caseID);
+        stmt.setString(2,date);
+        stmt.setString(3,motherName);
+        stmt.setString(4,maternalPatientId);
+        stmt.setString(5,paternalPatientId);
+        stmt.setString(6,gestationGender);
+        stmt.setString(7,testTypeCost);
+        stmt.setString(8,referral);
+        stmt.setString(9,genotypeA);
+        stmt.setString(10,genotypeB);
+        stmt.setString(11,firstDraw);
+        stmt.setString(12,secondDraw);
+        stmt.setString(13,thirdDraw);
+        stmt.setString(14,result);
+        stmt.setString(15,confirmation);
+        stmt.executeUpdate();
     }
 
 

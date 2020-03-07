@@ -10,7 +10,7 @@ import java.time.LocalDate;
 
 import static readwrite.MySQL.*;
 
-public class Sample implements Comparable<Sample> {
+public class Sample implements Insertable, Comparable<Sample> {
 
     private String sampleID;
     private LocalDate dateReceived;
@@ -55,6 +55,15 @@ public class Sample implements Comparable<Sample> {
                 && s.testID == this.testID
                 && s.patientID == this.patientID
                 && s.relation == this.relation;
+    }
+
+    public void insert(Connection dbConnection) throws SQLException{
+        PreparedStatement stmt = dbConnection.prepareStatement(insertSample);
+        stmt.setString(1,sampleID);
+        stmt.setObject(2,dateReceived);
+        stmt.setString(3,testID);
+        stmt.setString(4,patientID);
+        stmt.executeUpdate();
     }
 
 

@@ -13,10 +13,7 @@ import java.sql.*;
 import java.text.ParseException;
 import java.util.Arrays;
 
-import static readwrite.MySQL.insertFilteredCase;
-
 public class Main {
-
 
 
     public static void main(String [] args) throws IOException, ParseException, SQLException {
@@ -40,7 +37,7 @@ public class Main {
                 Connection dbConnection = DbManager.openConnection();
                 try {
                     newRow.setCaseID(interpreter.findFirstMaternalSampleID());
-                    insertNewFilteredCase(newRow, dbConnection);
+                    newRow.insert(dbConnection);
                     dbConnection.commit();
                 } catch(Exception e) {
                     e.printStackTrace();
@@ -66,25 +63,5 @@ public class Main {
         }
     }
 
-    //DML
-    private static void insertNewFilteredCase(ExcelRow row, Connection dbConnection) throws SQLException {
-            PreparedStatement stmt = dbConnection.prepareStatement(insertFilteredCase);
-            stmt.setString(1, row.getCaseID());
-            stmt.setString(2, row.getDate());
-            stmt.setString(3, row.getMotherName());
-            stmt.setString(4, row.getMaternalPatientId());
-            stmt.setString(5, row.getPaternalPatientId());
-            stmt.setString(6, row.getGestationGender());
-            stmt.setString(7, row.getTestTypeCost());
-            stmt.setString(8, row.getReferral());
-            stmt.setString(9, row.getGenotypeA());
-            stmt.setString(10, row.getGenotypeB());
-            stmt.setString(11, row.getFirstDraw());
-            stmt.setString(12, row.getSecondDraw());
-            stmt.setString(13, row.getThirdDraw());
-            stmt.setString(14, row.getResult());
-            stmt.setString(15, row.getConfirmation());
-            stmt.executeUpdate();
-    }
 
 }

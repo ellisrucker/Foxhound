@@ -1,5 +1,6 @@
 package logic;
 
+import DataTransferObject.Error;
 import DataTransferObject.HashRow;
 import DataTransferObject.Log;
 import readwrite.Creator;
@@ -7,7 +8,6 @@ import readwrite.DbManager;
 import DataTransferObject.ExcelRow;
 import readwrite.Updater;
 
-import java.io.File;
 import java.sql.*;
 import java.text.ParseException;
 
@@ -29,23 +29,22 @@ public class Comparison {
         this.fileName = fileName;
     }
 
-    public void evaluateCase() throws SQLException, ParseException {
+    public void evaluateCase() throws SQLException {
         dbConnection = DbManager.openConnection();
         try {
-            boolean caseExists = caseExists();
-            boolean caseIsFiltered = caseHasBeenFiltered();
-            if(!caseExists && !caseIsFiltered) {
-                Creator creator = new Creator(inputRow);
+            if(!caseExists() && !caseIsBlackListed()) {
+                Creator creator = new Creator(inputRow, fileName);
                 creator.generateNewCase();
             } else {
-                if(!caseIsFiltered && caseHasChanged()) {
+                if(!caseIsBlackListed() && caseHasChanged()) {
                     implementUpdates();
                 }
             }
-            //TODO: Add catch to log errors
         } catch(Exception e) {
             dbConnection.rollback();
-            //TODO: Create Error and add to Error Table, commit
+            Error error = new Error(caseID, fileName, e);
+            error.insert(dbConnection);
+            dbConnection.commit();
         } finally {
             dbConnection.close();
         }
@@ -65,8 +64,17 @@ public class Comparison {
         ResultSet rs = stmt.executeQuery();
         return rs.next();
     }
+    private boolean caseIsBlackListed() throws SQLException {
+        return(caseHasBeenFiltered() || caseCausedError());
+    }
     private boolean caseHasBeenFiltered() throws SQLException {
         PreparedStatement stmt = dbConnection.prepareStatement(selectFilteredCaseByID);
+        stmt.setString(1,caseID);
+        ResultSet rs = stmt.executeQuery();
+        return rs.next();
+    }
+    private boolean caseCausedError() throws SQLException {
+        PreparedStatement stmt = dbConnection.prepareStatement(selectErrorByCaseID);
         stmt.setString(1,caseID);
         ResultSet rs = stmt.executeQuery();
         return rs.next();
@@ -95,7 +103,7 @@ public class Comparison {
         HashRow newHash = new HashRow(caseID,inputRow);
 
         Log log = new Log(newHash,storedHash,fileName);
-        Updater updater = new Updater(inputRow);
+        Updater updater = new Updater(inputRow, fileName);
         updater.updateCase(log);
         replaceHash(newHash);
     }

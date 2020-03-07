@@ -11,7 +11,7 @@ import readwrite.DbManager;
 import logic.Interpreter;
 import static readwrite.MySQL.*;
 
-public class Case {
+public class Case implements Insertable {
 
     private String id;
     private String motherFirstName;
@@ -39,6 +39,20 @@ public class Case {
         source = interpreter.findSource();
         result = interpreter.findResultString();
         rowHash = newRow.hashCode();
+    }
+
+    public void insert(Connection dbConnection) throws SQLException {
+        PreparedStatement stmt = dbConnection.prepareStatement(insertCase);
+        stmt.setString(1,id);
+        stmt.setString(2,motherLastName);
+        stmt.setString(3,motherFirstName);
+        stmt.setObject(4,dateStarted);
+        stmt.setString(5,gender);
+        stmt.setBoolean(6,twins);
+        stmt.setString(7,source);
+        stmt.setString(8,result);
+        stmt.setInt(9,rowHash);
+        stmt.executeUpdate();
     }
 
 

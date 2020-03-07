@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 import static readwrite.MySQL.insertPatient;
 
-public class Patient {
+public class Patient implements Insertable {
 
     private String patientID;
     private String lastName;
@@ -27,6 +27,15 @@ public class Patient {
     public Patient(Sample sample){
         patientID = sample.getSampleID();
         relationship = sample.getRelation();
+    }
+
+    public void insert(Connection dbConnection) throws SQLException{
+        PreparedStatement stmt = dbConnection.prepareStatement(insertPatient);
+        stmt.setString(1,patientID);
+        stmt.setString(2,lastName);
+        stmt.setString(3,firstName);
+        stmt.setString(4,relationship.name());
+        stmt.executeUpdate();
     }
 
     //Setters & Getters

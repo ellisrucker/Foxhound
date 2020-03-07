@@ -1,6 +1,7 @@
 package readwrite;
 
 import DataTransferObject.*;
+import DataTransferObject.Error;
 import DataTransferObject.Log;
 import logic.Interpreter;
 
@@ -24,6 +25,7 @@ public class Updater {
     private String testID;
     private LocalDate dateUpdated;
     private Connection dbConnection;
+    private String fileName;
 
     //Constructors
     public Updater(){
@@ -34,12 +36,13 @@ public class Updater {
         this.caseID = caseID;
         this.testID = testID;
     }
-    public Updater(ExcelRow inputRow) throws ParseException {
+    public Updater(ExcelRow inputRow, String fileName) throws ParseException {
         this.inputRow = inputRow;
         interpreter = new Interpreter(inputRow);
         caseID = interpreter.findFirstMaternalSampleID();
         testID = caseID + "_1";
         dateUpdated = interpreter.findRowDate();
+        this.fileName = fileName;
     }
 
     public void updateCase(Log log) throws SQLException, ParseException {
@@ -48,11 +51,13 @@ public class Updater {
             updateChangedCells(log);
             updateCaseHash();
             log.setDateUpdated(interpreter.findRowDate());
-            insertNewLog(log);
+            log.insert(dbConnection);
             dbConnection.commit();
         } catch(Exception e) {
             dbConnection.rollback();
-            //TODO: Create Error and add to Error Table, commit
+            Error error = new Error(caseID, fileName, e);
+            error.insert(dbConnection);
+            dbConnection.commit();
         } finally {
             dbConnection.close();
         }
@@ -100,11 +105,19 @@ public class Updater {
         String motherLastName = interpreter.findLastName();
         String motherFirstName = interpreter.findFirstName();
 
-        PreparedStatement stmt = dbConnection.prepareStatement(updateMotherName);
-        stmt.setString(1,motherLastName);
-        stmt.setString(2,motherFirstName);
-        stmt.setString(3,caseID);
-        stmt.executeUpdate();
+        //Update Maternal name in Case Table
+        PreparedStatement caseStmt = dbConnection.prepareStatement(updateMotherName);
+        caseStmt.setString(1,motherLastName);
+        caseStmt.setString(2,motherFirstName);
+        caseStmt.setString(3,caseID);
+        caseStmt.executeUpdate();
+
+        //Update name in Patient Table
+        PreparedStatement patientStmt = dbConnection.prepareStatement(updatePatientName);
+        patientStmt.setString(1,motherLastName);
+        patientStmt.setString(2,motherFirstName);
+        patientStmt.setString(3,caseID);
+        patientStmt.executeUpdate();
     }
     private void updateSamples() throws SQLException{
         ArrayList<List<Sample>> samplesByPatient = interpreter.consolidateSamples();
@@ -269,7 +282,7 @@ public class Updater {
                 Sample newSample = sampleIDMap.get(newID);
                 newSample.setDateReceived(dateUpdated);
                 newSample.setTestID(testID);
-                insertNewSample(newSample);
+                newSample.insert(dbConnection);
             }
         }
     }
@@ -293,7 +306,7 @@ public class Updater {
         stmt.executeUpdate();
         //Insert new Patients
         for(Patient patient: patientList){
-            insertNewPatient(patient);
+            patient.insert(dbConnection);
         }
     }
 
@@ -336,22 +349,7 @@ public class Updater {
 
 
     //DML
-    private void insertNewSample(Sample s) throws SQLException {
-        PreparedStatement stmt = dbConnection.prepareStatement(insertSample);
-        stmt.setString(1,s.getSampleID());
-        stmt.setObject(2,s.getDateReceived());
-        stmt.setString(3,s.getTestID());
-        stmt.setString(4,s.getPatientID());
-        stmt.executeUpdate();
-    }
-    private void insertNewPatient(Patient p) throws SQLException {
-        PreparedStatement stmt = dbConnection.prepareStatement(insertPatient);
-        stmt.setString(1,p.getPatientID());
-        stmt.setString(2,p.getLastName());
-        stmt.setString(3,p.getFirstName());
-        stmt.setString(4,p.getRelationship().name());
-        stmt.executeUpdate();
-    }
+
     private void insertNewGenotype(Event g) throws SQLException {
         PreparedStatement stmt = dbConnection.prepareStatement(insertGenotype);
         stmt.setObject(1, g.getDate());
@@ -370,27 +368,7 @@ public class Updater {
         stmt.setString(6, p.getTestID());
         stmt.executeUpdate();
     }
-    private void insertNewLog(Log log) throws SQLException {
-        PreparedStatement stmt = dbConnection.prepareStatement(insertLog);
-        stmt.setString(1,caseID);
-        stmt.setObject(2,dateUpdated);
-        stmt.setString(3,log.getFileName());
-        stmt.setBoolean(4,log.getDate());
-        stmt.setBoolean(5,log.getMotherName());
-        stmt.setBoolean(6,log.getMaternalPatientId());
-        stmt.setBoolean(7,log.getPaternalPatientId());
-        stmt.setBoolean(8,log.getGestationGender());
-        stmt.setBoolean(9,log.getTestTypeCost());
-        stmt.setBoolean(10,log.getReferral());
-        stmt.setBoolean(11,log.getGenotypeA());
-        stmt.setBoolean(12,log.getGenotypeB());
-        stmt.setBoolean(13,log.getFirstDraw());
-        stmt.setBoolean(14,log.getSecondDraw());
-        stmt.setBoolean(15,log.getThirdDraw());
-        stmt.setBoolean(16,log.getResult());
-        stmt.setBoolean(17,log.getConfirmation());
-        stmt.executeUpdate();
-    }
+
 
 
     //Setters & Getters

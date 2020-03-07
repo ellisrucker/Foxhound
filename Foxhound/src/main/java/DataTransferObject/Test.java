@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import static readwrite.MySQL.insertTest;
 
 
-public class Test {
+public class Test implements Insertable {
 
     private String testID;
     private LocalDate dateStarted;
@@ -39,6 +39,18 @@ public class Test {
         cost = interpreter.findFirstCost();
         gestation = interpreter.findFirstGestation();
         this.caseID = caseID;
+    }
+
+    public void insert(Connection dbConnection) throws SQLException{
+        PreparedStatement stmt = dbConnection.prepareStatement(insertTest);
+        stmt.setString(1,testID);
+        stmt.setObject(2,dateStarted);
+        stmt.setString(3,type.name());
+        stmt.setInt(4,cost);
+        stmt.setInt(5,gestation);
+        stmt.setBoolean(6,legal);
+        stmt.setString(7,this.caseID);
+        stmt.executeUpdate();
     }
 
 

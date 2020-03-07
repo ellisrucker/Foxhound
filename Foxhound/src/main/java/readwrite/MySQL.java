@@ -40,14 +40,11 @@ public class MySQL {
     private static final String legal = "legal";
 
     //Event
-    private static final String eventTable = "event";
     private static final String genotypeTable = database +"."+"genotype";
     private static final String plasmaTable = database +"."+"plasma";
-    private static final String eventID = "eventID";
     private static final String genotypeID = "genotypeID";
     private static final String plasmaID = "plasmaID";
     private static final String eventDate = "date";
-    private static final String eventType = "type";
     private static final String primerSet = "primerSet";
     private static final String plasmaNumber = "plasmaNumber";
     private static final String performedBy = "performedBy";
@@ -80,6 +77,11 @@ public class MySQL {
     private static final String fileName = "fileName";
     private static final String logID = "logID";
 
+    //Error
+    private static final String errorTable = database +"."+ "error";
+    private static final String errorID = "errorID";
+    private static final String stackTrace = "stackTrace";
+
     //Drop Table
     public static String dropCaseTable = "DROP TABLE IF EXISTS "+ caseTable;
     public static String dropSampleTable = "DROP TABLE IF EXISTS "+ sampleTable;
@@ -90,6 +92,7 @@ public class MySQL {
     public static String dropFilteredTable = "DROP TABLE IF EXISTS "+ filteredTable;
     public static String dropHashTable = "DROP TABLE IF EXISTS "+ hashTable;
     public static String dropLogTable = "DROP TABLE IF EXISTS " + logTable;
+    public static String dropErrorTable = "DROP TABLE IF EXISTS " + errorTable;
 
     //Create Table
     public static String createCaseTable = "CREATE TABLE "+ caseTable +" (" +
@@ -204,6 +207,13 @@ public class MySQL {
             confirmation +" tinyint(1) DEFAULT '0', " +
             "PRIMARY KEY ("+ logID +") " +
             ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
+    public static String createErrorTable = "CREATE TABLE " + errorTable + " (" +
+            errorID + " MEDIUMINT NOT NULL AUTO_INCREMENT, " +
+            caseID + " varchar(16) DEFAULT NULL, " +
+            fileName + " varchar(40) DEFAULT NULL, " +
+            stackTrace + " varchar(2000) DEFAULT NULL, " +
+            "PRIMARY KEY ("+ errorID +") " +
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci";
 
     //Insert Into Table
     //Parameterized Statements: Update DTOs if columns are added, removed, or switched!
@@ -306,6 +316,11 @@ public class MySQL {
             result + ", " +
             confirmation + ") VALUES (" +
             "?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    public static String insertError = "INSERT INTO " + errorTable + " (" +
+            caseID + ", " +
+            fileName + ", " +
+            stackTrace + ") VALUES (" +
+            "?,?,?)";
 
     //Replace
     public static String replaceHash = "REPLACE " + hashTable +" (" +
@@ -330,13 +345,15 @@ public class MySQL {
     //Select
     public static String selectCaseByID = "SELECT * FROM "+ caseTable +" WHERE "+ caseID +" = ? LIMIT 1";
     public static String selectFilteredCaseByID = "SELECT * FROM "+ filteredTable + " WHERE "+ caseID +" = ? LIMIT 1";
+    public static String selectErrorByCaseID = "SELECT * FROM "+ errorTable +" WHERE "+ caseID +" = ? LIMIT 1";
     public static String selectHashByID = "SELECT * FROM "+ hashTable + " WHERE "+ caseID +" = ? LIMIT 1";
     public static String selectSampleIDsByTestID = "SELECT "+ sampleID +" FROM "+ sampleTable +" WHERE "+ testID + " = ?";
-    public static String selectSampleIDsByPatientID = "SELECT " + sampleID +" FROM "+ sampleTable +" WHERE "+ patientID +" = ?";
+
 
     //Update
     public static String updateCaseResult = "UPDATE "+ caseTable +" SET " + result + " = ? WHERE "+ caseID + " = ?";
     public static String updateMotherName = "UPDATE "+ caseTable +" SET " + motherLastName +" = ?, "+ motherFirstName +" = ? WHERE "+ caseID + " = ?";
+    public static String updatePatientName = "UPDATE "+ patientTable +" SET " + lastName +" = ?, "+ firstName +" = ? WHERE "+ patientID + " = ?";
     public static String updateGestation = "UPDATE "+ testTable +" SET " + gestation + " = ? WHERE "+ testID + " = ?";
     public static String updateGender = "UPDATE "+ caseTable +" SET " + gender + " = ? WHERE "+ caseID + " = ?";
     public static String updateTestTypeCost = "UPDATE "+ testTable +" SET " + testType +" = ?, "+ cost +" = ? WHERE "+ testID + " = ?";

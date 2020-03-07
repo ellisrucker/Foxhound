@@ -33,6 +33,7 @@ public class DbManager {
             initializeFilteredTable(dbConnection);
             initializeHashTable(dbConnection);
             initializeLogTable(dbConnection);
+            initializeErrorTable(dbConnection);
         } finally {
             dbConnection.close();
         }
@@ -91,6 +92,12 @@ public class DbManager {
     private static void initializeLogTable(Connection dbConnection) throws SQLException{
         PreparedStatement dropStmt = dbConnection.prepareStatement(dropLogTable);
         PreparedStatement createStmt = dbConnection.prepareStatement(createLogTable);
+        dropStmt.executeUpdate();
+        createStmt.executeUpdate();
+    }
+    private static void initializeErrorTable(Connection dbConnection) throws SQLException {
+        PreparedStatement dropStmt = dbConnection.prepareStatement(dropErrorTable);
+        PreparedStatement createStmt = dbConnection.prepareStatement(createErrorTable);
         dropStmt.executeUpdate();
         createStmt.executeUpdate();
     }
