@@ -9,6 +9,7 @@ import static readwrite.MySQL.*;
 
 public class DbManager {
 
+    //TODO: Set properties from Properties file
     private static final String url = "jdbc:mysql://localhost:3306/MySQL";
     private static final String user = "root";
     private static final String password = "Ravgen4!";

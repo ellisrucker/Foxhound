@@ -58,6 +58,7 @@ public class Updater {
             Error error = new Error(caseID, fileName, e);
             error.insert(dbConnection);
             dbConnection.commit();
+            System.out.println("Error at "+ caseID +" in "+ fileName);
         } finally {
             dbConnection.close();
         }

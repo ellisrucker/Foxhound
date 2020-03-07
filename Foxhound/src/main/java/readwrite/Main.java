@@ -24,7 +24,10 @@ public class Main {
         File [] csvList = targetFolder.listFiles();
         Arrays.sort(csvList);
 
+        //TODO: Set properties from Properties file
+
         //Initialize Tables
+        System.out.println("Initializing database tables");
         DbManager.initializeTables();
 
         //Pre-filter Complex Cases
@@ -51,6 +54,7 @@ public class Main {
         //Main Loop
         for (File csv: csvList) {
             //File reader method, ignores header row of CSV
+            System.out.println("Reading " + csv.getName());
             CSVReader reader = new CSVReaderBuilder(new FileReader(csv)).withSkipLines(1).build();
 
             String[] currentRow = null;
