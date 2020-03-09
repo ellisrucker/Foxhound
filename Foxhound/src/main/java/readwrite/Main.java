@@ -31,6 +31,7 @@ public class Main {
         DbManager.initializeTables();
 
         //Pre-filter Complex Cases
+        System.out.println("Pre-filtering fringe cases");
         CSVReader filterReader = new CSVReaderBuilder(new FileReader(finalCSV)).withSkipLines(1).build();
         String[] currentFilterRow;
         while ((currentFilterRow = filterReader.readNext()) != null){

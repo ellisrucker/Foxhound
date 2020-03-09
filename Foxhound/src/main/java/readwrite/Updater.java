@@ -166,38 +166,38 @@ public class Updater {
     }
     private void updateGenotypeA() throws SQLException {
         //Delete from PrimerSet A
-        deleteGenotypes(Event.PrimerSet.A);
+        deleteGenotypes(Genotype.PrimerSet.A);
 
         //Insert new Genotypes
-        ArrayList<Event> genotypes = interpreter.findGenotypeA();
+        ArrayList<Genotype> genotypes = interpreter.findGenotypeA();
         insertGenotypes(genotypes);
     }
     private void updateGenotypeB() throws SQLException {
         //Delete from PrimerSets B and B96
-        deleteGenotypes(Event.PrimerSet.B);
-        deleteGenotypes(Event.PrimerSet.B96);
+        deleteGenotypes(Genotype.PrimerSet.B);
+        deleteGenotypes(Genotype.PrimerSet.B96);
 
         //Insert new Genotypes
-        ArrayList<Event> genotypes = interpreter.findGenotypeB();
+        ArrayList<Genotype> genotypes = interpreter.findGenotypeB();
         insertGenotypes(genotypes);
     }
     private void updateFirstDraw() throws SQLException{
         //Delete from First Draws
-        deletePlasmas(Event.PlasmaNumber.FIRST);
+        deletePlasmas(Plasma.PlasmaNumber.FIRST);
 
         //Insert new Plasmas
-        ArrayList<Event> plasmas = interpreter.findFirstDrawPlasmas();
+        ArrayList<Plasma> plasmas = interpreter.findFirstDrawPlasmas();
         insertPlasmas(plasmas);
     }
     private void updateSecondDraw() throws SQLException {
-        deletePlasmas(Event.PlasmaNumber.SECOND);
-        ArrayList<Event> plasmas = interpreter.findSecondDrawPlasmas();
+        deletePlasmas(Plasma.PlasmaNumber.SECOND);
+        ArrayList<Plasma> plasmas = interpreter.findSecondDrawPlasmas();
         insertPlasmas(plasmas);
         updateSamples();
     }
     private void updateThirdDraw() throws SQLException {
-        deletePlasmas(Event.PlasmaNumber.THIRD);
-        ArrayList<Event> plasmas = interpreter.findThirdDrawPlasmas();
+        deletePlasmas(Plasma.PlasmaNumber.THIRD);
+        ArrayList<Plasma> plasmas = interpreter.findThirdDrawPlasmas();
         insertPlasmas(plasmas);
         updateSamples();
     }
@@ -311,65 +311,42 @@ public class Updater {
         }
     }
 
-    //Event Update Methods
+    //Procedures Update Methods
 
-    private void deleteGenotypes(Event.PrimerSet primerSet) throws SQLException{
+    private void deleteGenotypes(Genotype.PrimerSet primerSet) throws SQLException{
         PreparedStatement stmt = dbConnection.prepareStatement(deleteGenotype);
         stmt.setString(1,primerSet.name());
         stmt.setString(2,testID);
         stmt.executeUpdate();
     }
-    private void deletePlasmas(Event.PlasmaNumber plasmaNumber) throws SQLException {
+    private void deletePlasmas(Plasma.PlasmaNumber plasmaNumber) throws SQLException {
         PreparedStatement stmt = dbConnection.prepareStatement(deletePlasma);
         stmt.setString(1, plasmaNumber.name());
         stmt.setString(2, testID);
         stmt.executeUpdate();
     }
-    private void insertGenotypes(ArrayList<Event> genotypes) throws SQLException {
-        for(Event g : genotypes){
+    private void insertGenotypes(ArrayList<Genotype> genotypes) throws SQLException {
+        for(Genotype g : genotypes){
             //Set date and testID
-            LocalDate date = interpreter.findEventDate(g.getOriginalString(), dateUpdated);
+            LocalDate date = Interpreter.findEventDate(g.getOriginalString(), dateUpdated);
             g.setDate(date);
             g.setTestID(testID);
 
             //Insert into Database
-            insertNewGenotype(g);
+            g.insert(dbConnection);
         }
     }
-    private void insertPlasmas(ArrayList<Event> plasmas) throws SQLException {
-        for(Event p : plasmas){
+    private void insertPlasmas(ArrayList<Plasma> plasmas) throws SQLException {
+        for(Plasma p : plasmas){
             //Set date and testID
-            LocalDate date = interpreter.findEventDate(p.getOriginalString(), dateUpdated);
+            LocalDate date = Interpreter.findEventDate(p.getOriginalString(), dateUpdated);
             p.setDate(date);
             p.setTestID(testID);
 
             //Insert into Database
-            insertNewPlasma(p);
+            p.insert(dbConnection);
         }
     }
-
-
-    //DML
-
-    private void insertNewGenotype(Event g) throws SQLException {
-        PreparedStatement stmt = dbConnection.prepareStatement(insertGenotype);
-        stmt.setObject(1, g.getDate());
-        stmt.setString(2, g.getPrimerSet().name());
-        stmt.setString(3, g.getPerformedBy());
-        stmt.setString(4, g.getTestID());
-        stmt.executeUpdate();
-    }
-    private void insertNewPlasma(Event p) throws SQLException{
-        PreparedStatement stmt = dbConnection.prepareStatement(insertPlasma);
-        stmt.setObject(1, p.getDate());
-        stmt.setString(2, p.getPlasmaNumber().name());
-        stmt.setString(3, p.getPlasmaUsed());
-        stmt.setInt(4, p.getPlasmaGestation());
-        stmt.setString(5, p.getPerformedBy());
-        stmt.setString(6, p.getTestID());
-        stmt.executeUpdate();
-    }
-
 
 
     //Setters & Getters

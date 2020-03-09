@@ -82,7 +82,7 @@ public class Interpreter {
     private static String shane = "(?i)SB";
 
 
-    //Event Delimiters
+    //Procedure Delimiters
     private static String genotypeDelimiter = "(?<![\\d])(?=[\\d]{1,2}/[\\d]{1,2})";
     private static String plasmaDelimiter = "(?=([Aa][[\\s*-][/(]]))";
 
@@ -129,6 +129,7 @@ public class Interpreter {
         ArrayList<String> maternalSampleStrings = isolateSamples(inputRow.getMaternalPatientId());
         maternalSampleStrings.addAll(isolateSamples(inputRow.getSecondDraw()));
         maternalSampleStrings.addAll(isolateSamples(inputRow.getThirdDraw()));
+
         ArrayList<Sample> maternalSamples = maternalSampleStrings
                 .stream()
                 .map(s -> new Sample(s, Patient.Relation.M))
@@ -171,12 +172,14 @@ public class Interpreter {
     that do not follow a letter (to avoid splitting ids)
     */
     public static ArrayList<String> isolateSamples(String sampleCell){
-        String[] sampleArray = sampleCell.split("(?<![a-zA-z])(?=([a-zA-Z]{3,}[\\d]{5,}))");
         ArrayList<String> onlySamples = new ArrayList<>();
-        for(String element: sampleArray){
-            Matcher sampleMatcher = generalID.matcher(element);
-            if(sampleMatcher.find()){
-                onlySamples.add(element);
+        if(sampleCell != null) {
+            String[] sampleArray = sampleCell.split("(?<![a-zA-z])(?=([a-zA-Z]{3,}[\\d]{5,}))");
+            for (String element : sampleArray) {
+                Matcher sampleMatcher = generalID.matcher(element);
+                if (sampleMatcher.find()) {
+                    onlySamples.add(element);
+                }
             }
         }
         return onlySamples;
@@ -295,15 +298,20 @@ public class Interpreter {
         return onlyTestTypeCost;
     }
 
-    public ArrayList<Event> consolidateAllEvents(){
-        ArrayList<Event> allEvents = new ArrayList<>();
-        findGenotypeA().stream().forEachOrdered(allEvents::add);
-        findGenotypeB().stream().forEachOrdered(allEvents::add);
-        findFirstDrawPlasmas().stream().forEachOrdered(allEvents::add);
-        findSecondDrawPlasmas().stream().forEachOrdered(allEvents::add);
-        findThirdDrawPlasmas().stream().forEachOrdered(allEvents::add);
-        return allEvents;
+    public ArrayList<Genotype> consolidateAllGenotypes(){
+        ArrayList<Genotype> allGenotypes = new ArrayList<>();
+        findGenotypeA().forEach(allGenotypes::add);
+        findGenotypeB().forEach(allGenotypes::add);
+        return allGenotypes;
     }
+    public ArrayList<Plasma> consolidateAllPlasmas(){
+        ArrayList<Plasma> allPlasmas = new ArrayList<>();
+        findFirstDrawPlasmas().forEach(allPlasmas::add);
+        findSecondDrawPlasmas().forEach(allPlasmas::add);
+        findThirdDrawPlasmas().forEach(allPlasmas::add);
+        return allPlasmas;
+    }
+
     public static ArrayList<String> isolateGenotypes (String cell){
         String[] genotypeArray = cell.split(genotypeDelimiter);
         ArrayList<String> onlyGenotypes = new ArrayList<>();
@@ -315,25 +323,25 @@ public class Interpreter {
         }
         return onlyGenotypes;
     }
-    public ArrayList<Event> findGenotypeA() {
-        ArrayList<Event> eventList = isolateGenotypes(inputRow.getGenotypeA())
+    public ArrayList<Genotype> findGenotypeA() {
+        ArrayList<Genotype> genotypeList = isolateGenotypes(inputRow.getGenotypeA())
                 .stream()
-                .map(e -> new Event(e, Event.LabTest.GENOTYPE, Event.PrimerSet.A))
+                .map(e -> new Genotype(e, Genotype.PrimerSet.A))
                 .collect(toCollection(ArrayList::new));
-        return eventList;
+        return genotypeList;
     }
-    public ArrayList<Event> findGenotypeB() {
-        ArrayList<Event> eventList = isolateGenotypes(inputRow.getGenotypeB())
+    public ArrayList<Genotype> findGenotypeB() {
+        ArrayList<Genotype> genotypeList = isolateGenotypes(inputRow.getGenotypeB())
                 .stream()
-                .map(e -> new Event(e, Event.LabTest.GENOTYPE, Event.PrimerSet.B))
+                .map(e -> new Genotype(e, Genotype.PrimerSet.B))
                 .collect(toCollection((ArrayList::new)));
-        for(Event e: eventList){
-            Matcher matcher = Pattern.compile("96").matcher(e.getOriginalString());
+        for(Genotype g: genotypeList){
+            Matcher matcher = Pattern.compile("96").matcher(g.getOriginalString());
             if(matcher.find()){
-                e.setPrimerSet(Event.PrimerSet.B96);
+                g.setPrimerSet(Genotype.PrimerSet.B96);
             }
         }
-        return eventList;
+        return genotypeList;
     }
 
     public static ArrayList<String> isolatePlasmas (String cell){
@@ -352,44 +360,44 @@ public class Interpreter {
     Finding sampleID and gestation for First Draws may not work properly
     for cases with multiple maternal sampleIDs or multiple gestations
      */
-    public ArrayList<Event> findFirstDrawPlasmas(){
+    public ArrayList<Plasma> findFirstDrawPlasmas(){
         String sampleID = findFirstMaternalSampleID();
         Integer gestation = findFirstGestation();
-        ArrayList<Event> plasmaList = isolatePlasmas(inputRow.getFirstDraw())
+        ArrayList<Plasma> plasmaList = isolatePlasmas(inputRow.getFirstDraw())
                .stream()
-               .map(e -> new Event(e, Event.LabTest.PLASMA, Event.PlasmaNumber.FIRST))
+               .map(e -> new Plasma(e, Plasma.PlasmaNumber.FIRST))
                .collect(toCollection(ArrayList::new));
-        for(Event e : plasmaList){
-            e.setPlasmaUsed(sampleID);
-            e.setPlasmaGestation(gestation);
+        for(Plasma p : plasmaList){
+            p.setPlasmaUsed(sampleID);
+            p.setPlasmaGestation(gestation);
         }
        return plasmaList;
     }
-    public ArrayList<Event> findSecondDrawPlasmas(){
+    public ArrayList<Plasma> findSecondDrawPlasmas(){
         String cell = inputRow.getSecondDraw();
         String sampleID = Interpreter.findID(cell);
         Integer gestation = Interpreter.findGestation(cell);
-        ArrayList<Event> plasmaList = isolatePlasmas(cell)
+        ArrayList<Plasma> plasmaList = isolatePlasmas(cell)
                 .stream()
-                .map(e -> new Event(e, Event.LabTest.PLASMA, Event.PlasmaNumber.SECOND))
+                .map(e -> new Plasma(e, Plasma.PlasmaNumber.SECOND))
                 .collect(toCollection(ArrayList::new));
-        for(Event e : plasmaList){
-            e.setPlasmaUsed(sampleID);
-            e.setPlasmaGestation(gestation);
+        for(Plasma p : plasmaList){
+            p.setPlasmaUsed(sampleID);
+            p.setPlasmaGestation(gestation);
         }
         return plasmaList;
     }
-    public ArrayList<Event> findThirdDrawPlasmas(){
+    public ArrayList<Plasma> findThirdDrawPlasmas(){
         String cell = inputRow.getThirdDraw();
         String sampleID = Interpreter.findID(cell);
         Integer gestation = Interpreter.findGestation(cell);
-        ArrayList<Event> plasmaList = isolatePlasmas(cell)
+        ArrayList<Plasma> plasmaList = isolatePlasmas(cell)
                 .stream()
-                .map(e -> new Event(e, Event.LabTest.PLASMA, Event.PlasmaNumber.THIRD))
+                .map(e -> new Plasma(e, Plasma.PlasmaNumber.THIRD))
                 .collect(toCollection(ArrayList::new));
-        for(Event e : plasmaList){
-            e.setPlasmaUsed(sampleID);
-            e.setPlasmaGestation(gestation);
+        for(Plasma p : plasmaList){
+            p.setPlasmaUsed(sampleID);
+            p.setPlasmaGestation(gestation);
         }
         return plasmaList;
     }

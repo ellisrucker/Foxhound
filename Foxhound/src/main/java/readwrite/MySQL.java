@@ -39,7 +39,7 @@ public class MySQL {
     private static final String gestation = "gestation";
     private static final String legal = "legal";
 
-    //Event
+    //Procedures
     private static final String genotypeTable = database +"."+"genotype";
     private static final String plasmaTable = database +"."+"plasma";
     private static final String genotypeID = "genotypeID";

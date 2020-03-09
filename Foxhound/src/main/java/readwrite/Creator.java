@@ -52,7 +52,8 @@ public class Creator {
         Test newTest = new Test(interpreter, caseID, testID, dateUpdated);
         HashRow hashRow = new HashRow(caseID,inputRow);
         ArrayList<List<Sample>> newSamples = interpreter.consolidateSamples();
-        ArrayList<Event> newEvents = interpreter.consolidateAllEvents();
+        ArrayList<Genotype> newGenotypes = interpreter.consolidateAllGenotypes();
+        ArrayList<Plasma> newPlasmas = interpreter.consolidateAllPlasmas();
 
         //Create db connection
         dbConnection = DbManager.openConnection();
@@ -65,8 +66,11 @@ public class Creator {
                 createNewSamples(sampleList);
                 createNewPatient(sampleList);
             }
-            for (Event e: newEvents){
-                createNewEvent(e);
+            for(Genotype g: newGenotypes){
+                createNewGenotype(g);
+            }
+            for(Plasma p: newPlasmas){
+                createNewPlasma(p);
             }
             dbConnection.commit();
         } catch (Exception e) {
@@ -100,36 +104,17 @@ public class Creator {
         }
         newPatient.insert(dbConnection);
     }
-    private void createNewEvent(Event event) throws SQLException {
-        LocalDate date = Interpreter.findEventDate(event.getOriginalString(), dateUpdated);
-        event.setDate(date);
-        event.setTestID(testID);
-        if(event.getType() == Event.LabTest.GENOTYPE){
-            insertNewGenotype(event);
-        }
-        if(event.getType() == Event.LabTest.PLASMA){
-            insertNewPlasma(event);
-        }
+    private void createNewGenotype(Genotype g) throws SQLException {
+        LocalDate date = Interpreter.findEventDate(g.getOriginalString(), dateUpdated);
+        g.setDate(date);
+        g.setTestID(testID);
+        g.insert(dbConnection);
     }
-
-    //DML
-    public void insertNewGenotype(Event g) throws SQLException {
-        PreparedStatement stmt = dbConnection.prepareStatement(insertGenotype);
-        stmt.setObject(1, g.getDate());
-        stmt.setString(2, g.getPrimerSet().name());
-        stmt.setString(3, g.getPerformedBy());
-        stmt.setString(4, g.getTestID());
-        stmt.executeUpdate();
-    }
-    public void insertNewPlasma(Event p) throws SQLException{
-        PreparedStatement stmt = dbConnection.prepareStatement(insertPlasma);
-        stmt.setObject(1, p.getDate());
-        stmt.setString(2, p.getPlasmaNumber().name());
-        stmt.setString(3, p.getPlasmaUsed());
-        stmt.setInt(4, p.getPlasmaGestation());
-        stmt.setString(5, p.getPerformedBy());
-        stmt.setString(6, p.getTestID());
-        stmt.executeUpdate();
+    private void createNewPlasma(Plasma p) throws SQLException {
+        LocalDate date = Interpreter.findEventDate(p.getOriginalString(), dateUpdated);
+        p.setDate(date);
+        p.setTestID(testID);
+        p.insert(dbConnection);
     }
 
 }
