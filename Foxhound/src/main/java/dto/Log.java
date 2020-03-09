@@ -1,4 +1,4 @@
-package DataTransferObject;
+package dto;
 
 
 import java.sql.Connection;
@@ -6,7 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static readwrite.MySQL.insertLog;
+import static utility.MySQL.insertLog;
 
 
 public class Log implements Insertable{

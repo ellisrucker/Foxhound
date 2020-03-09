@@ -1,16 +1,12 @@
-package DataTransferObject;
+package dto;
 
-
-import readwrite.DbManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.Objects;
 
-import static readwrite.MySQL.insertFilteredCase;
-import static readwrite.MySQL.insertHash;
+import static utility.MySQL.insertFilteredCase;
 
 public class ExcelRow implements Insertable {
 

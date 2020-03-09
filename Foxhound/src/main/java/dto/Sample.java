@@ -1,14 +1,13 @@
-package DataTransferObject;
+package dto;
 
 import logic.Interpreter;
-import readwrite.DbManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static readwrite.MySQL.*;
+import static utility.MySQL.*;
 
 public class Sample implements Insertable, Comparable<Sample> {
 

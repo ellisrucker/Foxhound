@@ -1,4 +1,4 @@
-package DataTransferObject;
+package dto;
 
 import logic.Interpreter;
 
@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static readwrite.MySQL.insertGenotype;
+import static utility.MySQL.insertGenotype;
 
 public class Genotype implements Insertable {
 

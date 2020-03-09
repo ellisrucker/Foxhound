@@ -1,14 +1,9 @@
-package readwrite;
+package utility;
 
-import DataTransferObject.Case;
-import com.mysql.cj.x.protobuf.MysqlxPrepare;
-
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.*;
-import java.util.Properties;
 
-import static readwrite.MySQL.*;
+import static utility.MySQL.*;
 
 public class DbManager {
 

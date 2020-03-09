@@ -1,4 +1,4 @@
-Date,M patient name,M patient ID,P patient ID,Gestation/Gender,test type/ cost,Referral,X192,X 96 A/B,A Geno,B Geno,1st Draw,2nd Draw,3rd Draw,4th Draw,5th Draw,Result,DataTransferObject.Confirmation,
+Date,M patient name,M patient ID,P patient ID,Gestation/Gender,test type/ cost,Referral,X192,X 96 A/B,A Geno,B Geno,1st Draw,2nd Draw,3rd Draw,4th Draw,5th Draw,Result,dto.Confirmation,
 1/7/2019,Grace Riggs,GRAR1901008,GREP1901016,15w,"3wk, 950",ArcPt LA,,,1/7 ER,1/8 ER,A/B-1/11 AH,,,,,mismatch,,
 1/8/2019,Erica Tate,"ERIT1812119
 ","LANR1812120

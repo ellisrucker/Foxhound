@@ -1,15 +1,13 @@
-package DataTransferObject;
+package dto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 
-import readwrite.DbManager;
 import logic.Interpreter;
-import static readwrite.MySQL.*;
+import static utility.MySQL.*;
 
 public class Case implements Insertable {
 

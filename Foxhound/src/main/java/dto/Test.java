@@ -1,15 +1,13 @@
-package DataTransferObject;
+package dto;
 
-import com.mysql.cj.x.protobuf.MysqlxPrepare;
 import logic.Interpreter;
-import readwrite.DbManager;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.LocalDate;
 
-import static readwrite.MySQL.insertTest;
+import static utility.MySQL.insertTest;
 
 
 public class Test implements Insertable {
