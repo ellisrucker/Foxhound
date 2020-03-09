@@ -3,22 +3,33 @@ package readwrite;
 import DataTransferObject.Case;
 import com.mysql.cj.x.protobuf.MysqlxPrepare;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.sql.*;
+import java.util.Properties;
 
 import static readwrite.MySQL.*;
 
 public class DbManager {
 
-    //TODO: Set properties from Properties file
-    private static final String url = "jdbc:mysql://localhost:3306/MySQL";
-    private static final String user = "root";
-    private static final String password = "Ravgen4!";
+    private static String url;
+    private static String user;
+    private static String password;
+
+    //Constructor
+
 
     public static Connection openConnection() throws SQLException {
         Connection dbConnection = DriverManager.getConnection(url, user, password);
         //Set autocommit to false to allow for Rollbacks
         dbConnection.setAutoCommit(false);
         return dbConnection;
+    }
+
+    public static void configure() throws IOException {
+        url = Configuration.getInstance().getUrl();
+        user = Configuration.getInstance().getUser();
+        password = Configuration.getInstance().getPassword();
     }
 
     public static void initializeTables() throws SQLException {

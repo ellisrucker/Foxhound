@@ -5,14 +5,12 @@ import DataTransferObject.Error;
 import logic.Interpreter;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static readwrite.MySQL.*;
 
 public class Creator {
 

@@ -7,24 +7,28 @@ import logic.Comparison;
 import logic.Interpreter;
 
 import java.io.File;
+
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.*;
-import java.text.ParseException;
+
 import java.util.Arrays;
 
 public class Main {
 
 
-    public static void main(String [] args) throws IOException, ParseException, SQLException {
+    public static void main(String [] args) throws IOException, SQLException {
 
-        File targetFolder = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\UpdateTest");
-        File finalCSV = new File("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\target\\mockData\\UpdateTest\\Update_Mock_2.csv");
+
+        //Configuration
+        System.out.println("Configuring properties");
+        File targetFolder = new File(Configuration.getInstance().getTargetFolder());
+        File terminalCSV = new File(Configuration.getInstance().getTerminalCSV());
+        DbManager.configure();
 
         File [] csvList = targetFolder.listFiles();
         Arrays.sort(csvList);
 
-        //TODO: Set properties from Properties file
 
         //Initialize Tables
         System.out.println("Initializing database tables");
@@ -32,7 +36,7 @@ public class Main {
 
         //Pre-filter Complex Cases
         System.out.println("Pre-filtering fringe cases");
-        CSVReader filterReader = new CSVReaderBuilder(new FileReader(finalCSV)).withSkipLines(1).build();
+        CSVReader filterReader = new CSVReaderBuilder(new FileReader(terminalCSV)).withSkipLines(1).build();
         String[] currentFilterRow;
         while ((currentFilterRow = filterReader.readNext()) != null){
             ExcelRow newRow = new ExcelRow(currentFilterRow);

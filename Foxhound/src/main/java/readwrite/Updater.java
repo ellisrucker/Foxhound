@@ -311,7 +311,7 @@ public class Updater {
         }
     }
 
-    //Procedures Update Methods
+    //Procedure Update Methods
 
     private void deleteGenotypes(Genotype.PrimerSet primerSet) throws SQLException{
         PreparedStatement stmt = dbConnection.prepareStatement(deleteGenotype);
