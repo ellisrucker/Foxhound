@@ -1,4 +1,4 @@
-import Entities.Case;
+import DataTransferObject.Case;
 import org.junit.Test;
 
 import java.text.ParseException;

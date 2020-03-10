@@ -1,4 +1,4 @@
-package Entities;
+package DataTransferObject;
 
 public class Confirmation extends Event {
 

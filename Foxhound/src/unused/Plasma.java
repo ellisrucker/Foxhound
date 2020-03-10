@@ -1,6 +1,4 @@
-package Entities;
-
-import Entities.Event;
+package DataTransferObject;
 
 public class Plasma extends Event {
 
