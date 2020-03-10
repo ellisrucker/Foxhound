@@ -1,6 +1,7 @@
 import Entities.Event;
 import Entities.Sample;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -25,5 +26,6 @@ public class ParsedRow {
     private ArrayList<Event> thirdDrawList;
     private ArrayList<String> resultList;
     private ArrayList<Event> confirmationList;
+    private ArrayList<Integer> hashedRow;
 
 }
