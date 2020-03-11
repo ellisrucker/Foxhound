@@ -11,13 +11,14 @@ genetic testing. For redundancy, a new copy of the spreadsheet is saved every da
 This system poses a number of issues:
 * The date associated a case will often be changed in order to move ongoing cases closer to the
 bottom of the spreadsheet with other open cases
+* While the dates that samples are received are documented in physical records, they are not recorded digitally 
 * A single cell often contains multiple entries and multiple forms of data
 * Certain concepts are poorly defined and enforced within the spreadsheet
 * The file can only be opened for editing on one computer at a time. Other useres who may be 
 viewing it will not see any new changes made
 
 ## Goals
-* Restore data integrity
+The primary goal of this program is to restore data integrity by iterating through the spreadsheet backup files... (parse elements, record dates, and organize data into 6 tables) 
 * Standardize terms and concepts used within the laboratory
 * Facilitate the creation of sales and testing reports
 * Lay the foundation for an internal application for employee use
