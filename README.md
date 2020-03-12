@@ -8,6 +8,14 @@ genetic testing. For redundancy, a new copy of the spreadsheet is saved every da
 
 (Mock Spreadsheet Example)
 
+## Key Concepts
+**Identifiers**: Every sample the lab receives is assigned a unique identifier comprising of the first 3 initials of the patient's first name, the last initial of their last name, and a 7 digit number representing the year, month, and accession number associated with the sample. Patients are identified by the ID of their first submitted sample. Cases are identified by the mother’s patient ID. As such, a single ID could potentially refer to either a specific sample, patient, or case depending on the context.
+
+**Relationships**: All patients involved with a test are assigned a tag signifying their relationship to the unborn child (M = maternal, P = paternal, D = egg donor, MP = mother's father, etc.). In the event that multiple patients share a relationship, they are differentiated by a number following the letter (e.g. C1 & C2)
+
+**Lab Procedures**: The terms Genotype and Plasma refer to specific lab procedures used to conduct testing. The spreadsheet typically contains details such as the the month and day the procedure was conducted as well as the initials of the employee who performed it. Asterisks within a procedure cell signifies that the given procedure needs to be run in order to advance the test.
+
+
 This system poses a number of issues:
 * The date associated a case will often be changed in order to move ongoing cases closer to the
 bottom of the spreadsheet with other open cases
@@ -27,15 +35,15 @@ The primary goal of this program is to restore data integrity by iterating throu
 **Cases vs. Tests**: The new schema draws a distinction between a Case and a Test. A Case represents a single pregnancy. A Test represents an examination performed on that pregnancy. The convention accounts for scenarios in which a patient returns for additional testing during the same pregnancy, while also keeping patient relationships consistant throughout repeated tests.
 
 
-* Facilitate the creation of sales and testing reports
-* Lay the foundation for an internal application for employee use
+*Figure 2*, shown below, shows a group of auxillary tables that are used for data migration and debugging.
 
-## Key Concepts
-**Identifiers**: Every sample the lab receives is assigned a unique identifier comprising of the first 3 initials of the patient's first name, the last initial of their last name, and a 7 digit number representing the year, month, and accession number associated with the sample. Patients are identified by the ID of their first submitted sample. Cases are identified by the mother’s patient ID. As such, a single ID could potentially refer to either a specific sample, patient, or case depending on the context.
 
-**Relationships**: All patients involved with a test are assigned a tag signifying their relationship to the unborn child (M = maternal, P = paternal, D = egg donor, MP = mother's father, etc.). In the event that multiple patients share a relationship, they are differentiated by a number following the letter (e.g. C1 & C2)
+![Development Database 2](Media/Test%20Database%20ERD.jpg)
+*Figure 2*
 
-**Lab Procedures**: The terms Genotype and Plasma refer to specific lab procedures used to conduct testing. The spreadsheet typically contains details such as the the month and day the procedure was conducted as well as the initials of the employee who performed it. Asterisks within a procedure cell signifies that the given procedure needs to be run in order to advance the test.
+(Explanation of tables)
+
+
 
 ## Project Status
 
