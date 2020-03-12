@@ -60,9 +60,13 @@ The primary goal of this program is to restore data integrity by iterating throu
 
 **Hash table**: Contains a hashed representation of each cell within a row that has been entered into the database. After a row has been parsed, the program stores a hash of each cell that is later used to determine which cells, if any, been altered since it was last parsed.
 
-**Log table**: Each time a pre-existing row is updated, a log is created detailing which cells were changed and name of the file from which it was updated.
+**Log table**: Each time a pre-existing row is updated, a log is created detailing the cells that were changed and name of the file from which it was updated.
+
+**Error table**: To assist with debugging, the stacktrace of any exception encountered while parsing is logged along side the name of the file that triggered the error.
 
 
 ## Project Status
+* Refactoring code
+* Debugging
 
 
