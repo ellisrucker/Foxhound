@@ -35,7 +35,7 @@ This system poses a number of issues:
 bottom of the spreadsheet with other open cases
 * While the dates that samples are received are documented in physical records, they are not recorded digitally 
 * A single cell often contains multiple entries and multiple forms of data
-* Certain concepts are poorly defined and enforced within the spreadsheet
+* Certain concepts are not well defined or enforced within the spreadsheet
 * The file can only be opened for editing on one computer at a time. Other useres who may be 
 viewing it will not see any new changes made
 
