@@ -27,7 +27,7 @@ genetic testing. For redundancy, a new copy of the spreadsheet is saved every da
 
 **Relationships**: All patients involved with a test are assigned a tag signifying their relationship to the unborn child (M = maternal, P = paternal, D = egg donor, MP = mother's father, etc.). In the event that multiple patients share a relationship, they are differentiated by a number following the letter (e.g. C1 & C2)
 
-**Lab Procedures**: The terms Genotype and Plasma refer to specific lab procedures used to conduct testing. The spreadsheet typically contains details such as the the month and day the procedure was conducted as well as the initials of the employee who performed it. Asterisks within a procedure cell signifies that the given procedure needs to be run in order to advance the test.
+**Lab Procedures**: The terms Genotype and Plasma refer to specific lab procedures used to conduct testing. The spreadsheet typically contains details such as the month and day that the procedure was conducted as well as the initials of the employee who performed it. Asterisks within a procedure cell signifies that the given procedure needs to be run in order to advance the test.
 
 
 This system poses a number of issues:
@@ -43,7 +43,7 @@ viewing it will not see any new changes made
 The primary goal of this program is to restore data integrity by iterating through the spreadsheet backup files. As the files are read chronologically, the program parses out individual elements, records the original date that they were added, and reorganizes the data  into the six database tables shown below in *Figure 1*. 
 
 ![Development Database 1](Media/Migration%20Database%20ERD.jpg)
-*Figure 1*
+*Figure 1.*
 
 
 **Cases vs. Tests**: The new schema draws a distinction between a Case and a Test. A Case represents a single pregnancy. A Test represents an examination performed on that pregnancy. The convention accounts for scenarios in which a patient returns for additional testing during the same pregnancy, while also keeping patient relationships consistant throughout repeated tests.
@@ -53,7 +53,7 @@ The primary goal of this program is to restore data integrity by iterating throu
 
 
 ![Development Database 2](Media/Test%20Database%20ERD.jpg)
-*Figure 2*
+*Figure 2.*
 
 
 **Filtered table**: Contains string representations of rows that will likely require manual review. Before iterating through each file, the program first reads the most recent spreadsheet and adds any row that fits certain criteria to be considered a fringe case. Such cases are then skipped over when parsing each file.
