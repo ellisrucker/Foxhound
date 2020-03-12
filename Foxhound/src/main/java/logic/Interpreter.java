@@ -23,8 +23,6 @@ public class Interpreter {
     }
 
 
-    //Used to filter out extreme cases, edit as functionality is added
-    //Remember to adjust unit tests after editing
 
     public static String findPersonnel(String str) {
         Map<Pattern, String> personnelMap = new HashMap<>();
@@ -107,16 +105,7 @@ public class Interpreter {
         }
     }
 
-    public boolean caseIsComplex() {
-        if (!(hasSingleMaternalID()) ||
-                hasMultipleGestationGenders() ||
-                hasMultipleTestTypeCosts() ||
-                hasMultipleResults() ||
-                hasConfirmation() ||
-                hasUncommonGenotype()) {
-            return true;
-        } else return false;
-    }
+
     public ArrayList<List<Sample>> consolidateSamples() {
         ArrayList<List<Sample>> samplesByPatient = new ArrayList<>();
         samplesByPatient.add(retrieveMaternalSamples());
@@ -201,6 +190,7 @@ public class Interpreter {
         }
         return plasmaList;
     }
+
     public String findFirstName() {
         String[] nameArray = splitFullName(inputRow.getMotherName());
         return nameArray[0];
@@ -212,21 +202,38 @@ public class Interpreter {
     public String findSource() {
         return inputRow.getReferral();
     }
+    public LocalDate findRowDate() {
+        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("M[M]/d[d]/yyyy");
+        return LocalDate.parse(inputRow.getDate(), datePattern);
+    }
+    public String findResultString() {
+        return inputRow.getResult().trim();
+    }
+    public boolean isHavingTwins() {
+        Matcher twinMatcher = twin.matcher(inputRow.getGestationGender());
+        return twinMatcher.find();
+    }
+    public boolean caseIsComplex() {
+        if (!(hasSingleMaternalID()) ||
+                hasMultipleGestationGenders() ||
+                hasMultipleTestTypeCosts() ||
+                hasMultipleResults() ||
+                hasConfirmation() ||
+                hasUncommonGenotype()) {
+            return true;
+        } else return false;
+    }
+
+
+    /*
+    Some spreadsheet cells often contain multiple entries. The following
+    methods ensure that only the first instance in a cell is returned
+     */
     public String findFirstMaternalSampleID() {
         //Use Matcher to find String? How would you sort? Comparator?
         ArrayList<Sample> maternalIDs = retrieveMaternalSamples();
         Sample firstMaternalSample = maternalIDs.get(0);
         return firstMaternalSample.getSampleID();
-    }
-    public Integer findFirstGestation() {
-        ArrayList<String> stringsFromCell = isolateGestationGender(inputRow.getGestationGender());
-        if (stringsFromCell.size() != 0) {
-            return findGestation(stringsFromCell.get(0));
-        } else return 0;
-    }
-    public LocalDate findRowDate() {
-        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("M[M]/d[d]/yyyy");
-        return LocalDate.parse(inputRow.getDate(), datePattern);
     }
     public Integer findFirstCost() {
         ArrayList<String> stringsFromCell = isolateTestTypeCost(inputRow.getTestTypeCost());
@@ -236,22 +243,20 @@ public class Interpreter {
         ArrayList<String> stringsFromCell = isolateTestTypeCost(inputRow.getTestTypeCost());
         return findTestType(stringsFromCell.get(0));
     }
-    public boolean isHavingTwins() {
-        Matcher twinMatcher = twin.matcher(inputRow.getGestationGender());
-        return twinMatcher.find();
-    }
     public String findFirstGender() {
         ArrayList<String> stringsFromCell = isolateGestationGender(inputRow.getGestationGender());
         if (stringsFromCell.size() != 0) {
             return findGender(stringsFromCell.get(0));
         } else return null;
     }
-    public String findResultString() {
-        return inputRow.getResult().trim();
+    public Integer findFirstGestation() {
+        ArrayList<String> stringsFromCell = isolateGestationGender(inputRow.getGestationGender());
+        if (stringsFromCell.size() != 0) {
+            return findGestation(stringsFromCell.get(0));
+        } else return 0;
     }
 
-
-
+    //Private Methods
 
     /*
     Splits on zero-length matches that precede an id, but
@@ -326,6 +331,8 @@ public class Interpreter {
         }
         return onlyPlasmas;
     }
+
+
     private static TestType findTestType(String str) {
         Map<Pattern, TestType> testTypeMap = new HashMap<>();
         String oneWeek = "1[\\s]*[Ww]";
@@ -521,9 +528,6 @@ public class Interpreter {
         }
         return false;
     }
-
-
-
 
 
     private static Pattern generalID = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
