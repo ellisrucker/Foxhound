@@ -1,4 +1,4 @@
-package DataTransferObject;
+package dto;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
@@ -6,7 +6,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static readwrite.MySQL.insertError;
+import static utility.MySQL.insertError;
 
 public class Error implements Insertable {
 

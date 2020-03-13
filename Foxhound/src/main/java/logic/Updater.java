@@ -1,9 +1,9 @@
-package readwrite;
+package logic;
 
-import DataTransferObject.*;
-import DataTransferObject.Error;
-import DataTransferObject.Log;
-import logic.Interpreter;
+import dto.*;
+import dto.Error;
+import dto.Log;
+import utility.DbManager;
 
 import java.sql.*;
 import java.text.ParseException;
@@ -13,11 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static readwrite.MySQL.*;
+import static utility.MySQL.*;
 
+//Primarily handles the Updating of cells within a database row
 public class Updater {
-
-    //Primarily handles the Updating of cells within a database row
 
     private ExcelRow inputRow;
     private Interpreter interpreter;

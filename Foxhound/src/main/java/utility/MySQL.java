@@ -1,4 +1,4 @@
-package readwrite;
+package utility;
 
 public class MySQL {
 

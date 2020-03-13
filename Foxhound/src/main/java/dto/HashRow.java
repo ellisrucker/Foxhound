@@ -1,14 +1,11 @@
-package DataTransferObject;
-
-import readwrite.DbManager;
+package dto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import static readwrite.MySQL.insertHash;
-import static readwrite.MySQL.replaceHash;
+import static utility.MySQL.insertHash;
 
 public class HashRow implements Insertable {
 

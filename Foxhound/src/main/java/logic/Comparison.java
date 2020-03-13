@@ -1,17 +1,15 @@
 package logic;
 
-import DataTransferObject.Error;
-import DataTransferObject.HashRow;
-import DataTransferObject.Log;
-import readwrite.Creator;
-import readwrite.DbManager;
-import DataTransferObject.ExcelRow;
-import readwrite.Updater;
+import dto.Error;
+import dto.HashRow;
+import dto.Log;
+import utility.DbManager;
+import dto.ExcelRow;
 
 import java.sql.*;
 import java.text.ParseException;
 
-import static readwrite.MySQL.*;
+import static utility.MySQL.*;
 
 
 public class Comparison {

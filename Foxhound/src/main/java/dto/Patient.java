@@ -1,12 +1,10 @@
-package DataTransferObject;
-
-import readwrite.DbManager;
+package dto;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-import static readwrite.MySQL.insertPatient;
+import static utility.MySQL.insertPatient;
 
 public class Patient implements Insertable {
 

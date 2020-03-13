@@ -1,8 +1,8 @@
-package readwrite;
+package logic;
 
-import DataTransferObject.*;
-import DataTransferObject.Error;
-import logic.Interpreter;
+import dto.*;
+import dto.Error;
+import utility.DbManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;

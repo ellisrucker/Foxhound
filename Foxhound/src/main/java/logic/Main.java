@@ -1,10 +1,10 @@
-package readwrite;
+package logic;
 
-import DataTransferObject.ExcelRow;
+import dto.ExcelRow;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
-import logic.Comparison;
-import logic.Interpreter;
+import utility.Configuration;
+import utility.DbManager;
 
 import java.io.File;
 
@@ -18,7 +18,6 @@ public class Main {
 
 
     public static void main(String [] args) throws IOException, SQLException {
-
 
         //Configuration
         System.out.println("Configuring properties");

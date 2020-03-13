@@ -1,10 +1,8 @@
-import DataTransferObject.Patient;
-import DataTransferObject.Sample;
 import logic.Interpreter;
 import org.junit.Test;
-import DataTransferObject.ExcelRow;
+import dto.ExcelRow;
 
-import static DataTransferObject.Test.TestType.*;
+import static dto.Test.TestType.*;
 import static org.junit.Assert.*;
 
 
@@ -88,8 +86,8 @@ public class InterpreterTest {
         ExcelRow testRow = new ExcelRow();
         testRow.setTestTypeCost("(1wk, 1250) 3wk 950");
         Interpreter interpreter = new Interpreter(testRow);
-        DataTransferObject.Test.TestType expected = ONE_WEEK;
-        DataTransferObject.Test.TestType actual = interpreter.findFirstTestType();
+        dto.Test.TestType expected = ONE_WEEK;
+        dto.Test.TestType actual = interpreter.findFirstTestType();
         assertEquals(expected,actual);
     }
     @Test
@@ -97,8 +95,8 @@ public class InterpreterTest {
         ExcelRow testRow = new ExcelRow();
         testRow.setTestTypeCost("(1250) 3wk 950");
         Interpreter interpreter = new Interpreter(testRow);
-        DataTransferObject.Test.TestType expected = UNKNOWN;
-        DataTransferObject.Test.TestType actual = interpreter.findFirstTestType();
+        dto.Test.TestType expected = UNKNOWN;
+        dto.Test.TestType actual = interpreter.findFirstTestType();
         assertEquals(expected,actual);
     }
 
