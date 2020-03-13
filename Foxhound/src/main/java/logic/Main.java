@@ -14,6 +14,8 @@ import java.sql.*;
 
 import java.util.Arrays;
 
+import static utility.MySQL.selectFilteredCaseByID;
+
 public class Main {
 
 
@@ -33,6 +35,7 @@ public class Main {
         System.out.println("Initializing database tables");
         DbManager.initializeTables();
 
+        //TODO: abstract filter functions into new Class
         //Pre-filter Complex Cases
         System.out.println("Pre-filtering fringe cases");
         CSVReader filterReader = new CSVReaderBuilder(new FileReader(terminalCSV)).withSkipLines(1).build();
@@ -43,9 +46,17 @@ public class Main {
             if(interpreter.caseIsComplex()){
                 Connection dbConnection = DbManager.openConnection();
                 try {
-                    newRow.setCaseID(interpreter.findFirstMaternalSampleID());
-                    newRow.insert(dbConnection);
-                    dbConnection.commit();
+                    String caseID = interpreter.findFirstMaternalSampleID();
+
+                    //Check to see if duplicate row has already been entered into db
+                    PreparedStatement stmt = dbConnection.prepareStatement(selectFilteredCaseByID);
+                    stmt.setString(1,caseID);
+                    ResultSet rs = stmt.executeQuery();
+                    if(!rs.next()) {
+                        newRow.setCaseID(interpreter.findFirstMaternalSampleID());
+                        newRow.insert(dbConnection);
+                        dbConnection.commit();
+                    }
                 } catch(Exception e) {
                     e.printStackTrace();
                     dbConnection.rollback();
@@ -70,6 +81,5 @@ public class Main {
             }
         }
     }
-
 
 }
