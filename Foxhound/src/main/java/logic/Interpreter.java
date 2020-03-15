@@ -57,7 +57,7 @@ public class Interpreter {
         Matcher idMatcher = generalID.matcher(str);
         //May need to switch to while loop if it fails to find id
         if (idMatcher.find()) {
-            return idMatcher.group();
+            return idMatcher.group().replaceAll("\\s","");
         } else {
             return null;
         }
@@ -530,7 +530,7 @@ public class Interpreter {
     }
 
 
-    private static Pattern generalID = Pattern.compile("[a-zA-Z]{3,}[\\d]{5,}");
+    private static Pattern generalID = Pattern.compile("[a-zA-Z]{3,}[\\s]*[\\d]{5,}");
     private static Pattern gestationRegex = Pattern.compile("[\\d]{1,2}[Ww]");
     private static Pattern costRegex = Pattern.compile("[\\d]{3,4}");
     private static Pattern mmddRegex = Pattern.compile("[\\d]{1,2}/[\\d]{1,2}");

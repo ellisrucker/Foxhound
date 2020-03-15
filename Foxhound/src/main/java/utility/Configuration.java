@@ -18,7 +18,7 @@ public class Configuration {
 
     private Configuration() throws IOException {
         Properties prop = new Properties();
-        FileInputStream inputStream = new FileInputStream("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\config.properties");
+        FileInputStream inputStream = new FileInputStream("C:\\Users\\Work\\IdeaProjects\\Foxhound\\Foxhound\\src\\main\\resources\\config.properties");
         prop.load(inputStream);
 
         targetFolder = prop.getProperty("targetFolder");

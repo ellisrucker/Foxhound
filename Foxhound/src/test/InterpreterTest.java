@@ -55,6 +55,15 @@ public class InterpreterTest {
         assertEquals(expected,actual);
     }
     @Test
+    public void findFirstMaternalSampleID_returnsSample_ifSpaceInSample(){
+        ExcelRow testRow = new ExcelRow();
+        testRow.setMaternalPatientId("ELLR 2003022");
+        Interpreter interpreter = new Interpreter(testRow);
+        String expected = "ELLR2003022";
+        String actual = interpreter.findFirstMaternalSampleID();
+        assertEquals(expected,actual);
+    }
+    @Test
     public void findFirstGestation_returnsCorrectGestation_ifPassedMultipleGestations(){
         ExcelRow testRow = new ExcelRow();
         testRow.setGestationGender("16w 25w, boy");
