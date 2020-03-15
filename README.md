@@ -66,7 +66,7 @@ The primary goal of this program is to restore data integrity by iterating throu
 
 
 ## Project Status
-* QA testing
+* QC testing
 * Debugging
 
 
