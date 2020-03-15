@@ -1,4 +1,4 @@
-# Patient Data Migrator
+# Foxhound: Patient Data Migrator
 **Author:** Ellis Rucker - m.ellisrucker@gmail.com 
 
 ## Purpose
@@ -66,7 +66,7 @@ The primary goal of this program is to restore data integrity by iterating throu
 
 
 ## Project Status
-* Refactoring code
+* QA testing
 * Debugging
 
 
